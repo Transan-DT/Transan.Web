@@ -1,0 +1,26 @@
+﻿<nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark box-shadow mb-3">
+	<div class="container-fluid">
+		<NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">Transgenres Community</NavLink><span class="badge badge-pill badge-primary">WIP</span> &emsp;
+
+		<button class="navbar-toggler" @onclick=Toggle>
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="navbar-collapse @(collapse ? "collapse" : null)">
+			<ul class="navbar-nav flex-grow-1">
+				<li class="nav-item">
+					<NavLink class="nav-link text-light" href="" Match="NavLinkMatch.All">Home</NavLink>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+@code {
+	[Parameter]
+	public string CurrentUri { get; set; }
+
+	bool collapse = true;
+
+	void Toggle() => collapse = !collapse;
+}

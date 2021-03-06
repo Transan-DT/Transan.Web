@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transcom.Web", "Transcom.Web\Transcom.Web.csproj", "{C740DBFD-B315-4142-82FB-2520D1483513}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transcom.Web", "Transcom.Web\Transcom.Web.csproj", "{C740DBFD-B315-4142-82FB-2520D1483513}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

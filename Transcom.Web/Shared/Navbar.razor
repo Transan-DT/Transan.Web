@@ -1,6 +1,9 @@
 ﻿<nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark box-shadow mb-3">
 	<div class="container-fluid">
-		<NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">Transgenres Community</NavLink><span class="badge badge-pill badge-primary">WIP</span> &emsp;
+		<div>
+			<NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">Transgenres Community</NavLink>
+			<span class="badge badge-pill badge-primary">WIP</span> &emsp;
+		</div>
 
 		<button class="navbar-toggler" @onclick=Toggle>
 			<span class="navbar-toggler-icon"></span>
@@ -8,9 +11,15 @@
 
 		<div class="navbar-collapse @(collapse ? "collapse" : null)">
 			<ul class="navbar-nav flex-grow-1">
-				<li class="nav-item">
-					<NavLink class="nav-link text-light" href="" Match="NavLinkMatch.All">Home</NavLink>
-				</li>
+				<li class="nav-item"><NavLink class="nav-link text-light" href="">Accueil</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light" href="team">L'équipe</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light" href="help">Aide & Ressources</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light" href="contact">Contact</NavLink></li>
+			</ul>
+
+			<ul class="navbar-nav flex-grow-0">
+				<li class="nav-item"><a class="nav-link text-light" href="https://discord.gg/kKWs63X">Discord</a></li>
+				<li class="nav-item"><a class="nav-link text-light disabled text-muted" href="team">Espace Membres</a></li>
 			</ul>
 		</div>
 	</div>

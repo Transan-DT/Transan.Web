@@ -88,3 +88,25 @@ body {
 		top: 0.5rem;
 	}
 }
+
+
+/* Carousel */
+.carousel {
+	margin-bottom: 4rem;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+	bottom: 3rem;
+	z-index: 10;
+}
+
+.carousel-floating-text {
+	text-shadow: 2px 2px 10px #000000;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item > img {
+	object-fit: cover;
+	position: center;
+	min-height: 100%;
+}

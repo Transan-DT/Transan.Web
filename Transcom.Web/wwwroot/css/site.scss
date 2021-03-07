@@ -28,15 +28,6 @@ button.accept-policy {
 	line-height: inherit;
 }
 
-.modal {
-	overflow-y: scroll;
-	-ms-overflow-style: none; /* IE and Edge */
-	scrollbar-width: none; /* Firefox */
-}
-
-.modal::-webkit-scrollbar {
-	display: none; /* Chrome, Safari and Opera */
-}
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -90,7 +81,8 @@ body {
 }
 
 
-/* Carousel */
+/* Carousel
+-------------------------------------------------- */
 .carousel {
 	margin-bottom: 4rem;
 }
@@ -109,4 +101,14 @@ body {
 	object-fit: cover;
 	position: center;
 	min-height: 100%;
+}
+
+/* Backgrounds
+-------------------------------------------------- */
+
+.bg-dark-acrylic {
+	background-color: rgba(23, 20, 31, .6);
+
+	-webkit-backdrop-filter: blur(50px);
+	backdrop-filter: blur(50px);
 }

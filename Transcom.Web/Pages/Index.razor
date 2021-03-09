@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @layout FluidLayout
 
 <div class="carousel slide mb-5" data-ride="carousel">
@@ -52,6 +52,79 @@
 		</div>
 	</div>
 
-	
+	<div class="my-5">
+		<h1>Un serveur protégé et accessible à tou·te·s</h1>
+		<p class="lead">Le serveur est protégé par plusieurs systèmes :</p>
+
+		<Accordion Flush Id="server-systems" Class="text-start my-3">
+			<AccordionSection Id="natsecure" Name="Natsecure ID Protect" Icon="bi bi-shield-lock-fill">
+				<p class="lead">
+					L'ID Protect est un système et un dispositif qui permet d'identifier les utilisateurs potentiellement indésirables
+					dès leurs arrivées dans ce serveur serveur grâce à un Identifiant Discord.
+				</p>
+
+				<p>
+					Dès leurs arrivées, le bot prélève immédiatement l'identifiant et de les stocker dans un salon,
+					pour pouvoir le mettre dans les membres indésirables en cas de Raid ou autres qui nuisent la communauté.
+					<br />
+					Le but est d'empêcher dans l'immédiat tout utilisateur qui tente de rejoindre le serveur
+					qu'iel a déjà tenté par exemple de détruire la communauté ou de faire un Raid.
+				</p>
+
+				<p>
+					Exemple : si l'utilisateur rejoint le serveur est qu'iel est déjà sur la liste des membres indésirables,
+					l'utilisateur sera automatiquement banni.e du serveur.
+					<br />
+					Autre exemple : Si l'utilisateur n'est pas dans la liste et qu'iel essaye de détruire la communauté dès son arrivée,
+					les Admins / Mod peuvent l'ajouter dans la bases de données par un ID et iel sera banni·e du serveur
+					ainsi que les autres serveur disposant du système.
+				</p>
+
+				<p>
+					Pour le moment ce système est en version BETA et que nous avons un projet de le rendre publique ainsi qu'un code source
+					pour permettre aux autres serveurs d'être le plus safe possible, pour les membres ainsi que la commuanuté LGBTQIA+.
+				</p>
+			</AccordionSection>
+
+			<AccordionSection Id="gforms" Name="Formulaire d'adhésion externe (Google Forms)" Icon="bi bi-file-earmark-text">
+				<p class="lead">
+					Nous sommes (peut-être) le seul serveur au monde d'avoir ce dispositif d'un formulaire d'adhésion automatisé et externe
+				</p>
+
+				<p>
+					Le but de ce système est d'empêcher les Spams des Raids ainsi que les insultes de tout genres,
+					mais aussi de vérifier plus efficacement les nouveaux membres.
+				</p>
+
+				<p>
+					Elles sont automatiquement notifiées et envoyées directement dans le serveur afin de traiter rapidement après l'envoi du formulaire.
+					<br />
+					Les membres peuvent recevoir en message privé les réponses de la demande ou son rappel.
+				</p>
+			</AccordionSection>
+
+			<AccordionSection Id="other" Name="Autres Systèmes" Icon="bi bi-patch-check">
+				<p>Le serveur dispose également d'autres systèmes :</p>
+
+				<ul>
+					<li>Anti insultes & propos LGBTQIA-phobes</li>
+					<li>Anti Spam (mention / MAJ / liens)</li>
+					<li>Anti Publicité (liens discord)</li>
+					<li>Mode fantôme (bientôt)</li>
+				</ul>
+			</AccordionSection>
+
+			<AccordionSection Id="accessibility" Name="Accessibilité" Icon="bi bi-plus-square">
+				<p>Le serveur étant conçu pour l'accessibilité, il dispose de ces systèmes pour accompagner les utilisateurs :</p>
+				
+				<p>
+					<ul>
+						<li><a href="https://pluralkit.me/" target="_blank">PluralKit</a>, Un bot spécialement conçu pour les membres ayant un Trouble Dissociatif de l'Identité.</li>
+						<li>Messages TTS (Text To Speech), un système équipé sur tout les serveurs Discord et en MP, qui transforme les messages en écrit en messages vocaux.</li>
+					</ul>
+				</p>
+			</AccordionSection>
+		</Accordion>
+	</div>
 </div>
 

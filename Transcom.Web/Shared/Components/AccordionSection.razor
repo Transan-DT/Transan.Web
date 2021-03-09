@@ -20,21 +20,12 @@
 
 
 @code {
-	[Parameter]
-	public string Id { get; set; }
+	[CascadingParameter(Name = "ParentId")] public string ParentId { get; init; }
 
-	[Parameter]
-	public string ParentId { get; set; }
+	[Parameter] public string Id { get; init; }
+	[Parameter] public string Icon { get; set; }
+	[Parameter] public string Name { get; set; }
+	[Parameter] public bool Show { get; set; } = false;
 
-	[Parameter]
-	public string Icon { get; set; }
-
-	[Parameter]
-	public string Name { get; set; }
-
-	[Parameter]
-	public RenderFragment ChildContent { get; set; }
-
-	[Parameter]
-	public bool Show { get; set; } = false;
+	[Parameter] public RenderFragment ChildContent { get; set; }
 }

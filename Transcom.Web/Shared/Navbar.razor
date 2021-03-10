@@ -1,4 +1,6 @@
-﻿<nav class="navbar fixed-top navbar-expand-md navbar-toggleable-md navbar-dark bg-dark-acrylic box-shadow mb-5 px-3">
+﻿@inject IConfiguration Configuration
+
+<nav class="navbar fixed-top navbar-expand-md navbar-toggleable-md navbar-dark bg-dark-acrylic box-shadow mb-5 px-3">
 	<div class="container-fluid">
 		<div>
 			<NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">Transgenres Community</NavLink>
@@ -12,13 +14,13 @@
 		<div class="navbar-collapse @(collapse ? "collapse" : null)">
 			<ul class="navbar-nav flex-grow-1">
 				<li class="nav-item"><NavLink class="nav-link text-light" href="">Accueil</NavLink></li>
-				<li class="nav-item"><NavLink class="nav-link text-light" href="team">L'équipe</NavLink></li>
-				<li class="nav-item"><NavLink class="nav-link text-light" href="help">Aide & Ressources</NavLink></li>
-				<li class="nav-item"><NavLink class="nav-link text-light" href="contact">Contact</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="team">L'équipe</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="help">Aide & Ressources</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="contact">Contact</NavLink></li>
 			</ul>
 
 			<ul class="navbar-nav flex-grow-0">
-				<li class="nav-item"><a class="nav-link text-light" href="https://discord.gg/kKWs63X">Discord</a></li>
+				<li class="nav-item"><a class="nav-link text-light" href=@Configuration["ExtLinks:Discord"]>Discord</a></li>
 				<li class="nav-item"><a class="nav-link text-light disabled text-muted" href="team">Espace Membres</a></li>
 			</ul>
 		</div>

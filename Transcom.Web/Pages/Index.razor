@@ -1,5 +1,7 @@
 ﻿@page "/"
 @layout FluidLayout
+@inject IConfiguration Configuration
+
 
 <div class="carousel slide mb-5" data-ride="carousel">
 	<div class="carousel-inner">
@@ -45,11 +47,11 @@
 			</div>
 
 			<div class="col d-grid gap-2">
-				<a class="btn btn-lg btn-block btn-primary">Discord</a>
+				<a class="btn btn-lg btn-block btn-primary" href=@Configuration["ExtLinks:Discord"]>Discord</a>
 			</div>
 
 			<div class="col d-grid gap-2">
-				<a class="btn btn-lg btn-block btn-outline-secondary">Twitter</a>
+				<a class="btn btn-lg btn-block btn-outline-secondary" href=@Configuration["ExtLinks:Twitter"]>Twitter</a>
 			</div>
 		</div>
 

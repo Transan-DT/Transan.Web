@@ -28,6 +28,12 @@ button.accept-policy {
 	line-height: inherit;
 }
 
+.dotted-underline {
+    -moz-text-decoration-line: underline;
+    text-decoration-line: underline;
+    -moz-text-decoration-style: dotted;
+    text-decoration-style: dotted;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */

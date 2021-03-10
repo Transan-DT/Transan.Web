@@ -1,0 +1,13 @@
+﻿<div id=@Id class="accordion @(Flush ? "accordion-flush" : null) @Class">
+	<CascadingValue Name="ParentId" Value=@Id IsFixed>
+		@ChildContent
+	</CascadingValue>
+</div>
+
+@code {
+	[Parameter] public string Id { get; init; }
+	[Parameter] public bool Flush { get; init; }
+	[Parameter] public string Class { get; init; }
+
+	[Parameter] public RenderFragment ChildContent { get; set; }
+}

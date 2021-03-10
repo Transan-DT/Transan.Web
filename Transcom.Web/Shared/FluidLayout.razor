@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+
+<header>
+	<Navbar CurrentUri=@(NavigationManager.Uri) />
+</header>
+
+<div class="container-fluid" style="margin: 100px 0px 0px inherit; padding: 0px;">
+	<main role="main">
+		@Body
+	</main>
+</div>
+
+<Footer />

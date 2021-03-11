@@ -1,0 +1,64 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+
+<header>
+	<Navbar CurrentUri=@(NavigationManager.Uri) />
+</header>
+
+<div class="container-fluid" style="margin: 100px 0px 0px inherit; padding: 0px;">
+	<main role="main">
+		<div class="carousel slide mb-5" data-ride="carousel">
+			<div class="carousel-inner">
+				<div class="carousel-item active">
+					<img src="assets/index/transcom_banner.png" class="d-block w-100" style="min-height:25rem" alt="...">
+
+					<div class="container">
+						<div class="carousel-caption @(CoverTextCenter ? null : "text-start") align-content-center">
+							<div class="carousel-floating-text">
+								<h1>@CoverTitle</h1>
+
+								@if (SubtitleHeader)
+								{
+									<h2>@CoverSubtitle</h2>
+								}
+								else
+								{
+									<p class="lead">@CoverSubtitle</p>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container text-center">
+			<CascadingValue Value=this>
+				@Body
+			</CascadingValue>
+		</div>
+	</main>
+</div>
+
+<Footer />
+
+
+@code {
+	public string CoverTitle { get; private set; }
+	public string CoverSubtitle { get; private set; }
+
+	public bool SubtitleHeader { get; private set; }
+	public bool CoverTextCenter { get; private set; }
+
+
+	public void Refresh() => StateHasChanged();
+
+	public void SetCover(string title, string subtitle, bool center = false, bool subtitleHeader = false)
+	{
+		CoverTitle = title;
+		CoverSubtitle = subtitle;
+		SubtitleHeader = subtitleHeader;
+		CoverTextCenter = center;
+	}
+}

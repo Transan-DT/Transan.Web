@@ -1,152 +1,152 @@
 ﻿@page "/"
-@layout FluidLayout
+@layout CoverLayout
 @inject IConfiguration Configuration
 
 
-<div class="carousel slide mb-5" data-ride="carousel">
-	<div class="carousel-inner">
-		<div class="carousel-item active">
-			<img src="assets/index/transcom_banner.png" class="d-block w-100" style="min-height:25rem" alt="...">
 
-			<div class="container">
-				<div class="carousel-caption text-left align-content-center">
-					<div class="carousel-floating-text">
-						<h1>Transgenres Community</h1>
-						<h2>Expressing Myself, My Way.</h2>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="container text-center">
-	<div class="my-5">
-		<div class="lead my-3">
-			<h1>Le serveur Discord d'entraide et de support</h1>
-			<p>Transgenres Community a été créée sur Discord le 12 décembre 2019 puis ouverte le 15 décembre 2019.</p>
-			<p>Depuis sa création, elle a pour but d'accueillir, d'aider, s'entraider et de soutenir les personnes trans, non-binaires, gender-fluid et intersexes.</p>
-		</div>
-
-		<div class="my-3">
-			<p>
-				<span class="lead">Découvrez ci-dessous la communauté exclusivement pour les personnes transgenres, Non-Binaires, Intersexes et Genre fluide.</span> <br />
-				<small>
-					<i>
-						<span class="dotted-underline" data-bs-toggle="tooltip" title="Sous conditions (voir le règlement du serveur)">
-							Pour les personnes Cisgenres, vous êtes également les bienvenu.e.s *
-						</span>
-					</i>
-				</small>
-			</p>
-		</div>
-
-		<div class="row justify-content-between m-5">
-			<div class="col d-grid gap-2">
-				<a class="btn btn-lg btn-block btn-outline-light">Resources</a>
-			</div>
-
-			<div class="col d-grid gap-2">
-				<a class="btn btn-lg btn-block btn-primary" href=@Configuration["ExtLinks:Discord"]>Discord</a>
-			</div>
-
-			<div class="col d-grid gap-2">
-				<a class="btn btn-lg btn-block btn-outline-secondary" href=@Configuration["ExtLinks:Twitter"]>Twitter</a>
-			</div>
-		</div>
-
-		<div class="mx-5">
-			<img class="img-fluid rounded" src="assets/index/body-1.webp" />
-		</div>
+<div class="my-5">
+	<div class="lead my-3">
+		<h1>Le serveur Discord d'entraide et de support</h1>
+		<p>Transgenres Community a été créée sur Discord le 12 décembre 2019 puis ouverte le 15 décembre 2019.</p>
+		<p>Depuis sa création, elle a pour but d'accueillir, d'aider, s'entraider et de soutenir les personnes trans, non-binaires, gender-fluid et intersexes.</p>
 	</div>
 
-	<div class="my-5">
-		<h1>Un serveur protégé et accessible à tou·te·s</h1>
-		<p class="lead">Le serveur est protégé par plusieurs systèmes :</p>
-
-		<Accordion Flush Id="server-systems" Class="text-start my-3">
-			<AccordionSection Id="natsecure" Name="Natsecure ID Protect" Icon="bi bi-shield-lock-fill">
-				<p class="lead">
-					L'ID Protect est un système et un dispositif qui permet d'identifier les utilisateurs potentiellement indésirables
-					dès leurs arrivées dans ce serveur serveur grâce à un Identifiant Discord.
-				</p>
-
-				<p>
-					Dès leurs arrivées, le bot prélève immédiatement l'identifiant et de les stocker dans un salon,
-					pour pouvoir le mettre dans les membres indésirables en cas de Raid ou autres qui nuisent la communauté.
-					<br />
-					Le but est d'empêcher dans l'immédiat tout utilisateur qui tente de rejoindre le serveur
-					qu'iel a déjà tenté par exemple de détruire la communauté ou de faire un Raid.
-				</p>
-
-				<p>
-					Exemple : si l'utilisateur rejoint le serveur est qu'iel est déjà sur la liste des membres indésirables,
-					l'utilisateur sera automatiquement banni.e du serveur.
-					<br />
-					Autre exemple : Si l'utilisateur n'est pas dans la liste et qu'iel essaye de détruire la communauté dès son arrivée,
-					les Admins / Mod peuvent l'ajouter dans la bases de données par un ID et iel sera banni·e du serveur
-					ainsi que les autres serveur disposant du système.
-				</p>
-
-				<p>
-					Pour le moment ce système est en version BETA et que nous avons un projet de le rendre publique ainsi qu'un code source
-					pour permettre aux autres serveurs d'être le plus safe possible, pour les membres ainsi que la commuanuté LGBTQIA+.
-				</p>
-			</AccordionSection>
-
-			<AccordionSection Id="gforms" Name="Formulaire d'adhésion externe (Google Forms)" Icon="bi bi-file-earmark-text">
-				<p class="lead">
-					Nous sommes (peut-être) le seul serveur au monde d'avoir ce dispositif d'un formulaire d'adhésion automatisé et externe
-				</p>
-
-				<p>
-					Le but de ce système est d'empêcher les Spams des Raids ainsi que les insultes de tout genres,
-					mais aussi de vérifier plus efficacement les nouveaux membres.
-				</p>
-
-				<p>
-					Elles sont automatiquement notifiées et envoyées directement dans le serveur afin de traiter rapidement après l'envoi du formulaire.
-					<br />
-					Les membres peuvent recevoir en message privé les réponses de la demande ou son rappel.
-				</p>
-			</AccordionSection>
-
-			<AccordionSection Id="other" Name="Autres Systèmes" Icon="bi bi-patch-check">
-				<p>Le serveur dispose également d'autres systèmes :</p>
-
-				<ul>
-					<li>Anti insultes & propos LGBTQIA-phobes</li>
-					<li>Anti Spam (mention / MAJ / liens)</li>
-					<li>Anti Publicité (liens discord)</li>
-					<li>Mode fantôme (bientôt)</li>
-				</ul>
-			</AccordionSection>
-
-			<AccordionSection Id="accessibility" Name="Accessibilité" Icon="bi bi-plus-square">
-				<p>Le serveur étant conçu pour l'accessibilité, il dispose de ces systèmes pour accompagner les utilisateurs :</p>
-				
-				<p>
-					<ul>
-						<li><a href="https://pluralkit.me/" target="_blank">PluralKit</a>, Un bot spécialement conçu pour les membres ayant un Trouble Dissociatif de l'Identité.</li>
-						<li>Messages TTS (Text To Speech), un système équipé sur tout les serveurs Discord et en MP, qui transforme les messages en écrit en messages vocaux.</li>
-					</ul>
-				</p>
-			</AccordionSection>
-		</Accordion>
-	</div>
-
-	<div class="my-5">
-		<h1>Personnalisez votre profil à l'infini !</h1>
-
-		<p class="lead">
-			Vous avez la possibilité d'ajouter des rôles,
-			<span class="dotted-underline" data-bs-toggle="tooltip" title="Sous conditions (voir le règlement du serveur)">changer de pseudo *</span>,
-			sélectionner vos notifications, et choisir la couleur de votre pseudo à votre goût.
+	<div class="my-3">
+		<p>
+			<span class="lead">Découvrez ci-dessous la communauté exclusivement pour les personnes transgenres, Non-Binaires, Intersexes et Genre fluide.</span> <br />
+			<small>
+				<i>
+					<span class="dotted-underline" data-bs-toggle="tooltip" title="Sous conditions (voir le règlement du serveur)">
+						Pour les personnes Cisgenres, vous êtes également les bienvenu.e.s *
+					</span>
+				</i>
+			</small>
 		</p>
+	</div>
 
-		<div class="mx-5">
-			<img class="img-fluid rounded" src="assets/index/body-2.webp" />
+	<div class="row justify-content-between m-5">
+		<div class="col d-grid gap-2">
+			<a class="btn btn-lg btn-block btn-outline-light">Resources</a>
 		</div>
+
+		<div class="col d-grid gap-2">
+			<a class="btn btn-lg btn-block btn-primary" href=@Configuration["ExtLinks:Discord"]>Discord</a>
+		</div>
+
+		<div class="col d-grid gap-2">
+			<a class="btn btn-lg btn-block btn-outline-secondary" href=@Configuration["ExtLinks:Twitter"]>Twitter</a>
+		</div>
+	</div>
+
+	<div class="mx-5">
+		<img class="img-fluid rounded" src="assets/index/body-1.webp" />
 	</div>
 </div>
 
+<div class="my-5">
+	<h1>Un serveur protégé et accessible à tou·te·s</h1>
+	<p class="lead">Le serveur est protégé par plusieurs systèmes :</p>
+
+	<Accordion Flush Id="server-systems" Class="text-start my-3">
+		<AccordionSection Id="natsecure" Name="Natsecure ID Protect" Icon="bi bi-shield-lock-fill">
+			<p class="lead">
+				L'ID Protect est un système et un dispositif qui permet d'identifier les utilisateurs potentiellement indésirables
+				dès leurs arrivées dans ce serveur serveur grâce à un Identifiant Discord.
+			</p>
+
+			<p>
+				Dès leurs arrivées, le bot prélève immédiatement l'identifiant et de les stocker dans un salon,
+				pour pouvoir le mettre dans les membres indésirables en cas de Raid ou autres qui nuisent la communauté.
+				<br />
+				Le but est d'empêcher dans l'immédiat tout utilisateur qui tente de rejoindre le serveur
+				qu'iel a déjà tenté par exemple de détruire la communauté ou de faire un Raid.
+			</p>
+
+			<p>
+				Exemple : si l'utilisateur rejoint le serveur est qu'iel est déjà sur la liste des membres indésirables,
+				l'utilisateur sera automatiquement banni.e du serveur.
+				<br />
+				Autre exemple : Si l'utilisateur n'est pas dans la liste et qu'iel essaye de détruire la communauté dès son arrivée,
+				les Admins / Mod peuvent l'ajouter dans la bases de données par un ID et iel sera banni·e du serveur
+				ainsi que les autres serveur disposant du système.
+			</p>
+
+			<p>
+				Pour le moment ce système est en version BETA et que nous avons un projet de le rendre publique ainsi qu'un code source
+				pour permettre aux autres serveurs d'être le plus safe possible, pour les membres ainsi que la commuanuté LGBTQIA+.
+			</p>
+		</AccordionSection>
+
+		<AccordionSection Id="gforms" Name="Formulaire d'adhésion externe (Google Forms)" Icon="bi bi-file-earmark-text">
+			<p class="lead">
+				Nous sommes (peut-être) le seul serveur au monde d'avoir ce dispositif d'un formulaire d'adhésion automatisé et externe
+			</p>
+
+			<p>
+				Le but de ce système est d'empêcher les Spams des Raids ainsi que les insultes de tout genres,
+				mais aussi de vérifier plus efficacement les nouveaux membres.
+			</p>
+
+			<p>
+				Elles sont automatiquement notifiées et envoyées directement dans le serveur afin de traiter rapidement après l'envoi du formulaire.
+				<br />
+				Les membres peuvent recevoir en message privé les réponses de la demande ou son rappel.
+			</p>
+		</AccordionSection>
+
+		<AccordionSection Id="other" Name="Autres Systèmes" Icon="bi bi-patch-check">
+			<p>Le serveur dispose également d'autres systèmes :</p>
+
+			<ul>
+				<li>Anti insultes & propos LGBTQIA-phobes</li>
+				<li>Anti Spam (mention / MAJ / liens)</li>
+				<li>Anti Publicité (liens discord)</li>
+				<li>Mode fantôme (bientôt)</li>
+			</ul>
+		</AccordionSection>
+
+		<AccordionSection Id="accessibility" Name="Accessibilité" Icon="bi bi-plus-square">
+			<p>Le serveur étant conçu pour l'accessibilité, il dispose de ces systèmes pour accompagner les utilisateurs :</p>
+				
+			<p>
+				<ul>
+					<li><a href="https://pluralkit.me/" target="_blank">PluralKit</a>, Un bot spécialement conçu pour les membres ayant un Trouble Dissociatif de l'Identité.</li>
+					<li>Messages TTS (Text To Speech), un système équipé sur tout les serveurs Discord et en MP, qui transforme les messages en écrit en messages vocaux.</li>
+				</ul>
+			</p>
+		</AccordionSection>
+	</Accordion>
+</div>
+
+<div class="my-5">
+	<h1>Personnalisez votre profil à l'infini !</h1>
+
+	<p class="lead">
+		Vous avez la possibilité d'ajouter des rôles,
+		<span class="dotted-underline" data-bs-toggle="tooltip" title="Sous conditions (voir le règlement du serveur)">changer de pseudo *</span>,
+		sélectionner vos notifications, et choisir la couleur de votre pseudo à votre goût.
+	</p>
+
+	<div class="mx-5">
+		<img class="img-fluid rounded" src="assets/index/body-2.webp" />
+	</div>
+</div>
+
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	const string PageTitle = "Transgenres Community";
+	const string PageSubtitle = "Expressing Myself, My way.";
+
+
+	protected override void OnParametersSet()
+	{
+		if (Layout.CoverTitle is null or not PageTitle)
+		{
+			Layout.SetCover(PageTitle, PageSubtitle, true, true);
+			Layout.Refresh();
+		}
+	}
+}

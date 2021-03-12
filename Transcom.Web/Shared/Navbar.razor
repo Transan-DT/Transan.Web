@@ -7,14 +7,14 @@
 			<span class="badge rounded-pill bg-primary">WIP</span> &emsp;
 		</div>
 
-		<button class="navbar-toggler" @onclick=Toggle>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavContent">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 
-		<div class="navbar-collapse @(collapse ? "collapse" : null)">
+		<div id="navbarNavContent" class="navbar-collapse collapse">
 			<ul class="navbar-nav flex-grow-1">
 				<li class="nav-item"><NavLink class="nav-link text-light" href="">Accueil</NavLink></li>
-				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="team">L'équipe</NavLink></li>
+				<li class="nav-item"><NavLink class="nav-link text-light" href="team">L'équipe</NavLink></li>
 				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="help">Aide & Ressources</NavLink></li>
 				<li class="nav-item"><NavLink class="nav-link text-light disabled" href="contact">Contact</NavLink></li>
 			</ul>
@@ -30,8 +30,4 @@
 @code {
 	[Parameter]
 	public string CurrentUri { get; set; }
-
-	bool collapse = true;
-
-	void Toggle() => collapse = !collapse;
 }

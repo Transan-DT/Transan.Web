@@ -24,6 +24,7 @@ namespace Transcom.Web
 			services.AddServerSideBlazor();
 
 			services.AddSingleton<TeamPageLoaderService>();
+			services.AddSingleton<GlossaryService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

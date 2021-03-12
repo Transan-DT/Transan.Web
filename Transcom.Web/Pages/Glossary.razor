@@ -1,0 +1,85 @@
+﻿@page "/Glossary"
+@layout CoverLayout
+@inject Transcom.Web.Services.GlossaryService GlossaryService
+
+<div class="row justify-content-between text-start">
+	<div class="col-lg-6">
+		<h1 class="mb-3">Rechercher un Terme :</h1>
+
+		<EditForm Model="CurrentSearch" OnValidSubmit="HandleValidSubmitAsync">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+
+			<div class="input-group">
+				<InputText @bind-Value="CurrentSearch.Search" class="form-control" id="Search" placeholder="Recherche" DisplayName="Search" />
+
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-primary px-3">Rechercher</button>
+				</div>
+			</div>
+		</EditForm>
+	</div>
+
+	@if (Results is not null)
+	{
+		<div class="mx-3 my-5">
+			@if (Results.Count() is not 0)
+			{
+				<h4 class="text-success mb-3">@Results.Count() résultats :</h4>
+				<ul>
+					@foreach (GlossaryEntry entry in Results)
+					{
+						<li class="lead"><NavLink class="link-primary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
+					}
+				</ul>
+			}
+			else
+			{
+				<h4 class="text-warning">No Results found. Try again.</h4>
+			}
+		</div>
+	}
+	else if (Searching)
+	{
+		<h4 class="text-info my-5">Recherche...</h4>
+	}
+</div>
+
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	const string PageTitle = "Lexique";
+	const string PageSubtitle = "Tout ce qu'il vous faut pour comprendre le monde Transgenre.";
+
+	public SearchModel CurrentSearch { get; set; } = new SearchModel();
+	public IEnumerable<GlossaryEntry> Results { get; set; }
+	public bool Searching { get; private set; }
+
+	protected override void OnParametersSet()
+	{
+		if (Layout.CoverTitle is null or not PageTitle)
+		{
+			Layout.SetCover(PageTitle, PageSubtitle);
+			Layout.Refresh();
+		}
+	}
+
+	protected async Task HandleValidSubmitAsync()
+	{
+		Results = null;
+		Searching = true;
+		Results = ((CurrentSearch.Search is null || CurrentSearch.Search.Length > 2)
+			? await GlossaryService.SearchEntriesAsync(CurrentSearch.Search) : null)
+			?? Array.Empty<GlossaryEntry>();
+		Searching = false;
+	}
+
+
+	public record SearchModel
+	{
+		[Required, StringLength(100, MinimumLength = 2)]
+		public string Search { get; set; }
+	}
+}

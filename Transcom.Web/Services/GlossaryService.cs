@@ -31,6 +31,12 @@ namespace Transcom.Web.Services
 
 		public IQueryable<GlossaryEntry> GetAllEntries() => glossaryEntries.AsQueryable();
 
+		public IOrderedEnumerable<IGrouping<char, GlossaryEntry>> GetEntriesByStartLetter() =>
+			from entry in GetAllEntries().AsEnumerable()
+			group entry by entry.DisplayTitle[0] into letterGroup
+			orderby letterGroup.Key
+			select letterGroup;
+
 		public async Task<IEnumerable<GlossaryEntry>> SearchEntriesAsync(string search) => await (await glossaryEntries.FindAsync(GetSearchFilter(search))).ToListAsync();
 
 

@@ -3,10 +3,37 @@
 @inject Transcom.Web.Services.GlossaryService GlossaryService
 
 <div class="row justify-content-between text-start">
-	<div class="col-lg-6">
-		<h1 class="mb-3">Rechercher un Terme :</h1>
+	<div class="col-lg-8 my-5">
+		<h1>Parcourir</h1>
 
-		<EditForm Model="CurrentSearch" OnValidSubmit="HandleValidSubmitAsync">
+		<div class="my-3">
+			<div class="btn-group">
+				@for (int i = 0; i < GlossaryEntries.Count(); i++)
+				{
+					int current = i;
+					var probe = GlossaryEntries[i];
+
+					<btn class=@($"btn btn-primary {(currentLetter == i ? "active" : null)}") @onclick="() => { currentLetter = current; }">@GlossaryEntries[i].Key</btn>
+				}
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-body bg-dark">
+				<ul class="m-3">
+					@foreach (GlossaryEntry entry in GlossaryEntries[currentLetter].AsEnumerable())
+					{
+						<li><a class="link-secondary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</a></li>
+					}
+				</ul>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-4 my-5">
+		<h1 class="mb-3">Rechercher</h1>
+
+		<EditForm Model=CurrentSearch OnValidSubmit=HandleValidSubmitAsync>
 			<DataAnnotationsValidator />
 			<ValidationSummary />
 
@@ -18,31 +45,31 @@
 				</div>
 			</div>
 		</EditForm>
-	</div>
 
-	@if (Results is not null)
-	{
-		<div class="mx-3 my-5">
-			@if (Results.Count() is not 0)
-			{
-				<h4 class="text-success mb-3">@Results.Count() résultats :</h4>
-				<ul>
-					@foreach (GlossaryEntry entry in Results)
-					{
-						<li class="lead"><NavLink class="link-primary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
-					}
-				</ul>
-			}
-			else
-			{
-				<h4 class="text-warning">No Results found. Try again.</h4>
-			}
-		</div>
-	}
-	else if (Searching)
-	{
-		<h4 class="text-info my-5">Recherche...</h4>
-	}
+		@if (Results is not null)
+		{
+			<div class="mx-3 my-5">
+				@if (Results.Count() is not 0)
+				{
+					<h4 class="text-success mb-3">@Results.Count() résultat(s) :</h4>
+					<ul>
+						@foreach (GlossaryEntry entry in Results)
+						{
+							<li class="lead"><NavLink class="link-primary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
+						}
+					</ul>
+				}
+				else
+				{
+					<h4 class="text-warning">No Results found. Try again.</h4>
+				}
+			</div>
+		}
+		else if (Searching)
+		{
+			<h4 class="text-info my-5">Recherche...</h4>
+		}
+	</div>
 </div>
 
 
@@ -55,6 +82,9 @@
 
 	public SearchModel CurrentSearch { get; set; } = new SearchModel();
 	public IEnumerable<GlossaryEntry> Results { get; set; }
+	public IGrouping<char, GlossaryEntry>[] GlossaryEntries;
+	private int currentLetter;
+
 	public bool Searching { get; private set; }
 
 	protected override void OnParametersSet()
@@ -64,6 +94,12 @@
 			Layout.SetCover(PageTitle, PageSubtitle);
 			Layout.Refresh();
 		}
+	}
+
+	protected override void OnInitialized()
+	{
+		GlossaryEntries = GlossaryService.GetEntriesByStartLetter().ToArray();
+		
 	}
 
 	protected async Task HandleValidSubmitAsync()

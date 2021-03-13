@@ -1,0 +1,38 @@
+﻿@page "/Glossary/{EntryName}"
+@layout CoverLayout
+@inject Transcom.Web.Services.GlossaryService GlossaryService
+
+
+@if (Entry is not null)
+{
+	@Entry.Markup
+}
+else if (Loaded)
+{
+	<h4 class="text-warning">Aucun contenu trouvé.</h4>
+}
+else
+{
+	<h4 class="text-info">Chargement...</h4>
+}
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; init; }
+	[Parameter] public string EntryName { get; init; }
+
+	public GlossaryEntry Entry { get; private set; }
+	public bool Loaded { get; private set; }
+
+
+	protected override async Task OnParametersSetAsync()
+	{
+		Loaded = false;
+		Entry = await GlossaryService.FetchEntryAsync(EntryName);
+
+		Layout.SetCover("Lexique", Entry.DisplayTitle, subtitleHeader: true);
+
+		await base.OnParametersSetAsync();
+		Loaded = true;
+	}
+}

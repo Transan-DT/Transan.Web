@@ -1,0 +1,116 @@
+﻿@page "/Glossary"
+@layout CoverLayout
+@inject Transcom.Web.Services.GlossaryService GlossaryService
+
+<div class="row justify-content-between text-start">
+	<div class="col-lg-8 my-5">
+		<h1>Parcourir</h1>
+
+		<div class="my-3">
+			<div class="btn-group">
+				@for (int i = 0; i < GlossaryEntries.Count(); i++)
+				{
+					int current = i;
+					var probe = GlossaryEntries[i];
+
+					<btn class=@($"btn btn-primary {(currentLetter == i ? "active" : null)}") @onclick="() => { currentLetter = current; }">@GlossaryEntries[i].Key</btn>
+				}
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-body bg-dark">
+				<ul class="m-3">
+					@foreach (GlossaryEntry entry in GlossaryEntries[currentLetter].AsEnumerable())
+					{
+						<li><a class="link-secondary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</a></li>
+					}
+				</ul>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-4 my-5">
+		<h1 class="mb-3">Rechercher</h1>
+
+		<EditForm Model=CurrentSearch OnValidSubmit=HandleValidSubmitAsync>
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+
+			<div class="input-group">
+				<InputText @bind-Value="CurrentSearch.Search" class="form-control" id="Search" placeholder="Recherche" DisplayName="Search" />
+
+				<div class="input-group-append">
+					<button type="submit" class="btn btn-primary px-3">Rechercher</button>
+				</div>
+			</div>
+		</EditForm>
+
+		@if (Results is not null)
+		{
+			<div class="mx-3 my-5">
+				@if (Results.Count() is not 0)
+				{
+					<h4 class="text-success mb-3">@Results.Count() résultat(s) :</h4>
+					<ul>
+						@foreach (GlossaryEntry entry in Results)
+						{
+							<li class="lead"><NavLink class="link-secondary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
+						}
+					</ul>
+				}
+				else
+				{
+					<h4 class="text-warning">No Results found. Try again.</h4>
+				}
+			</div>
+		}
+		else if (Searching)
+		{
+			<h4 class="text-info my-5">Recherche...</h4>
+		}
+	</div>
+</div>
+
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+
+	public SearchModel CurrentSearch { get; set; } = new SearchModel();
+	public IEnumerable<GlossaryEntry> Results { get; set; }
+	public IGrouping<char, GlossaryEntry>[] GlossaryEntries;
+	private int currentLetter;
+
+	public bool Searching { get; private set; }
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Lexique", "Tout ce qu'il vous faut pour comprendre le monde Transgenre.");
+		base.OnParametersSet();
+	}
+
+	protected override void OnInitialized()
+	{
+		GlossaryEntries = GlossaryService.GetEntriesByStartLetter().ToArray();
+		base.OnInitialized();
+	}
+
+	protected async Task HandleValidSubmitAsync()
+	{
+		Results = null;
+		Searching = true;
+		Results = ((CurrentSearch.Search is null || CurrentSearch.Search.Length > 2)
+			? await GlossaryService.SearchEntriesAsync(CurrentSearch.Search) : null)
+			?? Array.Empty<GlossaryEntry>();
+		Searching = false;
+	}
+
+
+	public record SearchModel
+	{
+		[Required, StringLength(100, MinimumLength = 2)]
+		public string Search { get; set; }
+	}
+}

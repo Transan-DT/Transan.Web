@@ -55,7 +55,7 @@
 					<ul>
 						@foreach (GlossaryEntry entry in Results)
 						{
-							<li class="lead"><NavLink class="link-primary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
+							<li class="lead"><NavLink class="link-secondary" href=@($"glossary/{entry.UrlTitle}")>@entry.DisplayTitle</NavLink></li>
 						}
 					</ul>
 				}
@@ -77,8 +77,6 @@
 @code {
 	[CascadingParameter] CoverLayout Layout { get; set; }
 
-	const string PageTitle = "Lexique";
-	const string PageSubtitle = "Tout ce qu'il vous faut pour comprendre le monde Transgenre.";
 
 	public SearchModel CurrentSearch { get; set; } = new SearchModel();
 	public IEnumerable<GlossaryEntry> Results { get; set; }
@@ -89,17 +87,14 @@
 
 	protected override void OnParametersSet()
 	{
-		if (Layout.CoverTitle is null or not PageTitle)
-		{
-			Layout.SetCover(PageTitle, PageSubtitle);
-			Layout.Refresh();
-		}
+		Layout.SetCover("Lexique", "Tout ce qu'il vous faut pour comprendre le monde Transgenre.");
+		base.OnParametersSet();
 	}
 
 	protected override void OnInitialized()
 	{
 		GlossaryEntries = GlossaryService.GetEntriesByStartLetter().ToArray();
-		
+		base.OnInitialized();
 	}
 
 	protected async Task HandleValidSubmitAsync()

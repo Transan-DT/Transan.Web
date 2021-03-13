@@ -39,6 +39,8 @@ namespace Transcom.Web.Services
 
 		public async Task<IEnumerable<GlossaryEntry>> SearchEntriesAsync(string search) => await (await glossaryEntries.FindAsync(GetSearchFilter(search))).ToListAsync();
 
+		public async Task<GlossaryEntry> FetchEntryAsync(string urlId) => await (await glossaryEntries.FindAsync(Builders<GlossaryEntry>.Filter.Eq(e => e.UrlTitle, urlId))).FirstOrDefaultAsync();
+
 
 		private static FilterDefinition<GlossaryEntry> GetSearchFilter(string search) => Builders<GlossaryEntry>.Filter.Regex(e => e.DisplayTitle, new(search, "gi"));
 	}

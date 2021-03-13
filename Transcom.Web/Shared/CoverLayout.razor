@@ -33,7 +33,7 @@
 			</div>
 		</div>
 
-		<div class="container text-center">
+		<div class="container">
 			<CascadingValue Value=this>
 				@Body
 			</CascadingValue>
@@ -56,9 +56,14 @@
 
 	public void SetCover(string title, string subtitle, bool center = false, bool subtitleHeader = false)
 	{
-		CoverTitle = title;
-		CoverSubtitle = subtitle;
-		SubtitleHeader = subtitleHeader;
-		CoverTextCenter = center;
+		if (CoverTitle != title || CoverSubtitle != subtitle)
+		{
+			CoverTitle = title;
+			CoverSubtitle = subtitle;
+			SubtitleHeader = subtitleHeader;
+			CoverTextCenter = center;
+
+			StateHasChanged();
+		}
 	}
 }

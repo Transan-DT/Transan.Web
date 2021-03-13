@@ -7,16 +7,9 @@
 @code {
 	[CascadingParameter] CoverLayout Layout { get; set; }
 
-	const string PageTitle = "Notre Équipe";
-	const string PageSubtitle = "Découvrez les personnes derrière Transgenres Community.";
-
-
 	protected override void OnParametersSet()
 	{
-		if (Layout.CoverTitle is null or not PageTitle)
-		{
-			Layout.SetCover(PageTitle, PageSubtitle);
-			Layout.Refresh();
-		}
+		Layout.SetCover("Notre Équipe", "Découvrez les personnes derrière Transgenres Community.");
+		base.OnParametersSet();
 	}
 }

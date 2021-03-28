@@ -1,12 +1,15 @@
 ﻿@inherits ComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
 @using System.Security.Claims;
 
 <AuthorizeView>
 	<Authorized>
-		<li class="navbar-text text-light">Bienvenue, @GetUsername().GetAwaiter().GetResult().&emsp;</li>
+		<li class="navbar-text text-light">Bienvenue, @GetUsername().GetAwaiter().GetResult() !&emsp;</li>
+		<li class="nav-item"><a class="nav-link text-light" href=@Configuration["ExtLinks:Discord"]>Discord</a></li>
+		<li class="nav-item"><a class="nav-link text-light disabled text-muted" href="team">Espace Membres</a></li>
 		<li class="nav-item"><NavLink class="nav-link text-white" href="logout">Se déconnecter</NavLink></li>
 	</Authorized>
 

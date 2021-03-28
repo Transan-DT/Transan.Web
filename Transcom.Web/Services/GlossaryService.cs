@@ -13,13 +13,9 @@ namespace Transcom.Web.Services
 		private readonly IMongoCollection<GlossaryEntry> glossaryEntries;
 
 
-		public GlossaryService(IConfiguration configuration)
+		public GlossaryService(IConfiguration configuration, IMongoClient client)
 		{
-			IConfigurationSection mongoConfig = configuration.GetSection("MongoDatabase");
-
-			MongoClient client = new(mongoConfig["ConnectionString"]);
-			IMongoDatabase db = client.GetDatabase(mongoConfig["DatabaseName"]);
-
+			IMongoDatabase db = client.GetDatabase(configuration["MongoDb:Databases:Web"]);
 			glossaryEntries = db.GetCollection<GlossaryEntry>("GlossaryEntries");
 
 			if (glossaryEntries.EstimatedDocumentCount() is 0)

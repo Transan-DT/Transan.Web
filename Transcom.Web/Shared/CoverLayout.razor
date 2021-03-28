@@ -10,7 +10,7 @@
 		<div class="carousel slide mb-5" data-ride="carousel">
 			<div class="carousel-inner">
 				<div class="carousel-item active">
-					<img src="assets/transcom-banner.png" class="d-block w-100" style="min-height:25rem" alt="...">
+					<img src="assets/transcom-banner.png" class="d-block w-100" style="@(CoverFullHeight ? "min-" : "")height:30rem">
 
 					<div class="container">
 						<div class="carousel-caption @(CoverTextCenter ? null : "text-start") align-content-center">
@@ -49,11 +49,11 @@
 
 	public bool SubtitleHeader { get; private set; }
 	public bool CoverTextCenter { get; private set; }
-
+	public bool CoverFullHeight { get; private set; }
 
 	public void Refresh() => StateHasChanged();
 
-	public void SetCover(string title, string subtitle, bool center = false, bool subtitleHeader = false)
+	public void SetCover(string title, string subtitle, bool center = false, bool subtitleHeader = false, bool coverFullHeight = false)
 	{
 		if (CoverTitle != title || CoverSubtitle != subtitle)
 		{
@@ -61,6 +61,7 @@
 			CoverSubtitle = subtitle;
 			SubtitleHeader = subtitleHeader;
 			CoverTextCenter = center;
+			CoverFullHeight = coverFullHeight;
 
 			StateHasChanged();
 		}

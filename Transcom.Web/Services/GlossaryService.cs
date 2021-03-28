@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,11 @@ namespace Transcom.Web.Services
 
 		public async Task<GlossaryEntry> FetchEntryAsync(string urlId) => await (await glossaryEntries.FindAsync(Builders<GlossaryEntry>.Filter.Eq(e => e.UrlTitle, urlId))).FirstOrDefaultAsync();
 
+		public async Task CreateEntryAsync(GlossaryEntry entry) => await glossaryEntries.InsertOneAsync(entry);
+
+		public async Task EditEntryAsync(GlossaryEntry entry) => await glossaryEntries.ReplaceOneAsync(e => e.Id == entry.Id, entry);
+
+		public async Task DeleteEntryAsync(ObjectId id) => await glossaryEntries.DeleteOneAsync(e => e.Id == id);
 
 		private static FilterDefinition<GlossaryEntry> GetSearchFilter(string search) => Builders<GlossaryEntry>.Filter.Regex(e => e.DisplayTitle, new(search, "gi"));
 	}

@@ -1,7 +1,26 @@
-﻿@page "/Glossary/{EntryName}"
+﻿@page "/glossary/{EntryName}"
 @layout CoverLayout
 @inject Transcom.Web.Services.GlossaryService GlossaryService
 
+<div class="row">
+	<div class="col">
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-5">
+				<li class="breadcrumb-item"><NavLink href="/glossary">Lexique</NavLink></li>
+				<li class="breadcrumb-item active" aria-current="page">@(Entry?.DisplayTitle ?? EntryName)</li>
+			</ol>
+		</nav>
+	</div>
+
+	<AuthorizeView Roles="admin">
+		@if (Entry is not null)
+		{
+			<div class="col-auto">
+				<NavLink href=@($"/glossary/{EntryName}/edit") class="btn btn-sm btn-warning">Editer</NavLink>
+			</div>
+		}
+	</AuthorizeView>
+</div>
 
 @if (Entry is not null)
 {
@@ -17,22 +36,22 @@ else
 }
 
 
-@code {
-	[CascadingParameter] CoverLayout Layout { get; init; }
-	[Parameter] public string EntryName { get; init; }
+	@code {
+		[CascadingParameter] CoverLayout Layout { get; init; }
+		[Parameter] public string EntryName { get; init; }
 
-	public GlossaryEntry Entry { get; private set; }
-	public bool Loaded { get; private set; }
+		public GlossaryEntry Entry { get; private set; }
+		public bool Loaded { get; private set; }
 
 
-	protected override async Task OnParametersSetAsync()
-	{
-		Loaded = false;
-		Entry = await GlossaryService.FetchEntryAsync(EntryName);
+		protected override async Task OnParametersSetAsync()
+		{
+			Loaded = false;
+			Entry = await GlossaryService.FetchEntryAsync(EntryName);
 
-		Layout.SetCover("Lexique", Entry.DisplayTitle, subtitleHeader: true);
+			Layout.SetCover("Lexique", Entry?.DisplayTitle, subtitleHeader: true);
 
-		await base.OnParametersSetAsync();
-		Loaded = true;
+			await base.OnParametersSetAsync();
+			Loaded = true;
+		}
 	}
-}

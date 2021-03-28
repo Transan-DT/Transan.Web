@@ -1,0 +1,28 @@
+﻿@inherits ComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@using System.Security.Claims;
+
+<AuthorizeView>
+	<Authorized>
+		<li class="navbar-text text-light">Bienvenue, @GetUsername().GetAwaiter().GetResult().&emsp;</li>
+		<li class="nav-item"><NavLink class="nav-link text-white" href="logout">Se déconnecter</NavLink></li>
+	</Authorized>
+
+	<NotAuthorized>
+		<li class="nav-item"><NavLink class="nav-link text-white" href=@($"login?redirectUri={CurrentUri}")>Se connecter</NavLink></li>
+	</NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+	[Parameter] public string CurrentUri { get; set; }
+
+
+	public async Task<string> GetUsername()
+	{
+		AuthenticationState auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		return auth.User.FindFirstValue(ClaimTypes.Name);
+	}
+}

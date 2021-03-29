@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Transcom.Web.Data;
 
 namespace Transcom.Web
 {
@@ -27,5 +28,16 @@ namespace Transcom.Web
 
 			return Task.CompletedTask;
 		}
+
+		public static string ToDisplayString(this Orientation orientation) => orientation switch
+		{
+			Orientation.TransgenderMale => "Homme Transgenre",
+			Orientation.TransgenderFemale => "Femme Transgenre",
+			Orientation.NonBinary => "Non-Binaire",
+			Orientation.GenderFluid => "Genderfluid",
+			Orientation.Cisgender => "Homme/Femme Cisgenre",
+			Orientation.Questioning => "En Questionnement",
+			_ => "Autre"
+		};
 	}
 }

@@ -56,27 +56,26 @@ namespace Transcom.Web.Services
 
 		private async Task OnFormSubmitted(object _, FormSubmittedEventArgs args)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(Convert.ToUInt64(config["DiscordIntegration:Server:Id"]));
-			ITextChannel channel = await guild.GetTextChannelAsync(Convert.ToUInt64(config["DiscordIntegration:Channels:Signup"]));
+			IGuild guild = await discordClient.GetGuildAsync(Convert.ToUInt64(config.GetValue<ulong>("DiscordIntegration:Server:Id")));
+			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"));
 			IUser user = await guild.GetUserAsync(args.Form.UserSnowflake);
 
 			EmbedBuilder builder = new EmbedBuilder()
 				.WithTitle($"Formulaire d'inscription : {user.Username}")
 				.WithAuthor(user)
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
-				.WithTimestamp(new(args.Form.SubmittedAt))
 				.WithUrl($"{config["Domain"]}/signup/view/{args.Form.UserSnowflake}")
 				.AddField("Orientation", args.Form.Orientation.ToDisplayString())
 				.AddField("Présentation", args.Form.Presentation)
 				.AddField("Motivation", args.Form.Motivation)
-				.AddField($"Définition de {args.Form.Orientation}", args.Form.OrientationDefinition);
+				.AddField($"Définition de {args.Form.Orientation.ToDisplayString()}", args.Form.OrientationDefinition);
 
 			if (args.Form.Orientation is Orientation.Cisgender)
 			{
 				builder.AddField("Invité(e) par :", args.Form.ReferalUser);
 			}
 
-			await channel.SendMessageAsync($"{guild.GetRole(Convert.ToUInt64(config["DiscordIntegration:Roles:Mod"]))} Nouvelle demande d'inscription :", embed: builder.Build());
+			await channel.SendMessageAsync($"{guild.GetRole(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Mention} Nouvelle demande d'inscription, de {user.Mention} :", embed: builder.Build());
 		}
 	}
 

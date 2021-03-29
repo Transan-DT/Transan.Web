@@ -37,7 +37,8 @@ namespace Transcom.Web
 			Orientation.GenderFluid => "Genderfluid",
 			Orientation.Cisgender => "Homme/Femme Cisgenre",
 			Orientation.Questioning => "En Questionnement",
-			_ => "Autre"
+			Orientation.Other => "Autre",
+			_ => ""
 		};
 	}
 }

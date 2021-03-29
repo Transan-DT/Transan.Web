@@ -40,15 +40,15 @@ namespace Transcom.Web.Services.Authentication
 				{
 					identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
 
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Roles:Member")))
+					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Member")))
 					{
 						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Member));
 					}
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Roles:Mod")))
+					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")))
 					{
 						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Moderator));
 					}
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Roles:Admin")))
+					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")))
 					{
 						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Admin));
 					}

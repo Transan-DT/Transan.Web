@@ -32,6 +32,7 @@ namespace Transcom.Web
 		{
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
+			services.AddHttpContextAccessor();
 
 			services.AddAuthentication(options =>
 			{
@@ -50,9 +51,7 @@ namespace Transcom.Web
 
 				options.Scope.Add("identify");
 				options.Scope.Add("email");
-				options.Scope.Add("connections");
 				options.Scope.Add("guilds");
-				options.Scope.Add("guilds.join");
 			});
 
 			services.AddAuthorization();

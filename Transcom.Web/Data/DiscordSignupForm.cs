@@ -7,6 +7,8 @@ namespace Transcom.Web.Data
 {
 	public record DiscordSignupForm
 	{
+		public const int MaxContentLength = 10000; 
+
 		/// <summary>
 		/// Discord Snowflake (ID)
 		/// </summary>
@@ -31,13 +33,13 @@ namespace Transcom.Web.Data
 		/// <summary>
 		/// User's Presentation Text
 		/// </summary>
-		[Required, StringLength(10000, MinimumLength = 50)]
+		[Required, StringLength(MaxContentLength, MinimumLength = 50)]
 		public string Presentation { get; set; }
 
 		/// <summary>
 		/// User's Motivation to join the server
 		/// </summary>
-		[Required, StringLength(10000, MinimumLength = 50)]
+		[Required, StringLength(MaxContentLength, MinimumLength = 50)]
 		public string Motivation { get; set; }
 
 		/// <summary>
@@ -62,12 +64,13 @@ namespace Transcom.Web.Data
 
 	public enum Orientation
 	{
-		Other,
+		Unknown,
 		TransgenderMale,
 		TransgenderFemale,
 		NonBinary,
 		GenderFluid,
 		Cisgender,
-		Questioning
+		Questioning,
+		Other
 	}
 }

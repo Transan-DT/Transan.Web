@@ -1,6 +1,7 @@
 ﻿@page "/glossary/{EntryName}"
 @layout CoverLayout
 @inject Transcom.Web.Services.GlossaryService GlossaryService
+@inject NavigationManager NavigationManager 
 
 <div class="row">
 	<div class="col">
@@ -17,7 +18,13 @@
 		{
 			<div class="col-auto">
 				<NavLink href=@($"/glossary/{EntryName}/edit") class="btn btn-sm btn-warning">Editer</NavLink>
+				<button class="btn btn-sm btn-danger" @onclick=ToggleDeleteModal>Supprimer</button>
 			</div>
+		}
+
+		@if (showDeletionModal)
+		{
+			<DeleteConfirm OnConfirm=OnDeleteConfirmAsync OnCancel=ToggleDeleteModal />
 		}
 	</AuthorizeView>
 </div>
@@ -36,22 +43,30 @@ else
 }
 
 
-	@code {
-		[CascadingParameter] CoverLayout Layout { get; init; }
-		[Parameter] public string EntryName { get; init; }
+@code {
+	[CascadingParameter] CoverLayout Layout { get; init; }
+	[Parameter] public string EntryName { get; init; }
 
-		public GlossaryEntry Entry { get; private set; }
-		public bool Loaded { get; private set; }
+	public GlossaryEntry Entry { get; private set; }
+	public bool Loaded { get; private set; }
 
+	private bool showDeletionModal;
 
-		protected override async Task OnParametersSetAsync()
-		{
-			Loaded = false;
-			Entry = await GlossaryService.FetchEntryAsync(EntryName);
+	protected override async Task OnParametersSetAsync()
+	{
+		Loaded = false;
+		Entry = await GlossaryService.FetchEntryAsync(EntryName);
 
-			Layout.SetCover("Lexique", Entry?.DisplayTitle, subtitleHeader: true);
+		Layout.SetCover("Lexique", Entry?.DisplayTitle, subtitleHeader: true);
 
-			await base.OnParametersSetAsync();
-			Loaded = true;
-		}
+		await base.OnParametersSetAsync();
+		Loaded = true;
 	}
+
+	private async Task OnDeleteConfirmAsync()
+	{
+		await GlossaryService.DeleteEntryAsync(Entry.Id);
+		NavigationManager.NavigateTo("/glossary");
+	}
+	private void ToggleDeleteModal() => showDeletionModal = !showDeletionModal;
+}

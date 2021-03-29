@@ -35,7 +35,7 @@ namespace Transcom.Web
 		public static async Task StartDiscordBotAsync(IServiceProvider services)
 		{
 			IConfiguration config = services.GetRequiredService<IConfiguration>();
-			DiscordSocketClient discordClient = services.GetRequiredService<DiscordSocketClient>();
+			DiscordSocketClient discordClient = services.GetRequiredService<IDiscordClient>() as DiscordSocketClient;
 			ILogger discordLogger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(discordClient));
 
 			discordClient.Log += discordLogger.Log;

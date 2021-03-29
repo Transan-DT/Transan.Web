@@ -51,7 +51,7 @@ namespace Transcom.Web.Services
 		public async Task<bool> UserIsOnServerAsync(ulong snowflake)
 		{
 			IGuild guild = await discordClient.GetGuildAsync(Convert.ToUInt64(config["DiscordIntegration:Server:Id"]));
-			return guild.GetUserAsync(snowflake) is not null;
+			return await guild.GetUserAsync(snowflake) is not null;
 		}
 
 		private async Task OnFormSubmitted(object _, FormSubmittedEventArgs args)

@@ -59,9 +59,9 @@ namespace Transcom.Web
 
 			services.AddSingleton<TeamPageLoaderService>();
 			services.AddSingleton<GlossaryService>();
-			services.AddSingleton<AuthDbService>();
+			services.AddSingleton<AuthService>();
+			services.AddSingleton<SignupService>();
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
-			services.AddSingleton<DiscordSocketClient>();
 			services.AddSingleton<IDiscordClient, DiscordSocketClient>();
 
 			services.AddScoped<IClaimsTransformation, WebAppClaims>();

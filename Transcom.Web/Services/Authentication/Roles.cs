@@ -5,7 +5,7 @@
 		public const string
 			Admin = "admin",
 			Moderator = "mod",
-			Verified = "verified",
+			Member = "member",
 			Joined = "joined";
 	}
 }

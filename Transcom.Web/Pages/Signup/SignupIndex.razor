@@ -1,0 +1,46 @@
+﻿@page "/signup"
+@layout CoverLayout
+@inject IConfiguration Configuration 
+@inject SignupService SignupService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="text-center">
+	<AuthorizeView>
+		<Authorized>
+			@if (user.IsInRole(UserRoles.Joined))
+			{
+				<h3 class="text-success">Server Presence ACK.</h3>
+			}
+			else
+			{
+				<h3 class="text-info">Pour accéder à l'inscription, veuillez <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur</NavLink>.</h3>
+			}
+		</Authorized>
+		<NotAuthorized>
+			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href="/login">vous connecter</NavLink>.</h3>
+		</NotAuthorized>
+	</AuthorizeView>
+</div>
+
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	private ClaimsPrincipal user;
+	private ulong userSnowflake;
+	private bool userHasJoinedServer;
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Inscription", "Rejoignez le serveur Transgenres Community.");
+		base.OnParametersSet();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+		userSnowflake = Convert.ToUInt64(user.FindFirstValue(ClaimTypes.NameIdentifier));
+		await base.OnInitializedAsync();
+	}
+}

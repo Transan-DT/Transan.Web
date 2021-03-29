@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,9 @@ namespace Transcom.Web.Services
 		private readonly IMongoCollection<GlossaryEntry> glossaryEntries;
 
 
-		public GlossaryService(IConfiguration configuration)
+		public GlossaryService(IConfiguration configuration, IMongoClient client)
 		{
-			IConfigurationSection mongoConfig = configuration.GetSection("MongoDatabase");
-
-			MongoClient client = new(mongoConfig["ConnectionString"]);
-			IMongoDatabase db = client.GetDatabase(mongoConfig["DatabaseName"]);
-
+			IMongoDatabase db = client.GetDatabase(configuration["MongoDb:Databases:Web"]);
 			glossaryEntries = db.GetCollection<GlossaryEntry>("GlossaryEntries");
 
 			if (glossaryEntries.EstimatedDocumentCount() is 0)
@@ -41,6 +38,11 @@ namespace Transcom.Web.Services
 
 		public async Task<GlossaryEntry> FetchEntryAsync(string urlId) => await (await glossaryEntries.FindAsync(Builders<GlossaryEntry>.Filter.Eq(e => e.UrlTitle, urlId))).FirstOrDefaultAsync();
 
+		public async Task CreateEntryAsync(GlossaryEntry entry) => await glossaryEntries.InsertOneAsync(entry);
+
+		public async Task EditEntryAsync(GlossaryEntry entry) => await glossaryEntries.ReplaceOneAsync(e => e.Id == entry.Id, entry);
+
+		public async Task DeleteEntryAsync(ObjectId id) => await glossaryEntries.DeleteOneAsync(e => e.Id == id);
 
 		private static FilterDefinition<GlossaryEntry> GetSearchFilter(string search) => Builders<GlossaryEntry>.Filter.Regex(e => e.DisplayTitle, new(search, "gi"));
 	}

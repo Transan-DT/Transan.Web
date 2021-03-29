@@ -2,6 +2,22 @@
 @layout CoverLayout
 @inject Transcom.Web.Services.GlossaryService GlossaryService
 
+<div class="row">
+	<div class="col">
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-5">
+				<li class="breadcrumb-item active" aria-current="page">Lexique</li>
+			</ol>
+		</nav>
+	</div>
+
+	<AuthorizeView Roles="admin">
+		<div class="col-auto">
+			<NavLink href="/glossary/new" class="btn btn-sm btn-success">Ajouter</NavLink>
+		</div>
+	</AuthorizeView>
+</div>
+
 <div class="row justify-content-between text-start">
 	<div class="col-lg-8 my-5">
 		<h1>Parcourir</h1>

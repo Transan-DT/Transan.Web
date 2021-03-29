@@ -1,10 +1,25 @@
-<Router AppAssembly=typeof(Program).Assembly PreferExactMatches>
-	<Found Context="routeData">
-		<RouteView RouteData=routeData DefaultLayout=typeof(MainLayout) />
-	</Found>
-	<NotFound>
-		<LayoutView Layout="typeof(MainLayout)">
-			<p>Sorry, there's nothing at this address.</p>
-		</LayoutView>
-	</NotFound>
-</Router>
+@inject NavigationManager NavigationManager
+
+<CascadingAuthenticationState>
+	<Router AppAssembly=typeof(Program).Assembly PreferExactMatches>
+		<Found Context="RouteData">
+			<AuthorizeRouteView RouteData=RouteData DefaultLayout=typeof(MainLayout) Context="AuthorizationContext">
+				<Authorizing>
+
+				</Authorizing>
+				<NotAuthorized>
+					<h3 class="text-danger">L'accès à cette page est restreint.</h3>
+					@if (!AuthorizationContext.User.Identity.IsAuthenticated)
+					{
+						<p class="lead text-secondary">Veuillez <NavLink href="/login">vous connecter</NavLink> avant d'accéder à des pages restreintes.</p>
+					}
+				</NotAuthorized>
+			</AuthorizeRouteView>
+		</Found>
+		<NotFound>
+			<LayoutView Layout="typeof(MainLayout)">
+				<p class="lead text-warning">Désolé, il n'existe rien à cette adresse.</p>
+			</LayoutView>
+		</NotFound>
+	</Router>
+</CascadingAuthenticationState>

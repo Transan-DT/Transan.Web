@@ -18,7 +18,6 @@
       "library": "jquery@3.6.0",
       "destination": "wwwroot/lib/jquery/"
     },
-
     {
       "library": "@types/bootstrap@5.0.8",
       "destination": "wwwroot/lib/types/bootstrap/"

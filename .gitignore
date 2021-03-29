@@ -358,3 +358,5 @@ Transcom.Web/wwwroot/lib/
 Transcom.Web/wwwroot/js/site.js
 
 Transcom.Web/wwwroot/js/site.js.map
+
+Transcom.Web/appsettings.Production.json

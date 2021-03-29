@@ -1,4 +1,6 @@
 using AspNet.Security.OAuth.Discord;
+using Discord.Rest;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -58,6 +60,7 @@ namespace Transcom.Web
 			services.AddSingleton<GlossaryService>();
 			services.AddSingleton<AuthDbService>();
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
+			services.AddSingleton<DiscordSocketClient>();
 
 			services.AddScoped<IClaimsTransformation, WebAppClaims>();
 		}

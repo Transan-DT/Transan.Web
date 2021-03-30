@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.IO;
-using System.Threading.Tasks;
-using Transcom.Web.Data.HtmlPages;
+
+
 
 namespace Transcom.Web.Services
 {

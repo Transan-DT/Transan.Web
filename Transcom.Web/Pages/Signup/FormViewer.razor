@@ -1,0 +1,74 @@
+﻿@page "/signup/view/{SnowflakeStr}"
+@inject SignupService SignupService
+@inject Discord.IDiscordClient DiscordClient
+@attribute [Authorize(Roles = UserRoles.Moderator)]
+
+<h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
+
+@if (!Loaded)
+{
+	<h3 class="text-info">Chargement...</h3>
+}
+else if (Form is null)
+{
+	<h3 class="text-warning">Aucune inscription trouvée.</h3>
+}
+else
+{
+	<div class="row justify-content-between">
+		<div class="col-md-4 my-4 order-md-last">
+			<table class="table table-borderless">
+				<tbody>
+					<tr><th>Formulaire envoyé</th><td>@Form.SubmittedAt.ToString()</td></tr>
+					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
+					@if (User is not null)
+					{
+						<tr><th>Nom d'Utilisateur</th><td class="font-monospace">@User.ToString()</td></tr>
+						<tr><th>Compte créé</th><td>@User.CreatedAt.UtcDateTime.ToString()</td></tr>
+					}
+					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
+					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
+					@if (Form.Orientation is Orientation.Cisgender)
+					{
+						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-md-6 my-4">
+			<div class="mb-5">
+				<h4 class="mb-3">Présentation</h4>
+				<p style="white-space:pre-wrap;">@Form.Presentation</p>
+			</div>
+
+			<div class="mb-5">
+				<h4 class="mb-3">Motivation</h4>
+				<p style="white-space:pre-wrap;">@Form.Motivation</p>
+			</div>
+
+			<div class="mb-5">
+				<h4 class="mb-3">Définition de "@Form.Orientation.ToDisplayString()"</h4>
+				<p style="white-space:pre-wrap;">@Form.OrientationDefinition</p>
+			</div>
+		</div>
+	</div>
+}
+
+@code {
+	[Parameter] public string SnowflakeStr { get; init; }
+
+	public DiscordSignupForm Form { get; set; }
+	public Discord.IUser User { get; private set; }
+
+	public bool Loaded { get; private set; }
+
+	protected override async Task OnParametersSetAsync()
+	{
+		Loaded = false;
+		Form = await SignupService.GetUserFormAsync(Convert.ToUInt64(SnowflakeStr));
+		User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+		await base.OnParametersSetAsync();
+		Loaded = true;
+	}
+}

@@ -20,14 +20,14 @@ else
 			<table class="table table-borderless">
 				<tbody>
 					<tr><th>Formulaire envoyé</th><td>@Form.SubmittedAt.ToString()</td></tr>
+					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
+					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
 					@if (User is not null)
 					{
-						<tr><th>Nom d'Utilisateur</th><td class="font-monospace">@User.ToString()</td></tr>
+						<tr><th>Nom d'Utilisateur</th><td>@User.ToString()</td></tr>
 						<tr><th>Compte créé</th><td>@User.CreatedAt.UtcDateTime.ToString()</td></tr>
 					}
-					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
-					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
 					@if (Form.Orientation is Orientation.Cisgender)
 					{
 						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>

@@ -36,7 +36,7 @@ namespace Transcom.Web.Services.Authentication
 
 				}
 
-				if (await guild.GetUserAsync(snowflake) is not null and IGuildUser user)
+				if (await guild?.GetUserAsync(snowflake) is not null and IGuildUser user)
 				{
 					identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
 

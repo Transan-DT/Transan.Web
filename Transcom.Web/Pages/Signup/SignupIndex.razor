@@ -10,8 +10,8 @@
 	<Authorized>
 		@if (formWasSubmitted)
 		{
-		<h1 class="text-success mb-5">Merci !</h1>
-		<p class="lead text-secondary">Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu. Patience ! ;)</p>
+			<h1 class="text-success mb-5">Merci !</h1>
+			<p class="lead text-secondary">Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu. Patience ! ;)</p>
 		}
 		else if (SignupService.ListForms().Where(f => f.UserSnowflake == userSnowflake).Any())
 		{
@@ -19,6 +19,23 @@
 		}
 		else
 		{
+			<div class="mb-5">
+				<div class="my-5">
+					<h3 class="text-secondary mb-3"><i class="bi bi-exclamation-circle me-3 me-md-5"></i>Avant de Commencer...</h3>
+					<p class="lead">Veuillez noter que ce formulaire d'inscription nous permet de vérifier et filtrer les nouveaux arrivants afin de protéger notre communauté.</p>
+				</div>
+
+				<div class="my-5">
+					<h3 class="mb-3"><i class="bi bi-shield-check me-3 me-md-5"></i>Confidentialité & Sécurité</h3>
+
+					<p>
+						Nous transmettons votre identifiant aux équipes de confiance et sécurité de Discord si vous commettez des actes graves, ou contraires aux TOS de Discord. <br />
+						Après l'envoi de votre formulaire, votre formulaire sera étudié par notre équipe de modération et conservé pendant 5 ans. <br />
+						Nous nous réservons le droit de transmettre votre formulaire s'il nous paraît suspect, afin que le serveur reste le plus sûr possible.
+					</p>
+				</div>
+			</div>
+
 			<SignupForm Form=form OnValidSubmit=OnValidFormAsync />
 		}
 

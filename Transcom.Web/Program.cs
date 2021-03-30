@@ -20,8 +20,7 @@ namespace Transcom.Web
 			IHost host = CreateHostBuilder(args).Build();
 			using IServiceScope scope = host.Services.CreateScope();
 
-			await StartDiscordBotAsync(scope.ServiceProvider);
-			await host.RunAsync();
+			await Task.WhenAll(StartDiscordBotAsync(scope.ServiceProvider), host.RunAsync());
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>

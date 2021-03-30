@@ -39,7 +39,7 @@
 
 
 @code {
-		[CascadingParameter] CoverLayout Layout { get; set; }
+	[CascadingParameter] CoverLayout Layout { get; set; }
 
 	private ClaimsPrincipal user;
 	private DiscordSignupForm form;
@@ -66,5 +66,9 @@
 		await base.OnInitializedAsync();
 	}
 
-	private async Task OnValidFormAsync(DiscordSignupForm form) { await SignupService.SubmitFormAsync(form); }
+	private async Task OnValidFormAsync(DiscordSignupForm form)
+	{
+		await SignupService.SubmitFormAsync(form);
+		formWasSubmitted = true;
+	}
 }

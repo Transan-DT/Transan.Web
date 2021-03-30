@@ -1,0 +1,70 @@
+﻿@page "/signup"
+@layout CoverLayout
+@inject IConfiguration Configuration
+@inject SignupService SignupService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+<AuthorizeView Roles=@UserRoles.Joined>
+	<Authorized>
+		@if (formWasSubmitted)
+		{
+		<h1 class="text-success mb-5">Merci !</h1>
+		<p class="lead text-secondary">Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu. Patience ! ;)</p>
+		}
+		else if (SignupService.ListForms().Where(f => f.UserSnowflake == userSnowflake).Any())
+		{
+			<h3 class="text-info">Vous avez déjà rempli le formulaire.</h3>
+		}
+		else
+		{
+			<SignupForm Form=form OnValidSubmit=OnValidFormAsync />
+		}
+
+	</Authorized>
+	<NotAuthorized>
+		@if (user.Identity.IsAuthenticated)
+		{
+			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur</NavLink>.</h3>
+		}
+		else
+		{
+			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href="/login">vous connecter</NavLink>.</h3>
+		}
+	</NotAuthorized>
+</AuthorizeView>
+
+
+
+
+@code {
+		[CascadingParameter] CoverLayout Layout { get; set; }
+
+	private ClaimsPrincipal user;
+	private DiscordSignupForm form;
+	private ulong userSnowflake;
+	private bool formWasSubmitted;
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Inscription", "Rejoignez le serveur Transgenres Community.");
+		base.OnParametersSet();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+		userSnowflake = Convert.ToUInt64(user.FindFirstValue(ClaimTypes.NameIdentifier));
+
+		form = new()
+		{
+			UserSnowflake = userSnowflake,
+			IpAddress = HttpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+		};
+
+		await base.OnInitializedAsync();
+	}
+
+	private async Task OnValidFormAsync(DiscordSignupForm form) { await SignupService.SubmitFormAsync(form); }
+}

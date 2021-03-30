@@ -10,11 +10,11 @@ using Transcom.Web.Data.Authentication;
 
 namespace Transcom.Web.Services.Authentication
 {
-	public class AuthDbService
+	public class AuthService
 	{
 		private readonly IMongoCollection<User> users;
 
-		public AuthDbService(IMongoClient client, IConfiguration configuration)
+		public AuthService(IMongoClient client, IConfiguration configuration)
 		{
 			IMongoDatabase db = client.GetDatabase(configuration["MongoDb:Databases:Auth"]);
 			users = db.GetCollection<User>("Users");

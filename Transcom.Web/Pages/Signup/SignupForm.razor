@@ -1,0 +1,93 @@
+﻿<div class="my-5">
+	<EditForm EditContext=formEditContext OnValidSubmit=SubmitValidAsync>
+		<div class="row justify-content-center mb-5">
+			<div class="col-md-8">
+				<label class="form-label">Vous êtes...</label>
+
+				<InputSelect @bind-Value=Form.Orientation class="form-select form-select-lg">
+					<option value="Unknown"></option>
+					<option value="TransgenderMale">Homme Transgenre</option>
+					<option value="TransgenderFemale">Femme Transgenre</option>
+					<option value="NonBinary">Non-Binaire</option>
+					<option value="GenderFluid">Genderfluid</option>
+					<option value="Cisgender">Homme/Femme Cisgenre</option>
+					<option value="Questioning">En Questionnement</option>
+					<option value="Other">Autre</option>
+				</InputSelect>
+			</div>
+		</div>
+
+		@if (Form.Orientation is Orientation.Cisgender)
+		{
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">Qui vous a invité sur notre serveur ? (Entrez son nom d'utilisateur Discord)</label>
+					<InputText DisplayName="Parrainage" @bind-Value=Form.ReferalUser class="form-control" maxlength=@DiscordSignupForm.MaxContentLength />
+				</div>
+			</div>
+		}
+
+		@if (Form.Orientation is not Orientation.Unknown)
+		{
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">Présentez-vous.</label>
+					<InputTextArea DisplayName="Présentation" @bind-Value=Form.Presentation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">Pourquoi souhaitez-vous nous rejoindre ?</label>
+					<InputTextArea DisplayName="Motivation" @bind-Value=Form.Motivation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">
+						@(Form.Orientation switch
+					{
+						Orientation.Questioning => "Que ressentez-vous, en tant que personne en questionnement ?",
+						Orientation.Other => "Expliquez-nous votre orientation de genre.",
+						_ => $"Quelle est votre définition de {Form.Orientation.ToDisplayString()} ?"
+					})
+					</label>
+
+					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-2">
+				<div class="col-md-8">
+					<input class="form-check-input" type="checkbox" checked=@confirmFormCheck @onclick=OnConfirmToggle>
+					<label class="form-check-label" for="flexCheckDefault">Je confirme l'exactitude des informations envoyées par ce formulaire.</label>
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-3">
+				<div class="col-md-8">
+					<button class="btn btn-lg btn-primary px-5" disabled=@(!confirmFormCheck)>Envoyer</button>
+				</div>
+			</div>
+		}
+	</EditForm>
+</div>
+
+@code {
+	[Parameter] public DiscordSignupForm Form { get; set; }
+	[Parameter] public EventCallback<DiscordSignupForm> OnValidSubmit { get; set; }
+
+	private EditContext formEditContext;
+	private bool confirmFormCheck;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		Form ??= new();
+		formEditContext = new EditContext(Form);
+	}
+
+	private void OnConfirmToggle() => confirmFormCheck = !confirmFormCheck;
+
+	private async Task SubmitValidAsync() => await OnValidSubmit.InvokeAsync(Form);
+}

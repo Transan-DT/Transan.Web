@@ -1,4 +1,7 @@
 using AspNet.Security.OAuth.Discord;
+using Discord;
+using Discord.Rest;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +32,7 @@ namespace Transcom.Web
 		{
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
+			services.AddHttpContextAccessor();
 
 			services.AddAuthentication(options =>
 			{
@@ -47,17 +51,17 @@ namespace Transcom.Web
 
 				options.Scope.Add("identify");
 				options.Scope.Add("email");
-				options.Scope.Add("connections");
 				options.Scope.Add("guilds");
-				options.Scope.Add("guilds.join");
 			});
 
 			services.AddAuthorization();
 
 			services.AddSingleton<TeamPageLoaderService>();
 			services.AddSingleton<GlossaryService>();
-			services.AddSingleton<AuthDbService>();
+			services.AddSingleton<AuthService>();
+			services.AddSingleton<SignupService>();
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
+			services.AddSingleton<IDiscordClient, DiscordSocketClient>();
 
 			services.AddScoped<IClaimsTransformation, WebAppClaims>();
 		}

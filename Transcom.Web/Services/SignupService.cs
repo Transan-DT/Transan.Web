@@ -10,6 +10,9 @@ namespace Transcom.Web.Services
 {
 	public class SignupService
 	{
+		protected const int MaxEmbedContentLength = 1024;
+		protected const string ContentTooLargeSubstituteText = "Texte trop large ; Utilisez le site pour consulter ce champ.";
+
 		private readonly IMongoCollection<DiscordSignupForm> signups;
 		private readonly IDiscordClient discordClient;
 		private readonly IConfiguration config;
@@ -50,13 +53,13 @@ namespace Transcom.Web.Services
 
 		public async Task<bool> UserIsOnServerAsync(ulong snowflake)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(Convert.ToUInt64(config["DiscordIntegration:Server:Id"]));
+			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
 			return await guild.GetUserAsync(snowflake) is not null;
 		}
 
 		private async Task OnFormSubmitted(object _, FormSubmittedEventArgs args)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(Convert.ToUInt64(config.GetValue<ulong>("DiscordIntegration:Server:Id")));
+			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
 			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"));
 			IUser user = await guild.GetUserAsync(args.Form.UserSnowflake);
 
@@ -66,9 +69,10 @@ namespace Transcom.Web.Services
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
 				.WithUrl($"{config["Domain"]}/signup/view/{args.Form.UserSnowflake}")
 				.AddField("Orientation", args.Form.Orientation.ToDisplayString())
-				.AddField("Présentation", args.Form.Presentation)
-				.AddField("Motivation", args.Form.Motivation)
-				.AddField($"Définition de {args.Form.Orientation.ToDisplayString()}", args.Form.OrientationDefinition);
+				.AddField("Présentation", args.Form.Presentation.Length < MaxEmbedContentLength ? args.Form.Presentation : ContentTooLargeSubstituteText)
+				.AddField("Motivation", args.Form.Motivation.Length < MaxEmbedContentLength ? args.Form.Motivation : ContentTooLargeSubstituteText)
+				.AddField($"Définition de {args.Form.Orientation.ToDisplayString()}", 
+					args.Form.OrientationDefinition.Length < MaxEmbedContentLength ? args.Form.OrientationDefinition : ContentTooLargeSubstituteText);
 
 			if (args.Form.Orientation is Orientation.Cisgender)
 			{

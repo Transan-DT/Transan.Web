@@ -56,7 +56,7 @@ namespace Transcom.Web
 
 			services.AddAuthorization();
 
-			services.AddSingleton<TeamPageLoaderService>();
+			services.AddSingleton<HtmlContentFileLoader>();
 			services.AddSingleton<GlossaryService>();
 			services.AddSingleton<AuthService>();
 			services.AddSingleton<SignupService>();

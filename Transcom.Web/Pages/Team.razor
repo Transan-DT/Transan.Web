@@ -1,11 +1,13 @@
 ﻿@page "/Team"
 @layout CoverLayout
+@inject HtmlContentFileLoader Loader
 
-@Transcom.Web.Services.TeamPageLoaderService.HtmlContent
+@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("team", "content.html"))
 
 
 @code {
 	[CascadingParameter] CoverLayout Layout { get; set; }
+
 
 	protected override void OnParametersSet()
 	{

@@ -33,13 +33,13 @@ namespace Transcom.Web.Data
 		/// <summary>
 		/// User's Presentation Text
 		/// </summary>
-		[Required, StringLength(MaxContentLength, MinimumLength = 50)]
+		[Required, MinLength(50, ErrorMessage = "Présentez-vous de manière plus détaillée."), MaxLength(10000)]
 		public string Presentation { get; set; }
 
 		/// <summary>
 		/// User's Motivation to join the server
 		/// </summary>
-		[Required, StringLength(MaxContentLength, MinimumLength = 50)]
+		[Required, MinLength(50, ErrorMessage = "Vous ne semblez pas si motivé(e) que ça..."), MaxLength(10000)]
 		public string Motivation { get; set; }
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace Transcom.Web.Data
 		/// Unavailable to <see cref="Orientation.Cisgenders"/>.
 		/// For <see cref="Orientation.Questioning"/> users, this equates to their present feelings and thoughts.
 		/// </remarks>
-		[Required, StringLength(10000, MinimumLength = 50)]
+		[Required, MinLength(50, ErrorMessage = "Veuillez détailler davantage votre Identité de Genre."), MaxLength(10000)]
 		public string OrientationDefinition { get; set; }
 
 		/// <summary>

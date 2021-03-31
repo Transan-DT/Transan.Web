@@ -1,5 +1,8 @@
 ﻿<div class="my-5">
-	<EditForm EditContext=formEditContext OnValidSubmit=SubmitValidAsync>
+	<EditForm EditContext=formEditContext OnValidSubmit=SubmitValidAsync>		
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
 		<div class="row justify-content-center mb-5">
 			<div class="col-md-8">
 				<label class="form-label">Vous êtes...</label>

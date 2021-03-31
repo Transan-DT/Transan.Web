@@ -1,0 +1,33 @@
+﻿@page "/resources/emergencies"
+@layout CoverLayout
+
+
+<!--Emergency Numbers-->
+@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "emergency-numbers.html"))
+
+<div class="my-5">
+	<h1>Autres numéros</h1>
+
+	<Accordion Id="help-numbers">
+		<!--
+			To be completed :
+
+			Files :
+			abuse.html
+			distress.html
+			shelter.html
+			bullying.html
+		-->
+	</Accordion>
+</div>
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Aide & Urgences", "Besoin d'aide? Vous n'êtes pas seul(e).", subtitleHeader: true);
+		base.OnParametersSet();
+	}
+}

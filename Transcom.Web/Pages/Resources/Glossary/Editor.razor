@@ -1,5 +1,5 @@
-﻿@page "/glossary/{EntryName}/edit"
-@page "/glossary/new"
+﻿@page "/resources/glossary/{EntryName}/edit"
+@page "/resources/glossary/new"
 @layout CoverLayout
 @inject Transcom.Web.Services.GlossaryService GlossaryService
 @inject NavigationManager NavigationManager
@@ -7,14 +7,14 @@
 
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb mb-5">
-		<li class="breadcrumb-item"><NavLink href="/glossary">Lexique</NavLink></li>
+		<li class="breadcrumb-item"><NavLink href="/resources/glossary">Lexique</NavLink></li>
 		@if (Entry is null || Entry.Id == default)
 		{
 			<li class="breadcrumb-item active" aria-current="page">Nouveau</li>
 		}
 		else
 		{
-			<li class="breadcrumb-item" aria-current="page"><NavLink href=@($"/glossary/{EntryName}")>@Entry.DisplayTitle</NavLink></li>
+			<li class="breadcrumb-item" aria-current="page"><NavLink href=@($"/resources/glossary/{EntryName}")>@Entry.DisplayTitle</NavLink></li>
 			<li class="breadcrumb-item active" aria-current="page">Edition</li>
 		}
 		
@@ -30,7 +30,7 @@
 		<div class="row my-3">
 			<div class="col-sm-3">
 				<label for="UrlTitle">Fragment de lien </label>
-				<span class="form-text">/glossary/<b>...</b></span>
+				<span class="form-text">/resources/glossary/<b>...</b></span>
 				<InputText DisplayName="Link Fragment" @bind-Value=Entry.UrlTitle class="form-control" maxlength="30" />
 			</div>
 
@@ -85,6 +85,6 @@
 
 		}
 
-		NavigationManager.NavigateTo($"/glossary/{Entry.UrlTitle}");
+		NavigationManager.NavigateTo($"/resources/glossary/{Entry.UrlTitle}");
 	}
 }

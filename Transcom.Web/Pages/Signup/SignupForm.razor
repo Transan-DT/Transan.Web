@@ -25,7 +25,7 @@
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Qui vous a invité sur notre serveur ? (Entrez son nom d'utilisateur Discord)</label>
-					<InputText DisplayName="Parrainage" @bind-Value=Form.ReferalUser class="form-control" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputText DisplayName="Parrainage" @bind-Value=Form.ReferalUser class="form-control" maxlength=@IFormBase.MaxContentLength />
 				</div>
 			</div>
 		}
@@ -35,14 +35,14 @@
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Présentez-vous.</label>
-					<InputTextArea DisplayName="Présentation" @bind-Value=Form.Presentation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Présentation" @bind-Value=Form.Presentation class="form-control" style="height: 10rem;" maxlength=@IFormBase.MaxContentLength />
 				</div>
 			</div>
 
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Pourquoi souhaitez-vous nous rejoindre ?</label>
-					<InputTextArea DisplayName="Motivation" @bind-Value=Form.Motivation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Motivation" @bind-Value=Form.Motivation class="form-control" style="height: 10rem;" maxlength=@IFormBase.MaxContentLength />
 				</div>
 			</div>
 
@@ -57,7 +57,7 @@
 					})
 					</label>
 
-					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@IFormBase.MaxContentLength />
 				</div>
 			</div>
 
@@ -78,8 +78,8 @@
 </div>
 
 @code {
-	[Parameter] public DiscordSignupForm Form { get; set; }
-	[Parameter] public EventCallback<DiscordSignupForm> OnValidSubmit { get; set; }
+	[Parameter] public FormSignup Form { get; set; }
+	[Parameter] public EventCallback<FormSignup> OnValidSubmit { get; set; }
 
 	private EditContext formEditContext;
 	private bool confirmFormCheck;
@@ -88,6 +88,7 @@
 	{
 		Form ??= new();
 		formEditContext = new EditContext(Form);
+		await base.OnParametersSetAsync();
 	}
 
 	private void OnConfirmToggle() => confirmFormCheck = !confirmFormCheck;

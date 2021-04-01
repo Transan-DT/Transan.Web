@@ -3,16 +3,20 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Transcom.Web.Data
+namespace Transcom.Web.Data.Forms
 {
-	public record DiscordSignupForm
+	public record FormSignup : IFormBase
 	{
-		public const int MaxContentLength = 10000; 
+		/// <summary>
+		/// ID of Form
+		/// </summary>
+		[BsonId]
+		public ObjectId Id { get; init; }
 
 		/// <summary>
 		/// Discord Snowflake (ID)
 		/// </summary>
-		[BsonId, BsonRepresentation(BsonType.String)]
+		[BsonRepresentation(BsonType.String)]
 		public ulong UserSnowflake { get; init; }
 
 		/// <summary>
@@ -46,7 +50,7 @@ namespace Transcom.Web.Data
 		/// User's own Definition of their selected <see cref="Orientation"/>
 		/// </summary>
 		/// <remarks>
-		/// Unavailable to <see cref="Orientation.Cisgenders"/>.
+		/// Unavailable to <see cref="Orientation.Cisgender"/>.
 		/// For <see cref="Orientation.Questioning"/> users, this equates to their present feelings and thoughts.
 		/// </remarks>
 		[Required, MinLength(50, ErrorMessage = "Veuillez détailler davantage votre Identité de Genre."), MaxLength(10000)]

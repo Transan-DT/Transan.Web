@@ -58,7 +58,7 @@ else
 @code {
 	[Parameter] public string SnowflakeStr { get; init; }
 
-	public DiscordSignupForm Form { get; set; }
+	public FormSignup Form { get; set; }
 	public Discord.IUser User { get; private set; }
 
 	public bool Loaded { get; private set; }
@@ -66,8 +66,12 @@ else
 	protected override async Task OnParametersSetAsync()
 	{
 		Loaded = false;
-		Form = await SignupService.GetUserFormAsync(Convert.ToUInt64(SnowflakeStr));
-		User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+
+		if ((Form = await SignupService.GetUserFormAsync(Convert.ToUInt64(SnowflakeStr))) is not null)
+		{
+			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+		}
+
 		await base.OnParametersSetAsync();
 		Loaded = true;
 	}

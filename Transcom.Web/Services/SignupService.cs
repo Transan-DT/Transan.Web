@@ -4,16 +4,16 @@ using MongoDB.Driver;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Transcom.Web.Data;
+using Transcom.Web.Data.Forms;
 
 namespace Transcom.Web.Services
 {
 	public class SignupService
 	{
 		protected const int MaxEmbedContentLength = 1024;
-		protected const string ContentTooLargeSubstituteText = "Texte trop large ; Utilisez le site pour consulter ce champ.";
+		protected const string ContentTooLargeSubstituteText = "Contenu trop large ; Utilisez le site pour consulter ce champ.";
 
-		private readonly IMongoCollection<DiscordSignupForm> signups;
+		private readonly IMongoCollection<FormSignup> signups;
 		private readonly IDiscordClient discordClient;
 		private readonly IConfiguration config;
 
@@ -26,16 +26,16 @@ namespace Transcom.Web.Services
 			this.discordClient = discordClient;
 
 			IMongoDatabase db = mongoClient.GetDatabase(config["MongoDb:Databases:Web"]);
-			signups = db.GetCollection<DiscordSignupForm>("Signups");
+			signups = db.GetCollection<FormSignup>("Signups");
 
 			FormSubmitted += OnFormSubmitted;
 		}
 
-		public IQueryable<DiscordSignupForm> ListForms() => signups.AsQueryable();
+		public IQueryable<FormSignup> ListForms() => signups.AsQueryable();
 
-		public async Task<DiscordSignupForm> GetUserFormAsync(ulong snowflake) => (await signups.FindAsync(f => f.UserSnowflake == snowflake)).First();
+		public async Task<FormSignup> GetUserFormAsync(ulong snowflake) => (await signups.FindAsync(f => f.UserSnowflake == snowflake)).FirstOrDefault();
 
-		public async Task SubmitFormAsync(DiscordSignupForm form)
+		public async Task SubmitFormAsync(FormSignup form)
 		{
 			if (!await UserIsOnServerAsync(form.UserSnowflake))
 			{
@@ -67,7 +67,7 @@ namespace Transcom.Web.Services
 				.WithTitle($"Formulaire d'inscription : {user.Username}")
 				.WithAuthor(user)
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
-				.WithUrl($"{config["Domain"]}/signup/view/{args.Form.UserSnowflake}")
+				.WithUrl($"{config["Domain"]}/signup/view/{args.Form.Id}")
 				.AddField("Orientation", args.Form.Orientation.ToDisplayString())
 				.AddField("Présentation", args.Form.Presentation.Length < MaxEmbedContentLength ? args.Form.Presentation : ContentTooLargeSubstituteText)
 				.AddField("Motivation", args.Form.Motivation.Length < MaxEmbedContentLength ? args.Form.Motivation : ContentTooLargeSubstituteText)
@@ -85,6 +85,6 @@ namespace Transcom.Web.Services
 
 	public class FormSubmittedEventArgs : EventArgs
 	{
-		public DiscordSignupForm Form { get; init; }
+		public FormSignup Form { get; init; }
 	}
 }

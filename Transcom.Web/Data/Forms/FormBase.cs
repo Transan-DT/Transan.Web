@@ -35,6 +35,7 @@ namespace Transcom.Web.Data.Forms
 
 	public enum ContactFormType
 	{
+		Unknown,
 		Other,
 		Technical,
 		Report

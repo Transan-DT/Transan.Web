@@ -1,5 +1,7 @@
-﻿<div class="my-5">
-	<EditForm EditContext=formEditContext OnValidSubmit=SubmitValidAsync>		
+﻿@inherits FormBaseComponent<FormSignup>
+
+<div class="my-5">
+	<EditForm EditContext=FormEditContext OnValidSubmit=OnValidFormAsync>		
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
@@ -77,20 +79,7 @@
 </div>
 
 @code {
-	[Parameter] public FormSignup Form { get; set; }
-	[Parameter] public EventCallback<FormSignup> OnValidSubmit { get; set; }
-
-	private EditContext formEditContext;
 	private bool confirmFormCheck;
 
-	protected override async Task OnParametersSetAsync()
-	{
-		Form ??= new();
-		formEditContext = new EditContext(Form);
-		await base.OnParametersSetAsync();
-	}
-
 	private void OnConfirmToggle() => confirmFormCheck = !confirmFormCheck;
-
-	private async Task SubmitValidAsync() => await OnValidSubmit.InvokeAsync(Form);
 }

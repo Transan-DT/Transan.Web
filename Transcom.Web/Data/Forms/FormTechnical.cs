@@ -1,6 +1,6 @@
 ﻿namespace Transcom.Web.Data.Forms
 {
-	public class FormTechnical
+	public record FormTechnical : FormBase
 	{
 		public TechnicalType ReportType { get; set; }
 

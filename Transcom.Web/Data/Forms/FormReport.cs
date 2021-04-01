@@ -1,6 +1,6 @@
 ﻿namespace Transcom.Web.Data.Forms
 {
-	public class FormReport
+	public record FormReport : FormBase
 	{
 		public ReportType ReportType { get; set; }
 

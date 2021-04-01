@@ -47,12 +47,11 @@ namespace Transcom.Web.Data.Forms
 	public enum Orientation
 	{
 		Unknown,
-		TransgenderMale,
-		TransgenderFemale,
+		Other,
+		Transgender,
 		NonBinary,
 		GenderFluid,
 		Cisgender,
-		Questioning,
-		Other
+		Questioning
 	}
 }

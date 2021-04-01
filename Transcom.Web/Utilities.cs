@@ -32,8 +32,7 @@ namespace Transcom.Web
 
 		public static string ToDisplayString(this Orientation orientation) => orientation switch
 		{
-			Orientation.TransgenderMale => "Homme Transgenre",
-			Orientation.TransgenderFemale => "Femme Transgenre",
+			Orientation.Transgender => "Transgenre",
 			Orientation.NonBinary => "Non-Binaire",
 			Orientation.GenderFluid => "Genderfluid",
 			Orientation.Cisgender => "Homme/Femme Cisgenre",

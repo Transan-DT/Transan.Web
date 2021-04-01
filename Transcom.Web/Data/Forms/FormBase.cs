@@ -32,4 +32,11 @@ namespace Transcom.Web.Data.Forms
 		/// </summary>
 		public string IpAddress { get; init; }
 	}
+
+	public enum ContactFormType
+	{
+		Other,
+		Technical,
+		Report
+	}
 }

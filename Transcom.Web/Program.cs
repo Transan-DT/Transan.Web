@@ -8,8 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-
-
+using Transcom.Web.Services;
 
 namespace Transcom.Web
 {
@@ -19,6 +18,9 @@ namespace Transcom.Web
 		{
 			IHost host = CreateHostBuilder(args).Build();
 			using IServiceScope scope = host.Services.CreateScope();
+
+			// Prodding service to cause event hooks
+			_ = scope.ServiceProvider.GetRequiredService<FormEmbedHandler>();
 
 			await StartDiscordBotAsync(scope.ServiceProvider);
 			await host.RunAsync();

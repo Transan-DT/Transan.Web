@@ -5,30 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Transcom.Web.Data.Forms
 {
-	public record FormSignup : IFormBase
+	public record FormSignup : FormBase
 	{
-		/// <summary>
-		/// ID of Form
-		/// </summary>
-		[BsonId]
-		public ObjectId Id { get; init; }
-
-		/// <summary>
-		/// Discord Snowflake (ID)
-		/// </summary>
-		[BsonRepresentation(BsonType.String)]
-		public ulong UserSnowflake { get; init; }
-
-		/// <summary>
-		/// Date & Time of form submission
-		/// </summary>
-		public DateTime SubmittedAt { get; init; }
-
-		/// <summary>
-		/// IP address from User
-		/// </summary>
-		public string IpAddress { get; init; }
-		
 		/// <summary>
 		/// User's Gender Orientation
 		/// </summary>

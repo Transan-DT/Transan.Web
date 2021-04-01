@@ -6,7 +6,7 @@ using System;
 
 namespace Transcom.Web.Data.Forms
 {
-	interface IFormBase
+	public abstract record FormBase
 	{
 		public const int MaxContentLength = 10000;
 
@@ -14,22 +14,22 @@ namespace Transcom.Web.Data.Forms
 		/// ID of Form
 		/// </summary>
 		[BsonId]
-		public ObjectId Id { get; }
+		public ObjectId Id { get; init; }
 
 		/// <summary>
 		/// Discord Snowflake (ID)
 		/// </summary>
 		[BsonRepresentation(BsonType.String)]
-		public ulong UserSnowflake { get; }
+		public ulong UserSnowflake { get; init; }
 
 		/// <summary>
 		/// Date & Time of Form submission
 		/// </summary>
-		public DateTime SubmittedAt { get; }
+		public DateTime SubmittedAt { get; init; }
 
 		/// <summary>
 		/// IP address from User
 		/// </summary>
-		public string IpAddress { get; }
+		public string IpAddress { get; init; }
 	}
 }

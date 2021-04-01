@@ -1,5 +1,5 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
-@inject SignupService SignupService
+@inject FormService<FormSignup> SignupService
 @inject Discord.IDiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
@@ -67,7 +67,7 @@ else
 	{
 		Loaded = false;
 
-		if ((Form = await SignupService.GetUserFormAsync(Convert.ToUInt64(SnowflakeStr))) is not null)
+		if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
 		{
 			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
 		}

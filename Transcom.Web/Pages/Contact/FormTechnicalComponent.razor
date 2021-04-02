@@ -1,67 +1,80 @@
 ﻿@inherits FormBaseComponent<FormTechnical>
 
-<div class="my-5">
-	<EditForm EditContext=FormEditContext OnValidSubmit=OnValidFormAsync>
-		<DataAnnotationsValidator />
-		<ValidationSummary />
 
+<AuthorizeView Context=AuthorizeContext>
+	<Authorized>
+		<div class="my-5">
+			<EditForm EditContext=FormEditContext OnValidSubmit=OnValidFormAsync>
+				<DataAnnotationsValidator />
+				<ValidationSummary />
+
+				<div class="row justify-content-center mb-5">
+					<div class="col-md-8">
+						<label class="form-label">Le problème concerne...</label>
+
+						<InputSelect @bind-Value=Form.IssueType class="form-select form-select-lg">
+							<option value="Unknown"></option>
+							<option value="DiscordServer">Serveur Discord</option>
+							<option value="DiscordBot">Bot(s) Discord</option>
+							<option value="Website">Site Web</option>
+							<option value="Other">Autre</option>
+						</InputSelect>
+					</div>
+				</div>
+
+				@if (Form.IssueType is TechnicalType.Website)
+				{
+					<div class="row justify-content-center mb-5">
+						<div class="col-md-8">
+							<p class="lead text-info">
+								Pour tout problème technique relié au Site Web,
+								<a class="link-secondary" target="_blank" href="https://github.com/Transcom-DT/Transcom.Web/issues">veuillez soumettre un incident sur GitHub</a>.
+							</p>
+						</div>
+					</div>
+				}
+				else if (Form.IssueType is not TechnicalType.Unknown)
+				{
+					<div class="row justify-content-center my-5">
+						<div class="col-md-8">
+							<label class="form-label">Précisez la nature/origine/cible du problème.</label>
+							<InputText DisplayName="ProblemTarget" @bind-Value=Form.IssueTarget class="form-control form-control-lg" maxlength=@FormBase.MaxContentLength />
+						</div>
+					</div>
+
+					<div class="row justify-content-center my-5">
+						<div class="col-md-8">
+							<label class="form-label">Décrivez-nous le problème.</label>
+							<InputTextArea DisplayName="ProblemDescription" @bind-Value=Form.ProblemDescription class="form-control" style="height: 15rem;" maxlength=@FormBase.MaxContentLength />
+						</div>
+					</div>
+
+					<div class="row justify-content-center my-2">
+						<div class="col-md-8">
+							<input class="form-check-input" type="checkbox" checked=@confirmFormCheck @onclick=OnConfirmToggle>
+							<label class="form-check-label" for="flexCheckDefault">Je confirme l'exactitude des informations envoyées par ce formulaire.</label>
+						</div>
+					</div>
+
+					<div class="row justify-content-center my-3">
+						<div class="col-md-8">
+							<button class="btn btn-lg btn-primary px-5" disabled=@(!confirmFormCheck)>Envoyer</button>
+						</div>
+					</div>
+				}
+
+			</EditForm>
+		</div>
+	</Authorized>
+
+	<NotAuthorized>
 		<div class="row justify-content-center mb-5">
 			<div class="col-md-8">
-				<label class="form-label">Le problème concerne...</label>
-
-				<InputSelect @bind-Value=Form.IssueType class="form-select form-select-lg">
-					<option value="Unknown"></option>
-					<option value="DiscordServer">Serveur Discord</option>
-					<option value="DiscordBot">Bot(s) Discord</option>
-					<option value="Website">Site Web</option>
-					<option value="Other">Autre</option>
-				</InputSelect>
+				<p class="lead text-info">Pour soumettre un problème technique, veuillez d'abord <NavLink href="/login">vous connecter</NavLink>.</p>
 			</div>
 		</div>
-
-		@if (Form.IssueType is TechnicalType.Website)
-		{
-			<div class="row justify-content-center mb-5">
-				<div class="col-md-8">
-					<p class="lead text-info">
-						Pour tout problème technique relié au Site Web,
-						<a class="link-secondary" target="_blank" href="https://github.com/Transcom-DT/Transcom.Web/issues">veuillez soumettre un incident sur GitHub</a>.
-					</p>
-				</div>
-			</div>
-		}
-		else if (Form.IssueType is not TechnicalType.Unknown)
-		{
-			<div class="row justify-content-center my-5">
-				<div class="col-md-8">
-					<label class="form-label">Précisez la nature/origine/cible du problème.</label>
-					<InputText DisplayName="ProblemTarget" @bind-Value=Form.IssueTarget class="form-control form-control-lg" maxlength=@FormBase.MaxContentLength />
-				</div>
-			</div>
-
-			<div class="row justify-content-center my-5">
-				<div class="col-md-8">
-					<label class="form-label">Décrivez-nous le problème.</label>
-					<InputTextArea DisplayName="ProblemDescription" @bind-Value=Form.ProblemDescription class="form-control" style="height: 15rem;" maxlength=@FormBase.MaxContentLength />
-				</div>
-			</div>
-
-			<div class="row justify-content-center my-2">
-				<div class="col-md-8">
-					<input class="form-check-input" type="checkbox" checked=@confirmFormCheck @onclick=OnConfirmToggle>
-					<label class="form-check-label" for="flexCheckDefault">Je confirme l'exactitude des informations envoyées par ce formulaire.</label>
-				</div>
-			</div>
-
-			<div class="row justify-content-center my-3">
-				<div class="col-md-8">
-					<button class="btn btn-lg btn-primary px-5" disabled=@(!confirmFormCheck)>Envoyer</button>
-				</div>
-			</div>
-		}
-
-	</EditForm>
-</div>
+	</NotAuthorized>
+</AuthorizeView>
 
 @code {
 	private bool confirmFormCheck;

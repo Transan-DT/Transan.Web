@@ -29,7 +29,14 @@
 	}
 	else if (FormType is ContactFormType.Other)
 	{
-
+		<div class="row justify-content-center mb-5">
+			<div class="col-md-8">
+				<p class="lead">
+					Veuillez nous contacter par mail : 
+					<a class="link-secondary" target="_blank" href="mailto:assistance@transgenres-community.org">assistance@transgenres-community.org</a>
+				</p>
+			</div>
+		</div>
 	}
 }
 else
@@ -44,7 +51,7 @@ else
 			@if (report.HasEvidence)
 			{
 				<p class="lead text-warning">
-					Veuillez garder vos messages privés ouverts pendant toute la durée de traitement, 
+					Veuillez garder vos messages privés ouverts pendant toute la durée de traitement,
 					afin que la Modération puisse vous contacter concernant vos preuves, ou toute autre information.
 				</p>
 			}
@@ -52,7 +59,7 @@ else
 		else if (form is FormTechnical)
 		{
 			<p class="lead text-secondary">
-				Nous avons bien reçu votre rapport d'incident. 
+				Nous avons bien reçu votre rapport d'incident.
 				L'Administration et les équipes de Développement traiteront ceci dans les plus brefs délais.
 			</p>
 		}

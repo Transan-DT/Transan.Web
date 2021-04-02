@@ -1,0 +1,93 @@
+﻿@inherits FormBaseComponent<FormReport>
+
+<div class="my-5">
+	<EditForm EditContext=FormEditContext OnValidSubmit=OnValidFormAsync>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div class="row justify-content-center mb-5">
+			<div class="col-md-8">
+				<label class="form-label">Quels faits se sont produits?</label>
+
+				<InputSelect @bind-Value=Form.ReportType class="form-select form-select-lg">
+					<option value="Unknown"></option>
+					<option value="Bullying">Harcèlement, Intimidation, Discrimination</option>
+					<option value="Spamming">Insultes, Spams</option>
+					<option value="Triggering">Sujet d'une conversation (sensible, TW/CW, illégal)</option>
+					<option value="Doxxing">Partage d'informations confidentielles</option>
+					<option value="HormonesDIY">Partage d'information sur le THS DIY, ou les doses</option>
+					<option value="Other">Autre</option>
+				</InputSelect>
+			</div>
+		</div>
+
+		@if (Form.ReportType is not ReportType.Unknown)
+		{
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">Contre qui souhaitez-vous signaler ces faits?</label>
+					<InputText DisplayName="ProblemTarget" @bind-Value=Form.ProblemTarget class="form-control form-control-lg" maxlength=@FormBase.MaxContentLength />
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-5">
+				<div class="col-md-8">
+					<label class="form-label">Décrivez-nous le problème.</label>
+					<InputTextArea DisplayName="ProblemDescription" @bind-Value=Form.ProblemDescription class="form-control" style="height: 15rem;" maxlength=@FormBase.MaxContentLength />
+				</div>
+			</div>
+
+			<div class="row justify-content-center mt-5 mb-3">
+				<div class="col-md-8">
+					<label class="form-label">Pouvez-vous fournir des preuves ?</label>
+
+					<div>
+						<div class="form-check">
+							<input type="radio" class="form-check-input" checked=@(Form.HasEvidence) @onclick=@(() => { Form.HasEvidence = true; }) />
+							<label class="form-check-label">Oui</label>
+						</div>
+
+						<div class="form-check">
+							<input type="radio" class="form-check-input" checked=@(!Form.HasEvidence) @onclick=@(() => { Form.HasEvidence = false; }) />
+							<label class="form-check-label">Non</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+				<div class="row justify-content-center mt-3 mb-5">
+					<div class="col-md-8">
+						@if (Form.HasEvidence)
+						{
+							<p class="text-info lead">Vous serez recontacté(e) par la Modération afin de fournir ces preuves.</p>
+						}
+						else
+						{
+							<label class="form-label">Veuillez nous fournir les dates et heures exactes, pour nous permettre de rechercher les preuves.</label>
+							<InputTextArea DisplayName="ProblemDescription" @bind-Value=Form.EvidenceDescription class="form-control" maxlength=@FormBase.MaxContentLength />
+						}
+					</div>
+				</div>
+
+			<div class="row justify-content-center my-2">
+				<div class="col-md-8">
+					<input class="form-check-input" type="checkbox" checked=@confirmFormCheck @onclick=OnConfirmToggle>
+					<label class="form-check-label" for="flexCheckDefault">Je confirme l'exactitude des informations envoyées par ce formulaire.</label>
+				</div>
+			</div>
+
+			<div class="row justify-content-center my-3">
+				<div class="col-md-8">
+					<button class="btn btn-lg btn-primary px-5" disabled=@(!confirmFormCheck)>Envoyer</button>
+				</div>
+			</div>
+		}
+	</EditForm>
+</div>
+
+@code {
+	private bool confirmFormCheck;
+
+	private void OnConfirmToggle() => confirmFormCheck = !confirmFormCheck;
+}

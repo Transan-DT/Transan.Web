@@ -40,5 +40,16 @@ namespace Transcom.Web
 			Orientation.Other => "Autre",
 			_ => ""
 		};
+
+		public static string ToDisplayString(this ReportType reportType) => reportType switch
+		{
+			ReportType.Bullying => "Harcèlement, Intimidation, Discrimination",
+			ReportType.Spamming => "Insultes, Spams",
+			ReportType.Triggering => "Sujet d'une conversation (sensible, TW/CW, illégal)",
+			ReportType.Doxxing => "Partage d'informations confidentielles",
+			ReportType.HormonesDIY => "Partage d'information sur le THS DIY, ou les doses",
+			ReportType.Other => "Autre",
+			_ => ""
+		};
 	}
 }

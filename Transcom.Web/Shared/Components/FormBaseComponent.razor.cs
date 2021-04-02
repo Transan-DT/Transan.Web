@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,20 +23,21 @@ namespace Transcom.Web.Shared.Components
 		private ulong userSnowflake;
 
 
-		[Inject] private AuthenticationStateProvider authenticationStateProvider { get; init; }
-		[Inject] private IHttpContextAccessor httpContextAccessor { get; init; }
+		[Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; init; }
+		[Inject] private IHttpContextAccessor HttpContextAccessor { get; init; }
 		
 
 
 		protected override async Task OnParametersSetAsync()
 		{
-			user = (await authenticationStateProvider.GetAuthenticationStateAsync()).User;
+			user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 			userSnowflake = Convert.ToUInt64(user.FindFirstValue(ClaimTypes.NameIdentifier));
 
 			Form = new()
 			{
+				Id = ObjectId.GenerateNewId(),
 				UserSnowflake = userSnowflake,
-				IpAddress = httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+				IpAddress = HttpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
 			};
 
 			FormEditContext = new(Form);
@@ -46,7 +48,7 @@ namespace Transcom.Web.Shared.Components
 		protected async Task OnValidFormAsync()
 		{
 			await FormService.SubmitFormAsync(Form);
-			await OnValidSubmit.InvokeAsync();
+			await OnValidSubmit.InvokeAsync(Form);
 		}
 	}
 }

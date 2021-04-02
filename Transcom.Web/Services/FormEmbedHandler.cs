@@ -17,13 +17,15 @@ namespace Transcom.Web.Services
 
 		public FormEmbedHandler(IConfiguration config, IDiscordClient discordClient, 
 			FormService<FormSignup> signup,
-			FormService<FormReport> report)
+			FormService<FormReport> report,
+			FormService<FormTechnical> technical)
 		{
 			this.config = config;
 			this.discordClient = discordClient;
 
 			signup.FormSubmitted += OnSignupFormSubmittedAsync;
 			report.FormSubmitted += OnReportFormSubmittedAsync;
+			technical.FormSubmitted += OnTechnicalFormSubmittedAsync;
 		}
 
 
@@ -40,6 +42,14 @@ namespace Transcom.Web.Services
 			if (args.Form is FormReport form)
 			{
 				await SendReportEmbedAsync(form);
+			}
+		}
+
+		private async Task OnTechnicalFormSubmittedAsync(object _, FormSubmittedEventArgs args)
+		{
+			if (args.Form is FormTechnical form)
+			{
+				await SendTechnicalEmbedAsync(form);
 			}
 		}
 
@@ -71,17 +81,17 @@ namespace Transcom.Web.Services
 		public async Task SendReportEmbedAsync(FormReport form)
 		{
 			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
-			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"));
+			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
 			IUser user = await guild.GetUserAsync(form.UserSnowflake);
 
 			EmbedBuilder builder = new EmbedBuilder()
-				.WithTitle($"Formulaire d'inscription : {user.Username}")
+				.WithTitle("Formulaire de Signalement")
 				.WithAuthor(user)
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
-				.WithUrl($"{config["Domain"]}/signup/view/{form.Id}")
+				//.WithUrl($"{config["Domain"]}/signup/view/{form.Id}")
 				.AddField("Type de Signalement", form.ReportType.ToDisplayString())
-				.AddField("Description du Problème", SubstituteOverflowText(form.ProblemDescription))
 				.AddField("Cible du Signalement", SubstituteOverflowText(form.ProblemTarget))
+				.AddField("Description du Problème", SubstituteOverflowText(form.ProblemDescription))
 				.AddField($"Preuves ?", form.HasEvidence ? "Oui" : "Non");
 
 			if (!form.HasEvidence)
@@ -90,6 +100,24 @@ namespace Transcom.Web.Services
 			}
 
 			await channel.SendMessageAsync($"{guild.GetRole(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Mention} Nouveau signalement, de {user.Mention} :", embed: builder.Build());
+		}
+
+		public async Task SendTechnicalEmbedAsync(FormTechnical form)
+		{
+			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
+			IUser user = await guild.GetUserAsync(form.UserSnowflake);
+
+			EmbedBuilder builder = new EmbedBuilder()
+				.WithTitle("Incident / Problème Technique")
+				.WithAuthor(user)
+				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
+				//.WithUrl($"{config["Domain"]}/signup/view/{form.Id}")
+				.AddField("Type d'Incident", form.IssueType.ToDisplayString())
+				.AddField("Nature/Cible du problème", SubstituteOverflowText(form.IssueTarget))
+				.AddField("Description du Problème", SubstituteOverflowText(form.ProblemDescription));
+
+			await channel.SendMessageAsync($"{guild.GetRole(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")).Mention} Nouveau signalement, de {user.Mention} :", embed: builder.Build());
 		}
 
 

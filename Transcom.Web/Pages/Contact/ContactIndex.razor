@@ -25,7 +25,7 @@
 	}
 	else if (FormType is ContactFormType.Technical)
 	{
-
+		<FormTechnicalComponent OnValidSubmit=OnSentForm />
 	}
 	else if (FormType is ContactFormType.Other)
 	{
@@ -48,6 +48,13 @@ else
 					afin que la Modération puisse vous contacter concernant vos preuves, ou toute autre information.
 				</p>
 			}
+		}
+		else if (form is FormTechnical)
+		{
+			<p class="lead text-secondary">
+				Nous avons bien reçu votre rapport d'incident. 
+				L'Administration et les équipes de Développement traiteront ceci dans les plus brefs délais.
+			</p>
 		}
 	</div>
 }

@@ -1,20 +1,24 @@
-﻿namespace Transcom.Web.Data.Forms
+﻿using System.ComponentModel.DataAnnotations;
+
+
+
+namespace Transcom.Web.Data.Forms
 {
 	public record FormTechnical : FormBase
 	{
-		public TechnicalType ReportType { get; set; }
+		public TechnicalType IssueType { get; set; }
 
+		[Required, MaxLength(200)]
+		public string IssueTarget { get; set; }
+
+		[Required, MinLength(20), MaxLength(10000)]
 		public string ProblemDescription { get; set; }
-
-		public string ProblemTarget { get; set; }
-
-		public bool HasEvidence { get; set; }
-
-		public string EvidenceDescription { get; set; }
 	}
 
 	public enum TechnicalType 
 	{
+		Unknown,
+		Other,
 		DiscordServer,
 		DiscordBot,
 		Website

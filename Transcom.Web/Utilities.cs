@@ -51,5 +51,14 @@ namespace Transcom.Web
 			ReportType.Other => "Autre",
 			_ => ""
 		};
+
+		public static string ToDisplayString(this TechnicalType technicalType) => technicalType switch
+		{
+			TechnicalType.DiscordServer => "Serveur Discord",
+			TechnicalType.DiscordBot => "Bot(s) Discord",
+			TechnicalType.Website => "Site Web",
+			TechnicalType.Other => "Autre",
+			_ => ""
+		};
 	}
 }

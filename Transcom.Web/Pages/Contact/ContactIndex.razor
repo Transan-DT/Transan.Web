@@ -1,0 +1,93 @@
+﻿@page "/contact"
+@layout CoverLayout
+
+
+@if (!FormSent)
+{
+	<div class="row justify-content-center mb-5">
+		<div class="col-md-8">
+			<label class="form-label">Votre demande concerne...</label>
+
+			<EditForm EditContext=formSelectContext>
+				<InputSelect @bind-Value=FormType class="form-select form-select-lg">
+					<option value="Unknown"></option>
+					<option value="Report">Signalement</option>
+					<option value="Technical">Problème Technique</option>
+					<option value="Other">Autre</option>
+				</InputSelect>
+			</EditForm>
+		</div>
+	</div>
+
+	@if (FormType is ContactFormType.Report)
+	{
+		<FormReportComponent OnValidSubmit=OnSentForm />
+	}
+	else if (FormType is ContactFormType.Technical)
+	{
+		<FormTechnicalComponent OnValidSubmit=OnSentForm />
+	}
+	else if (FormType is ContactFormType.Other)
+	{
+		<div class="row justify-content-center mb-5">
+			<div class="col-md-8">
+				<p class="lead">
+					Veuillez nous contacter par mail : 
+					<a class="link-secondary" target="_blank" href="mailto:assistance@transgenres-community.org">assistance@transgenres-community.org</a>
+				</p>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<div>
+		<h1 class="text-success mb-5">Merci !</h1>
+
+		@if (form is FormReport report)
+		{
+			<p class="lead text-secondary">Nous avons bien reçu votre signalement, et la Modération l'étudiera dans les plus brefs délais.</p>
+
+			@if (report.HasEvidence)
+			{
+				<p class="lead text-warning">
+					Veuillez garder vos messages privés ouverts pendant toute la durée de traitement,
+					afin que la Modération puisse vous contacter concernant vos preuves, ou toute autre information.
+				</p>
+			}
+		}
+		else if (form is FormTechnical)
+		{
+			<p class="lead text-secondary">
+				Nous avons bien reçu votre rapport d'incident.
+				L'Administration et les équipes de Développement traiteront ceci dans les plus brefs délais.
+			</p>
+		}
+	</div>
+}
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	public ContactFormType FormType { get; set; }
+	public bool FormSent { get; private set; }
+
+	private EditContext formSelectContext;
+
+	private FormBase form;
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Contact", "Quelque chose à nous partager ? Prenez contact avec nous.");
+
+		formSelectContext = new(FormType);
+		base.OnParametersSet();
+	}
+
+	private void OnSentForm(FormBase form)
+	{
+		this.form = form;
+		FormSent = true;
+	}
+}

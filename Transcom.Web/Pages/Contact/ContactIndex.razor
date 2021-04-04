@@ -1,4 +1,4 @@
-﻿@page "/contact"
+@page "/contact"
 @layout CoverLayout
 
 
@@ -80,6 +80,8 @@ else
 	protected override void OnParametersSet()
 	{
 		Layout.SetCover("Contact", "Quelque chose à nous partager ? Prenez contact avec nous.");
+        FormSent = false;
+        FormType = ContactFormType.Unknown;
 
 		formSelectContext = new(FormType);
 		base.OnParametersSet();

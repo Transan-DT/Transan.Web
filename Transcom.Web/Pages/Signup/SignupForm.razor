@@ -1,5 +1,7 @@
-﻿<div class="my-5">
-	<EditForm EditContext=formEditContext OnValidSubmit=SubmitValidAsync>		
+﻿@inherits FormBaseComponent<FormSignup>
+
+<div class="my-5">
+	<EditForm EditContext=FormEditContext OnValidSubmit=OnValidFormAsync>		
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 
@@ -9,8 +11,7 @@
 
 				<InputSelect @bind-Value=Form.Orientation class="form-select form-select-lg">
 					<option value="Unknown"></option>
-					<option value="TransgenderMale">Homme Transgenre</option>
-					<option value="TransgenderFemale">Femme Transgenre</option>
+					<option value="Transgender">Transgenre</option>
 					<option value="NonBinary">Non-Binaire</option>
 					<option value="GenderFluid">Genderfluid</option>
 					<option value="Cisgender">Homme/Femme Cisgenre</option>
@@ -25,7 +26,7 @@
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Qui vous a invité sur notre serveur ? (Entrez son nom d'utilisateur Discord)</label>
-					<InputText DisplayName="Parrainage" @bind-Value=Form.ReferalUser class="form-control" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputText DisplayName="Parrainage" @bind-Value=Form.ReferalUser class="form-control" maxlength=@FormBase.MaxContentLength />
 				</div>
 			</div>
 		}
@@ -35,14 +36,14 @@
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Présentez-vous.</label>
-					<InputTextArea DisplayName="Présentation" @bind-Value=Form.Presentation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Présentation" @bind-Value=Form.Presentation class="form-control" style="height: 10rem;" maxlength=@FormBase.MaxContentLength />
 				</div>
 			</div>
 
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">Pourquoi souhaitez-vous nous rejoindre ?</label>
-					<InputTextArea DisplayName="Motivation" @bind-Value=Form.Motivation class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Motivation" @bind-Value=Form.Motivation class="form-control" style="height: 10rem;" maxlength=@FormBase.MaxContentLength />
 				</div>
 			</div>
 
@@ -57,7 +58,7 @@
 					})
 					</label>
 
-					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@DiscordSignupForm.MaxContentLength />
+					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@FormBase.MaxContentLength />
 				</div>
 			</div>
 
@@ -78,19 +79,7 @@
 </div>
 
 @code {
-	[Parameter] public DiscordSignupForm Form { get; set; }
-	[Parameter] public EventCallback<DiscordSignupForm> OnValidSubmit { get; set; }
-
-	private EditContext formEditContext;
 	private bool confirmFormCheck;
 
-	protected override async Task OnParametersSetAsync()
-	{
-		Form ??= new();
-		formEditContext = new EditContext(Form);
-	}
-
 	private void OnConfirmToggle() => confirmFormCheck = !confirmFormCheck;
-
-	private async Task SubmitValidAsync() => await OnValidSubmit.InvokeAsync(Form);
 }

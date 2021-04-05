@@ -1,0 +1,45 @@
+﻿@page "/resources/emergencies"
+@layout CoverLayout
+
+
+
+<div class="my-3">
+	<div class="row align-items-md-stretch">
+		<div class="col-md-8">
+			<h1>Numéros d'urgence</h1>
+			@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "emergency-numbers.html"))
+		</div>
+
+		<div class="col-md-4">
+			<h1>Autres numéros</h1>
+			<Accordion Id="help-numbers" Class="my-3">
+				<AccordionSection Id="abuse" Name="Violence faites aux femmes" Icon="bi bi-tornado">
+					@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "abuse.html"))
+				</AccordionSection>
+
+				<AccordionSection Id="distress" Name="Envies suicidaires, dépressions, anxiété ?" Icon="bi bi-cloud-rain">
+					@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "distress.html"))
+				</AccordionSection>
+
+				<AccordionSection Id="shelter" Name="Besoin d'hébergements" Icon="bi bi-house">
+					@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "shelter.html"))
+				</AccordionSection>
+
+				<AccordionSection Id="bullying" Name="Harcèlement" Icon="bi bi-emoji-angry">
+					@HtmlContentFileLoader.LoadHtmlContent(Path.Combine("resources-emergencies", "bullying.html"))
+				</AccordionSection>
+			</Accordion>
+		</div>
+	</div>
+</div>
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Aide & Urgences", "Besoin d'aide? Vous n'êtes pas seul(e).", subtitleHeader: true);
+		base.OnParametersSet();
+	}
+}

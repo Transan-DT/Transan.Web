@@ -1,0 +1,52 @@
+﻿@page "/resources"
+@layout CoverLayout
+
+
+<div class="row align-items-md-stretch">
+	<div class="col-md-4">
+		<div class="h-100 p-5 text-white border border-info rounded-3 order-1">
+			<h3><i class="bi bi-info-circle-fill me-3"></i>Sites Utilitaires</h3>
+
+			<p>
+				Vous recherchez des ressources, médecins, renseignements, ou témoignages ? <br />
+				C'est ici !
+			</p>
+
+			<button class="btn btn-lg btn-info disabled" type="button">Bientôt</button>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="h-100 p-5 text-light border border-danger rounded-3 order-md-3 order-0">
+			<h3 class="text-danger"><i class="bi bi-exclamation-triangle-fill me-3"></i>Besoin d'aide ?</h3>
+
+			<p>Ces numéros vous redirigent vers des services compétent, par chat, par téléphone ou par mail</p>
+
+			<div class="col d-grid gap-2">
+				<NavLink class="btn btn-lg btn-danger" href="/resources/emergencies">Aides & Urgences</NavLink>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="h-100 p-5 border border-secondary rounded-3">
+			<h3><i class="bi bi-bookmarks-fill me-3"></i>Lexique</h3>
+			<p>Vous ne connaissez pas les définitions, les significations ou les mots en anglais, cette section est faite pour vous.</p>
+			<div class="col d-grid gap-2">
+				<NavLink class="btn btn-lg btn-secondary" href="/resources/glossary">Lexique</NavLink>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; set; }
+
+
+	protected override void OnParametersSet()
+	{
+		Layout.SetCover("Ressources", "Toutes les ressources du monde Transgenre, à votre portée.");
+		base.OnParametersSet();
+	}
+}

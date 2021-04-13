@@ -52,6 +52,9 @@ namespace Transcom.Web
 				options.Scope.Add("identify");
 				options.Scope.Add("email");
 				options.Scope.Add("guilds");
+
+				options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+				options.CorrelationCookie.SameSite = SameSiteMode.Lax;
 			});
 
 			services.AddAuthorization();

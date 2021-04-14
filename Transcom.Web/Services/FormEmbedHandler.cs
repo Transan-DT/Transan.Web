@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Transcom.Web.Data.Forms;
@@ -13,9 +14,9 @@ namespace Transcom.Web.Services
 		protected const string ContentTooLargeSubstituteText = "Contenu trop large ; Utilisez le site pour consulter ce champ.";
 
 		private readonly IConfiguration config;
-		private readonly IDiscordClient discordClient;
+		private readonly DiscordClient discordClient;
 
-		public FormEmbedHandler(IConfiguration config, IDiscordClient discordClient, 
+		public FormEmbedHandler(IConfiguration config, DiscordClient discordClient, 
 			FormService<FormSignup> signup,
 			FormService<FormReport> report,
 			FormService<FormTechnical> technical)
@@ -55,11 +56,11 @@ namespace Transcom.Web.Services
 
 		public async Task SendSignupEmbedAsync(FormSignup form)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
-			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"));
-			IUser user = await guild.GetUserAsync(form.UserSnowflake);
+			DiscordGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+			DiscordChannel channel = guild.GetChannel(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"));
+			DiscordUser user = await discordClient.GetUserAsync(form.UserSnowflake);
 
-			EmbedBuilder builder = new EmbedBuilder()
+			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 			.WithTitle($"Formulaire d'inscription : {user.Username}")
 			.WithAuthor(user)
 			.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
@@ -80,11 +81,11 @@ namespace Transcom.Web.Services
 
 		public async Task SendReportEmbedAsync(FormReport form)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
-			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
-			IUser user = await guild.GetUserAsync(form.UserSnowflake);
+			DiscordGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+			DiscordChannel channel = guild.GetChannel(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
+			DiscordUser user = await discordClient.GetUserAsync(form.UserSnowflake);
 
-			EmbedBuilder builder = new EmbedBuilder()
+			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 				.WithTitle("Formulaire de Signalement")
 				.WithAuthor(user)
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
@@ -104,11 +105,11 @@ namespace Transcom.Web.Services
 
 		public async Task SendTechnicalEmbedAsync(FormTechnical form)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
-			ITextChannel channel = await guild.GetTextChannelAsync(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
-			IUser user = await guild.GetUserAsync(form.UserSnowflake);
+			DiscordGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+			DiscordChannel channel = guild.GetChannel(config.GetValue<ulong>("DiscordIntegration:Server:Channels:Report"));
+			DiscordUser user = await discordClient.GetUserAsync(form.UserSnowflake);
 
-			EmbedBuilder builder = new EmbedBuilder()
+			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 				.WithTitle("Incident / Problème Technique")
 				.WithAuthor(user)
 				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")

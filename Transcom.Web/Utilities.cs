@@ -42,7 +42,9 @@ namespace Transcom.Web
 
 		public static DiscordEmbedBuilder WithAuthor(this DiscordEmbedBuilder embed, DiscordUser user)
 		{
-			return embed.WithAuthor(user.Username, null, user.GetAvatarUrl(ImageFormat.Auto, 128));
+			return embed.WithAuthor(user.GetFullUsername(), null, user.GetAvatarUrl(ImageFormat.Auto, 128));
 		}
+
+		public static string GetFullUsername(this DiscordUser user) => $"{user.Username}#{user.Discriminator}";
 	}
 }

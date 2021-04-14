@@ -1,6 +1,3 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
 using DSharpPlus;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

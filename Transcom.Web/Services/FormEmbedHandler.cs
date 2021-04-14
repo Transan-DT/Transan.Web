@@ -61,7 +61,7 @@ namespace Transcom.Web.Services
 			DiscordUser user = await discordClient.GetUserAsync(form.UserSnowflake);
 
 			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
-			.WithTitle($"Formulaire d'inscription : {user.Username}")
+			.WithTitle($"Formulaire d'inscription : {user.GetFullUsername()}")
 			.WithAuthor(user)
 			.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
 			.WithUrl($"{config["Domain"]}/signup/view/{form.UserSnowflake}")

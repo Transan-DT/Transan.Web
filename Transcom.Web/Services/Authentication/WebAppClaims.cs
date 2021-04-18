@@ -1,8 +1,8 @@
-﻿using Discord;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,10 +12,10 @@ namespace Transcom.Web.Services.Authentication
 	public class WebAppClaims : IClaimsTransformation
 	{
 		private readonly AuthService authDb;
-		private readonly IGuild guild;
+		private readonly DiscordGuild guild;
 		private readonly IConfiguration config;
 
-		public WebAppClaims(AuthService authDb, IDiscordClient client, IConfiguration config)
+		public WebAppClaims(AuthService authDb, DiscordClient client, IConfiguration config)
 		{
 			this.authDb = authDb;
 			this.config = config;
@@ -36,22 +36,25 @@ namespace Transcom.Web.Services.Authentication
 
 				}
 
-				if (await guild?.GetUserAsync(snowflake) is not null and IGuildUser user)
+				if (guild is not null)
 				{
-					identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
+					if (guild.Members.TryGetValue(snowflake, out DiscordMember member))
+					{
+						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
 
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Member")))
-					{
-						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Member));
-					}
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")))
-					{
-						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Moderator));
-					}
-					if (user.RoleIds.Contains(config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")))
-					{
-						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Admin));
-					}
+						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Member")))
+						{
+							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Member));
+						}
+						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")))
+						{
+							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Moderator));
+						}
+						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")))
+						{
+							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Admin));
+						}
+					} 
 				}
 
 				principal.AddIdentity(identity);

@@ -1,11 +1,12 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
+using DSharpPlus;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Transcom.Web.Services;
@@ -16,6 +17,19 @@ namespace Transcom.Web
 	{
 		public static async Task Main(string[] args)
 		{
+			Log.Logger = new LoggerConfiguration()
+#if DEBUG
+				.MinimumLevel.Debug()
+	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+#else
+				.MinimumLevel.Information()
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+#endif
+				.Enrich.FromLogContext()
+				.Enrich.WithProperty("_Source", typeof(Program).Assembly.GetName())
+				.WriteTo.Console()
+				.CreateLogger();
+
 			IHost host = CreateHostBuilder(args).Build();
 			using IServiceScope scope = host.Services.CreateScope();
 
@@ -31,18 +45,15 @@ namespace Transcom.Web
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
+					webBuilder.UseSerilog();
 				});
 
 
 		public static async Task StartDiscordBotAsync(IServiceProvider services)
 		{
-			IConfiguration config = services.GetRequiredService<IConfiguration>();
-			DiscordSocketClient discordClient = services.GetRequiredService<IDiscordClient>() as DiscordSocketClient;
-			ILogger discordLogger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(discordClient));
+			DiscordClient client = services.GetRequiredService<DiscordClient>();
 
-			discordClient.Log += discordLogger.Log;
-			await discordClient.LoginAsync(TokenType.Bot, config["DiscordIntegration:BotToken"]);
-			await discordClient.StartAsync();
+			await client.ConnectAsync();
 		}
 	}
 }

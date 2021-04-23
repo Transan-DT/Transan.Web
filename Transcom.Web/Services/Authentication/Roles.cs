@@ -5,6 +5,7 @@
 		public const string
 			Admin = "admin",
 			Moderator = "mod",
+			GlossaryEditor = "glossary-editor",
 			Member = "member",
 			Joined = "joined";
 	}

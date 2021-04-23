@@ -1,6 +1,6 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
 @inject FormService<FormSignup> SignupService
-@inject Discord.IDiscordClient DiscordClient
+@inject DSharpPlus.DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
@@ -25,8 +25,8 @@ else
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
 					@if (User is not null)
 					{
-						<tr><th>Nom d'Utilisateur</th><td>@User.ToString()</td></tr>
-						<tr><th>Compte créé</th><td>@User.CreatedAt.UtcDateTime.ToString()</td></tr>
+						<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
+						<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
 					}
 					@if (Form.Orientation is Orientation.Cisgender)
 					{
@@ -59,7 +59,7 @@ else
 	[Parameter] public string SnowflakeStr { get; init; }
 
 	public FormSignup Form { get; set; }
-	public Discord.IUser User { get; private set; }
+	public DSharpPlus.Entities.DiscordUser User { get; private set; }
 
 	public bool Loaded { get; private set; }
 

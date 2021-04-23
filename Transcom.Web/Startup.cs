@@ -1,7 +1,5 @@
 using AspNet.Security.OAuth.Discord;
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
+using DSharpPlus;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
+using Serilog.Extensions.Logging;
 using Transcom.Web.Services;
 using Transcom.Web.Services.Authentication;
 
@@ -65,7 +64,14 @@ namespace Transcom.Web
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
-			services.AddSingleton<IDiscordClient, DiscordSocketClient>();
+
+			services.AddSingleton(new DiscordClient(new DiscordConfiguration()
+			{
+				TokenType = TokenType.Bot,
+				Intents = DiscordIntents.All,
+				Token = Configuration["DiscordIntegration:BotToken"],
+				LoggerFactory = new SerilogLoggerFactory()
+			}));
 
 			services.AddScoped<IClaimsTransformation, WebAppClaims>();
 		}

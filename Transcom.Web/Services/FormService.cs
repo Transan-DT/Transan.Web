@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -13,13 +14,13 @@ namespace Transcom.Web.Services
 	public class FormService<TForm> where TForm : FormBase
 	{
 		private readonly IMongoCollection<TForm> signups;
-		private readonly IDiscordClient discordClient;
+		private readonly DiscordClient discordClient;
 		private readonly IConfiguration config;
 
 		public delegate Task FormSubmittedEventHandler(object sender, FormSubmittedEventArgs args);
 		public event FormSubmittedEventHandler FormSubmitted;
 
-		public FormService(IMongoClient mongoClient, IConfiguration config, IDiscordClient discordClient)
+		public FormService(IMongoClient mongoClient, IConfiguration config, DiscordClient discordClient)
 		{
 			this.config = config;
 			this.discordClient = discordClient;
@@ -35,11 +36,6 @@ namespace Transcom.Web.Services
 
 		public async Task SubmitFormAsync(TForm form)
 		{
-			if (!await UserIsOnServerAsync(form.UserSnowflake))
-			{
-				throw new ApplicationException("User is not on Server.");
-			}
-
 			await signups.InsertOneAsync(form with
 			{
 				SubmittedAt = DateTime.UtcNow
@@ -51,8 +47,8 @@ namespace Transcom.Web.Services
 
 		public async Task<bool> UserIsOnServerAsync(ulong snowflake)
 		{
-			IGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
-			return await guild.GetUserAsync(snowflake) is not null;
+			DiscordGuild guild = await discordClient.GetGuildAsync(config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+			return guild.Members.ContainsKey(snowflake);
 		}
 	}
 

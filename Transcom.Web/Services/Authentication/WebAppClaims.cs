@@ -50,6 +50,10 @@ namespace Transcom.Web.Services.Authentication
 						{
 							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Moderator));
 						}
+						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:GlossaryEditor")))
+						{
+							identity.AddClaim(new(ClaimTypes.Role, UserRoles.GlossaryEditor));
+						}
 						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")))
 						{
 							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Admin));

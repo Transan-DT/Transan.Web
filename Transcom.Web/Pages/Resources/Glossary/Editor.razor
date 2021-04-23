@@ -3,7 +3,7 @@
 @layout CoverLayout
 @inject Transcom.Web.Services.GlossaryService GlossaryService
 @inject NavigationManager NavigationManager
-@attribute [Authorize(Roles = UserRoles.Admin)]
+@attribute [Authorize(Roles = UserRoles.Admin + "," + UserRoles.GlossaryEditor)]
 
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb mb-5">

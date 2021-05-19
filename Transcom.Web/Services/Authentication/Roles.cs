@@ -3,10 +3,10 @@
 	public static class UserRoles
 	{
 		public const string
-			Admin = "admin",
-			Moderator = "mod",
-			GlossaryEditor = "glossary-editor",
-			Member = "member",
-			Joined = "joined";
+			Admin = "Admin",
+			Moderator = "Mod",
+			GlossaryEditor = "GlossaryEditor",
+			Member = "Member",
+			Joined = "Joined";
 	}
 }

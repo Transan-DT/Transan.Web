@@ -1,3 +1,4 @@
+using System;
 using AspNet.Security.OAuth.Discord;
 using DSharpPlus;
 using Microsoft.AspNetCore.Authentication;
@@ -18,9 +19,12 @@ namespace Transcom.Web
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration)
+		private readonly IWebHostEnvironment hostingEnvironment;
+
+		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			Configuration = configuration;
+			this.hostingEnvironment = env;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -32,6 +36,19 @@ namespace Transcom.Web
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
 			services.AddHttpContextAccessor();
+
+			if (hostingEnvironment.IsProduction() || true)
+			{
+				services.Configure<ForwardedHeadersOptions>(options =>
+				{
+					options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |	ForwardedHeaders.XForwardedProto;
+					// Only loopback proxies are allowed by default.
+					// Clear that restriction because forwarders are enabled by explicit 
+					// configuration.
+					options.KnownNetworks.Clear();
+					options.KnownProxies.Clear();
+				});
+			}
 
 			services.AddAuthentication(options =>
 			{
@@ -93,10 +110,7 @@ namespace Transcom.Web
 
 			if (env.IsProduction()) // Nginx configuration step
 			{
-				app.UseForwardedHeaders(new ForwardedHeadersOptions
-				{
-					ForwardedHeaders = ForwardedHeaders.All
-				});
+				app.UseForwardedHeaders();
 			}
 
 			app.UseHttpsRedirection();

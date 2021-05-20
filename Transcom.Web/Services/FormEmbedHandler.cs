@@ -12,7 +12,6 @@ namespace Transcom.Web.Services
 	{
 		protected const int MaxEmbedContentLength = 1024;
 		protected const string ContentTooLargeSubstituteText = "Contenu trop large ; Utilisez le site pour consulter ce champ.";
-
 		private readonly IConfiguration config;
 		private readonly DiscordClient discordClient;
 
@@ -63,7 +62,7 @@ namespace Transcom.Web.Services
 			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 			.WithTitle($"Formulaire d'inscription : {user.GetFullUsername()}")
 			.WithAuthor(user)
-			.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
+			.WithFooter(Utilities.SignatureFooter)
 			.WithUrl($"{config["Domain"]}/signup/view/{form.UserSnowflake}")
 			.AddField("Orientation", form.Orientation.ToDisplayString())
 			.AddField("Présentation", form.Presentation.Length < MaxEmbedContentLength ? form.Presentation : ContentTooLargeSubstituteText)
@@ -88,7 +87,7 @@ namespace Transcom.Web.Services
 			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 				.WithTitle("Formulaire de Signalement")
 				.WithAuthor(user)
-				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
+				.WithFooter(Utilities.SignatureFooter)
 				//.WithUrl($"{config["Domain"]}/signup/view/{form.Id}")
 				.AddField("Type de Signalement", form.ReportType.ToDisplayString())
 				.AddField("Cible du Signalement", SubstituteOverflowText(form.ProblemTarget))
@@ -112,7 +111,7 @@ namespace Transcom.Web.Services
 			DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
 				.WithTitle("Incident / Problème Technique")
 				.WithAuthor(user)
-				.WithFooter("Transcom (Web) - Powered by Nodsoft Systems")
+				.WithFooter(Utilities.SignatureFooter)
 				//.WithUrl($"{config["Domain"]}/signup/view/{form.Id}")
 				.AddField("Type d'Incident", form.IssueType.ToDisplayString())
 				.AddField("Nature/Cible du problème", SubstituteOverflowText(form.IssueTarget))

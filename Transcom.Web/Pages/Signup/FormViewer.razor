@@ -1,6 +1,7 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
 @inject FormService<FormSignup> SignupService
-@inject DSharpPlus.DiscordClient DiscordClient
+@inject SignupControlService SignupControlService 
+@inject DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
@@ -15,7 +16,7 @@ else if (Form is null)
 }
 else
 {
-	<div class="row justify-content-between">
+	<div class="row justify-content-between mb-5">
 		<div class="col-md-4 my-4 order-md-last">
 			<table class="table table-borderless">
 				<tbody>
@@ -23,11 +24,13 @@ else
 					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
 					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
+					
 					@if (User is not null)
 					{
 						<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
 						<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
 					}
+
 					@if (Form.Orientation is Orientation.Cisgender)
 					{
 						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>
@@ -53,13 +56,50 @@ else
 			</div>
 		</div>
 	</div>
+
+	<div class="my-5">
+		<h2 class="mb-3">Décision</h2>
+		
+		@if (Member is null)
+		{
+			<h5 class="text-warning">L'utilisateur n'est pas présent sur le serveur.</h5>
+		}
+		else
+		{
+			if (MemberRoles.Contains(UserRoles.Member))
+			{
+				<h5 class="text-info">L'utilisateur est déjà Membre du serveur.</h5>
+			}
+			else
+			{
+				<div class="row justify-content-between m-5">
+					<div class="col d-grid gap-2">
+						<button class="btn btn-lg btn-block btn-success">Accepter</button>
+					</div>
+
+					<div class="col d-grid gap-2">
+						<button class="btn btn-lg btn-block btn-light">Contrôler</button>
+					</div>
+
+					<div class="col d-grid gap-2">
+						<button class="btn btn-lg btn-block btn-danger">Refuser</button>
+					</div>
+				</div>
+			}
+		}
+	</div>
+
 }
 
 @code {
 	[Parameter] public string SnowflakeStr { get; init; }
 
 	public FormSignup Form { get; set; }
-	public DSharpPlus.Entities.DiscordUser User { get; private set; }
+	public DiscordUser User { get; private set; }
+	public DiscordMember Member { get; private set; }
+	public IEnumerable<string> MemberRoles { get; private set; }
+
+	private DiscordGuild guild;
 
 	public bool Loaded { get; private set; }
 
@@ -70,6 +110,11 @@ else
 		if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
 		{
 			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+
+			if ((Member = SignupControlService.ResolveMember(Form.UserSnowflake)) is not null)
+			{
+				MemberRoles = SignupControlService.GetMemberRoles(Member);
+			}
 		}
 
 		await base.OnParametersSetAsync();

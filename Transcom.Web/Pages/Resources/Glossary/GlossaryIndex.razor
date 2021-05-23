@@ -66,7 +66,6 @@
 
 		<EditForm Model=CurrentSearch OnValidSubmit=HandleValidSubmitAsync>
 			<DataAnnotationsValidator />
-			<ValidationSummary />
 
 			<div class="input-group">
 				<InputText @bind-Value="CurrentSearch.Search" class="form-control" id="Search" placeholder="Recherche" DisplayName="Search" />
@@ -74,6 +73,10 @@
 				<div class="input-group-append">
 					<button type="submit" class="btn btn-primary px-3">Rechercher</button>
 				</div>
+			</div>
+
+			<div class="lead mt-3">
+				<ValidationSummary />
 			</div>
 		</EditForm>
 
@@ -90,7 +93,7 @@
 							if (entry.Visible)
 							{
 								<li class="lead">
-									<NavLink class=@(entry.Visible ? "link-secondary" : "link-active") href=@($"/resources/glossary/{entry.UrlTitle}")>
+									<NavLink class="link-secondary" href=@($"/resources/glossary/{entry.UrlTitle}")>
 										@entry.DisplayTitle
 									</NavLink>
 								</li>
@@ -98,14 +101,13 @@
 							else if (userIsEditor)
 							{
 								<li class="lead">
-									<NavLink class=@(entry.Visible ? "link-secondary" : "link-active") href=@($"/resources/glossary/{entry.UrlTitle}")>
+									<NavLink class="link-secondary" href=@($"/resources/glossary/{entry.UrlTitle}")>
 										@entry.DisplayTitle
 									</NavLink>
 
 									<span class="text-muted bi-type-italic">[Invisible]</span>
 								</li>
 							}
-
 						}
 					</ul>
 				}
@@ -160,13 +162,18 @@
 		Results = ((CurrentSearch.Search is null || CurrentSearch.Search.Length > 2)
 			? await GlossaryService.SearchEntriesAsync(CurrentSearch.Search) : null)
 			?? Array.Empty<GlossaryEntry>();
+
+		if (!userIsEditor)
+		{
+			Results = Results.Where(e => e.Visible);
+		}
 		Searching = false;
 	}
 
 
 	public record SearchModel
 	{
-		[Required, StringLength(100, MinimumLength = 2)]
+		[Required(ErrorMessage = "Veuillez entrer un terme de recherche."), StringLength(100, MinimumLength = 2)]
 		public string Search { get; set; }
 	}
 }

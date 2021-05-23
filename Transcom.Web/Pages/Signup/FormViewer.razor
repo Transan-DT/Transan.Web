@@ -1,7 +1,7 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject FormService<FormSignup> SignupService
-@inject SignupControlService SignupControlService 
+@inject SignupControlService SignupControlService
 @inject DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
@@ -25,7 +25,7 @@ else
 					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
 					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
-					
+
 					@if (User is not null)
 					{
 						<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
@@ -60,7 +60,7 @@ else
 
 	<div class="my-5">
 		<h2 class="mb-3">Décision</h2>
-		
+
 		@if (Member is null)
 		{
 			<h5 class="text-warning">L'utilisateur n'est pas présent sur le serveur.</h5>
@@ -73,6 +73,10 @@ else
 		{
 			<h5 class="text-success">L'utilisateur a été accepté.</h5>
 		}
+		else if (rejected)
+		{
+			<h5 class="text-success">L'utilisateur a été refusé.</h5>
+		}
 		else
 		{
 			<div class="row justify-content-between m-5">
@@ -81,16 +85,23 @@ else
 				</div>
 
 				<div class="col d-grid gap-2">
-					<button class="btn btn-lg btn-block btn-secondary" @onclick=ControlMemberAsync disabled=@controlled>Contrôler</button>
+					<button class="btn btn-lg btn-block btn-secondary" @onclick="() => { controlModal.Show = true; }" disabled=@controlled>Contrôler</button>
 				</div>
 
 				<div class="col d-grid gap-2">
-					<button class="btn btn-lg btn-block btn-danger" @onclick=RejectMemberAsync>Rejeter</button>
+					<button class="btn btn-lg btn-block btn-danger" @onclick="() => { rejectModal.Show = true; }">Rejeter</button>
 				</div>
 			</div>
 		}
 	</div>
 
+	<ControlModal @ref=controlModal
+				  OnSubmit="(parameters) => { ControlMemberAsync(parameters); }"
+				  OnCancel="() => { controlModal.Show = false; }" />
+
+	<RejectModal @ref=rejectModal
+				  OnSubmit="(parameters) => { RejectMemberAsync(parameters); }"
+				  OnCancel="() => { rejectModal.Show = false; }" />
 }
 
 @code {
@@ -105,6 +116,9 @@ else
 
 	private DiscordGuild guild;
 	private bool accepted, controlled, rejected;
+
+	private ControlModal controlModal;
+	private RejectModal rejectModal;
 
 	protected override async Task OnParametersSetAsync()
 	{
@@ -132,15 +146,17 @@ else
 		return SignupControlService.AcceptNewMemberAsync(Member, Garantor);
 	}
 
-	private Task ControlMemberAsync()
+	private Task ControlMemberAsync(ControlModal.ParametersModel parameters)
 	{
 		controlled = true;
-		return SignupControlService.ControlNewMemberAsync(Member, Garantor, null);
+		controlModal.Show = false;
+		return SignupControlService.ControlNewMemberAsync(Member, Garantor, parameters.Reason);
 	}
 
-	private Task RejectMemberAsync()
+	private Task RejectMemberAsync(RejectModal.ParametersModel parameters)
 	{
 		rejected = true;
-		return SignupControlService.RejectNewMemberAsync(Member, Garantor, null);
+		rejectModal.Show = false;
+		return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason);
 	}
 }

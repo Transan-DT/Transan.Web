@@ -49,7 +49,7 @@ namespace Transcom.Web.Services
 		public async Task RejectNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason)
 		{
 			await Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))
-				.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor));
+				.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor, reason));
 
 			await member.SendMessageAsync($"Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason));
 		}
@@ -108,15 +108,24 @@ namespace Transcom.Web.Services
 			.AddField("🎤 Présentez vous", $"<#{configuration["DiscordIntegration:Server:Channels:Presentation"]}>")
 			.Build();
 
-		private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor) => new DiscordEmbedBuilder()
+		private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor, string reason)
+		{
+			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 			.WithTitle($"Demande d'inscription refusée : {member.Nickname}")
 			.WithColor(DiscordColor.Red)
 			.WithFooter(Utilities.SignatureFooter)
 			.WithAuthor(member)
 			.WithUrl($"{configuration["Domain"]}/signup/view/{member.Id}")
 			.AddField("Utilisateur", member.Mention)
-			.AddField("Validation", garantor.Mention)
-			.Build();
+			.AddField("Validation", garantor.Mention);
+
+			if (!string.IsNullOrWhiteSpace(reason))
+			{
+				embed.AddField("Motif", reason);
+			}
+
+			return embed.Build();
+		}
 
 		private static DiscordEmbed GenerateDenyDmEmbed(string reason)
 		{
@@ -128,7 +137,7 @@ namespace Transcom.Web.Services
 
 			if (!string.IsNullOrWhiteSpace(reason))
 			{
-				embed.AddField("Raison", reason);
+				embed.AddField("Motif", reason);
 			}
 
 			embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec la Modération.");

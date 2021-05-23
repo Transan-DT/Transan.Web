@@ -1,0 +1,49 @@
+﻿@if (Show)
+{
+	<div class="modal fade show" id="deleteConfirm" style="display:block" aria-modal="true" role="dialog">
+		<div class="modal-dialog">
+			<EditForm Model=EditModel OnValidSubmit=SubmitAsync>
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Rejeter l'utilisateur ?</h4>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div>
+							<label class="form-label">Motif <span class="text-muted">(facultatif)</span></label>
+							<InputTextArea DisplayName="Raison" @bind-Value=EditModel.Reason class="form-control" style="height: 10rem;" maxlength=1000 />
+						</div>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-dark" @onclick=OnCancel>Annuler</button>
+						<button type="submit" class="btn btn-danger">Rejeter</button>
+					</div>
+				</div>
+			</EditForm>
+		</div>
+	</div>
+
+	<div class="modal-backdrop fade show"></div>
+}
+
+@code {
+	[Parameter] public EventCallback<ParametersModel> OnSubmit { get; set; }
+	[Parameter] public EventCallback OnCancel { get; set; }
+	[Parameter] public ParametersModel EditModel { get; set; } = new();
+	
+	public bool Show { get; set; }
+
+
+	public Task SubmitAsync() => OnSubmit.InvokeAsync(EditModel);
+
+
+	public record ParametersModel
+	{
+		[MaxLength(1000)]
+		public string Reason { get; set; }
+	}
+}

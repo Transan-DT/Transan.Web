@@ -10,6 +10,7 @@ namespace Transcom.Web
 	public static class Utilities
 	{
 		public const string SignatureFooter = "Transcom (Web) - Powered by Nodsoft Systems";
+		public const string AuditLogPrefix = "[Transcom Web] - \n";
 
 		public static string ToDisplayString(this Orientation orientation) => orientation switch
 		{

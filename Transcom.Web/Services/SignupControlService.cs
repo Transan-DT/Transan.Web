@@ -46,12 +46,21 @@ namespace Transcom.Web.Services
 			await member.SendMessageAsync($"Demande d'Inscription acceptée!", GenerateWelcomeDmEmbed());
 		}
 
-		public async Task RejectNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason)
+		public async Task RejectNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason, RejectAction action)
 		{
 			await Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))
-				.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor, reason));
+				.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor, reason, action));
 
-			await member.SendMessageAsync($"Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason));
+			await member.SendMessageAsync($"Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason, action));
+
+			if (action is RejectAction.Ban)
+			{
+				await member.BanAsync(0, Utilities.AuditLogPrefix + reason);
+			}
+			else if (action is RejectAction.Kick)
+			{
+				await member.RemoveAsync(Utilities.AuditLogPrefix + reason);
+			}
 		}
 
 		public async Task ControlNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason)
@@ -108,7 +117,7 @@ namespace Transcom.Web.Services
 			.AddField("🎤 Présentez vous", $"<#{configuration["DiscordIntegration:Server:Channels:Presentation"]}>")
 			.Build();
 
-		private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor, string reason)
+		private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor, string reason, RejectAction action)
 		{
 			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 			.WithTitle($"Demande d'inscription refusée : {member.Nickname}")
@@ -124,10 +133,20 @@ namespace Transcom.Web.Services
 				embed.AddField("Motif", reason);
 			}
 
+			if (action is RejectAction.Ban)
+			{
+				embed.AddField("Bannissement", "L'utilisateur a été banni du serveur.");
+			}
+
+			if (action is RejectAction.Kick)
+			{
+				embed.AddField("Exclusion", "L'utilisateur a été exclu du serveur.");
+			}
+
 			return embed.Build();
 		}
 
-		private static DiscordEmbed GenerateDenyDmEmbed(string reason)
+		private static DiscordEmbed GenerateDenyDmEmbed(string reason, RejectAction action)
 		{
 			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 				.WithTitle("Inscription refusée")
@@ -140,8 +159,19 @@ namespace Transcom.Web.Services
 				embed.AddField("Motif", reason);
 			}
 
-			embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec la Modération.");
-				
+			if (action is RejectAction.Kick)
+			{
+				embed.AddField("Exclusion", "Suite à votre refus, vous avez été exclu(e) du serveur. Désolé.");
+			}
+			else if (action is RejectAction.Ban)
+			{
+				embed.AddField("Bannissement", "Suite à votre refus, vous avez été banni(e) du serveur. Désolé.");
+			}
+			else
+			{
+				embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec la Modération.");
+			}
+
 			return embed.Build();
 		}
 
@@ -181,5 +211,12 @@ namespace Transcom.Web.Services
 		}
 
 		#endregion //Embeds
+
+		public enum RejectAction
+		{
+			None,
+			Kick,
+			Ban
+		}
 	}
 }

@@ -157,6 +157,15 @@ else
 	{
 		rejected = true;
 		rejectModal.Show = false;
-		return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason);
+
+
+
+		return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason, (parameters.Kick, parameters.Ban) switch
+		{
+			(_, true) => SignupControlService.RejectAction.Ban,
+			(true, _) => SignupControlService.RejectAction.Kick,
+
+			_ => SignupControlService.RejectAction.None
+		});
 	}
 }

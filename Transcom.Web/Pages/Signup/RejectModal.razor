@@ -15,6 +15,20 @@
 							<label class="form-label">Motif <span class="text-muted">(facultatif)</span></label>
 							<InputTextArea DisplayName="Raison" @bind-Value=EditModel.Reason class="form-control" style="height: 10rem;" maxlength=1000 />
 						</div>
+
+						<div class="my-3">
+							<h3 class="mb-3">Actions</h3>
+
+							<div class="form-check">
+								<InputCheckbox class="form-check-input" @bind-Value=EditModel.Kick />
+								<label class="form-check-label">Exclure</label>
+							</div>
+
+							<div class="form-check">
+								<InputCheckbox class="form-check-input" @bind-Value=EditModel.Ban />
+								<label class="form-check-label text-danger">Bannir</label>
+							</div>
+						</div>
 					</div>
 
 					<!-- Modal footer -->
@@ -34,7 +48,7 @@
 	[Parameter] public EventCallback<ParametersModel> OnSubmit { get; set; }
 	[Parameter] public EventCallback OnCancel { get; set; }
 	[Parameter] public ParametersModel EditModel { get; set; } = new();
-	
+
 	public bool Show { get; set; }
 
 
@@ -45,5 +59,8 @@
 	{
 		[MaxLength(1000)]
 		public string Reason { get; set; }
+
+		public bool Kick { get; set; }
+		public bool Ban { get; set; }
 	}
 }

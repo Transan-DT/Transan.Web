@@ -1,4 +1,5 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject FormService<FormSignup> SignupService
 @inject SignupControlService SignupControlService 
 @inject DiscordClient DiscordClient
@@ -64,28 +65,29 @@ else
 		{
 			<h5 class="text-warning">L'utilisateur n'est pas présent sur le serveur.</h5>
 		}
+		else if (MemberRoles.Contains(UserRoles.Member))
+		{
+			<h5 class="text-info">L'utilisateur est déjà Membre du serveur.</h5>
+		}
+		else if (accepted)
+		{
+			<h5 class="text-success">L'utilisateur a été accepté.</h5>
+		}
 		else
 		{
-			if (MemberRoles.Contains(UserRoles.Member))
-			{
-				<h5 class="text-info">L'utilisateur est déjà Membre du serveur.</h5>
-			}
-			else
-			{
-				<div class="row justify-content-between m-5">
-					<div class="col d-grid gap-2">
-						<button class="btn btn-lg btn-block btn-success">Accepter</button>
-					</div>
-
-					<div class="col d-grid gap-2">
-						<button class="btn btn-lg btn-block btn-light">Contrôler</button>
-					</div>
-
-					<div class="col d-grid gap-2">
-						<button class="btn btn-lg btn-block btn-danger">Refuser</button>
-					</div>
+			<div class="row justify-content-between m-5">
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-success" @onclick=AcceptMemberAsync>Accepter</button>
 				</div>
-			}
+
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-secondary" @onclick=ControlMemberAsync disabled=@controlled>Contrôler</button>
+				</div>
+
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-danger" @onclick=RejectMemberAsync>Rejeter</button>
+				</div>
+			</div>
 		}
 	</div>
 
@@ -94,14 +96,15 @@ else
 @code {
 	[Parameter] public string SnowflakeStr { get; init; }
 
+	public bool Loaded { get; private set; }
 	public FormSignup Form { get; set; }
 	public DiscordUser User { get; private set; }
 	public DiscordMember Member { get; private set; }
+	public DiscordMember Garantor { get; private set; }
 	public IEnumerable<string> MemberRoles { get; private set; }
 
 	private DiscordGuild guild;
-
-	public bool Loaded { get; private set; }
+	private bool accepted, controlled, rejected;
 
 	protected override async Task OnParametersSetAsync()
 	{
@@ -117,7 +120,27 @@ else
 			}
 		}
 
+		Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
+
 		await base.OnParametersSetAsync();
 		Loaded = true;
+	}
+
+	private Task AcceptMemberAsync()
+	{
+		accepted = true;
+		return SignupControlService.AcceptNewMemberAsync(Member, Garantor);
+	}
+
+	private Task ControlMemberAsync()
+	{
+		controlled = true;
+		return SignupControlService.ControlNewMemberAsync(Member, Garantor, null);
+	}
+
+	private Task RejectMemberAsync()
+	{
+		rejected = true;
+		return SignupControlService.RejectNewMemberAsync(Member, Garantor, null);
 	}
 }

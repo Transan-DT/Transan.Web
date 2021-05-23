@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -45,10 +46,40 @@ namespace Transcom.Web.Services
 			await member.SendMessageAsync($"Demande d'Inscription acceptée!", GenerateWelcomeDmEmbed());
 		}
 
+		public async Task RejectNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason)
+		{
+			await Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))
+				.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor));
 
+			await member.SendMessageAsync($"Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason));
+		}
+
+		public async Task ControlNewMemberAsync(DiscordMember member, DiscordMember garantor, string reason)
+		{
+			DiscordChannel channel = await Guild.CreateChannelAsync(
+				name: $"🔒🔎-control-{member.Id:X}",
+				type: ChannelType.Text,
+				parent: Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Categories:Control")),
+				overwrites: new DiscordOverwriteBuilder[] 
+				{
+					new DiscordOverwriteBuilder().For(Guild.EveryoneRole).Deny(Permissions.AccessChannels),
+					new DiscordOverwriteBuilder().For(Guild.Roles.First(r => r.Key == configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels),
+					new DiscordOverwriteBuilder().For(member).Allow(Permissions.AccessChannels)
+				});
+
+			await Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))
+				.SendMessageAsync($"Mise sous contrôle de {member.Mention} par {garantor.Mention}.", GenerateControlReportEmbed(member, garantor, channel, reason));
+
+			await member.SendMessageAsync(GenerateControlDmEmbed(channel, reason));
+		}
+
+
+
+
+		#region Embeds
 
 		private static DiscordEmbed GenerateSignupReportEmbed(DiscordMember member, DiscordMember garantor) => new DiscordEmbedBuilder()
-			.WithTitle($"Demande d'inscription acceptée : {member.GetFullUsername()}")
+			.WithTitle($"Demande d'inscription acceptée : {member.Nickname}")
 			.WithColor(DiscordColor.Green)
 			.WithFooter(Utilities.SignatureFooter)
 			.WithAuthor(member)
@@ -58,13 +89,12 @@ namespace Transcom.Web.Services
 			.Build();
 
 		private static DiscordEmbed GenerateWelcomeGreetEmbed(DiscordMember member) => new DiscordEmbedBuilder()
-			.WithTitle($"Nouveau Membre : {member.Mention}")
+			.WithTitle($"Nouveau Membre : {member.Nickname}")
 			.WithDescription($"{member.Mention} est arrivé(e) sur le serveur. Souhaitez-lui la bienvenue!")
 			.WithColor(DiscordColor.Green)
 			.WithFooter(Utilities.SignatureFooter)
 			.WithThumbnail(member.GetAvatarUrl(ImageFormat.Auto, 512))
 			.Build();
-
 
 		private static DiscordEmbed GenerateWelcomeDmEmbed() => new DiscordEmbedBuilder()
 			.WithTitle($"Bienvenue !")
@@ -77,5 +107,70 @@ namespace Transcom.Web.Services
 			.AddField("🎨 Changez votre couleur", $"<#{configuration["DiscordIntegration:Server:Channels:ColorMenu"]}>")
 			.AddField("🎤 Présentez vous", $"<#{configuration["DiscordIntegration:Server:Channels:Presentation"]}>")
 			.Build();
+
+		private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor) => new DiscordEmbedBuilder()
+			.WithTitle($"Demande d'inscription refusée : {member.Nickname}")
+			.WithColor(DiscordColor.Red)
+			.WithFooter(Utilities.SignatureFooter)
+			.WithAuthor(member)
+			.WithUrl($"{configuration["Domain"]}/signup/view/{member.Id}")
+			.AddField("Utilisateur", member.Mention)
+			.AddField("Validation", garantor.Mention)
+			.Build();
+
+		private static DiscordEmbed GenerateDenyDmEmbed(string reason)
+		{
+			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+				.WithTitle("Inscription refusée")
+				.WithDescription("Désolé, votre demande d'inscription a été refusée par la Modération.")
+				.WithColor(DiscordColor.Red)
+				.WithFooter(Utilities.SignatureFooter);
+
+			if (!string.IsNullOrWhiteSpace(reason))
+			{
+				embed.AddField("Raison", reason);
+			}
+
+			embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec la Modération.");
+				
+			return embed.Build();
+		}
+
+		private static DiscordEmbed GenerateControlReportEmbed(DiscordMember member, DiscordMember garantor, DiscordChannel channel, string reason)
+		{
+			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+				.WithTitle("Mise sous contrôle")
+				.WithColor(DiscordColor.Orange)
+				.WithFooter(Utilities.SignatureFooter)
+				.AddField("Utilisateur", member.Mention)
+				.AddField("Validation", garantor.Mention)
+				.AddField("Channel", channel.Mention);
+
+			if (!string.IsNullOrWhiteSpace(reason))
+			{
+				embed.AddField("Raison", reason);
+			}
+
+			return embed.Build();
+		}
+
+		private static DiscordEmbed GenerateControlDmEmbed(DiscordChannel channel, string remarks) 
+		{
+			DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+				.WithTitle("Petit soucis...")
+				.WithDescription("Nous avons un problème avec votre demande d'adhésion. \nVeuillez prendre contact avec la modération dans le channel ci-dessous.")
+				.WithColor(DiscordColor.Orange)
+				.WithFooter(Utilities.SignatureFooter)
+				.AddField("Channel", channel.Mention);
+
+			if (!string.IsNullOrWhiteSpace(remarks))
+			{
+				embed.AddField("Remarques", remarks);
+			}
+
+			return embed.Build();
+		}
+
+		#endregion //Embeds
 	}
 }

@@ -16,8 +16,9 @@ namespace Transcom.Web.Data
 		[Required, MaxLength(60)]
 		public string DisplayTitle { get; set; }
 
-
 		public string Content { get; set; }
+
+		public bool Visible { get; set; }
 
 
 		public MarkupString Markup => new(Content);

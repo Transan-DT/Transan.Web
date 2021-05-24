@@ -1,6 +1,8 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject FormService<FormSignup> SignupService
-@inject DSharpPlus.DiscordClient DiscordClient
+@inject SignupControlService SignupControlService
+@inject DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
@@ -15,7 +17,7 @@ else if (Form is null)
 }
 else
 {
-	<div class="row justify-content-between">
+	<div class="row justify-content-between mb-5">
 		<div class="col-md-4 my-4 order-md-last">
 			<table class="table table-borderless">
 				<tbody>
@@ -23,11 +25,13 @@ else
 					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
 					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
+
 					@if (User is not null)
 					{
 						<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
 						<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
 					}
+
 					@if (Form.Orientation is Orientation.Cisgender)
 					{
 						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>
@@ -53,15 +57,68 @@ else
 			</div>
 		</div>
 	</div>
+
+	<div class="my-5">
+		<h2 class="mb-3">Décision</h2>
+
+		@if (Member is null)
+		{
+			<h5 class="text-warning">L'utilisateur n'est pas présent sur le serveur.</h5>
+		}
+		else if (MemberRoles.Contains(UserRoles.Member))
+		{
+			<h5 class="text-info">L'utilisateur est déjà Membre du serveur.</h5>
+		}
+		else if (accepted)
+		{
+			<h5 class="text-success">L'utilisateur a été accepté.</h5>
+		}
+		else if (rejected)
+		{
+			<h5 class="text-success">L'utilisateur a été refusé.</h5>
+		}
+		else
+		{
+			<div class="row justify-content-between m-5">
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-success" @onclick=AcceptMemberAsync>Accepter</button>
+				</div>
+
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-secondary" @onclick="() => { controlModal.Show = true; }" disabled=@controlled>Contrôler</button>
+				</div>
+
+				<div class="col d-grid gap-2">
+					<button class="btn btn-lg btn-block btn-danger" @onclick="() => { rejectModal.Show = true; }">Rejeter</button>
+				</div>
+			</div>
+		}
+	</div>
+
+	<ControlModal @ref=controlModal
+				  OnSubmit="(parameters) => { ControlMemberAsync(parameters); }"
+				  OnCancel="() => { controlModal.Show = false; }" />
+
+	<RejectModal @ref=rejectModal
+				  OnSubmit="(parameters) => { RejectMemberAsync(parameters); }"
+				  OnCancel="() => { rejectModal.Show = false; }" />
 }
 
 @code {
 	[Parameter] public string SnowflakeStr { get; init; }
 
-	public FormSignup Form { get; set; }
-	public DSharpPlus.Entities.DiscordUser User { get; private set; }
-
 	public bool Loaded { get; private set; }
+	public FormSignup Form { get; set; }
+	public DiscordUser User { get; private set; }
+	public DiscordMember Member { get; private set; }
+	public DiscordMember Garantor { get; private set; }
+	public IEnumerable<string> MemberRoles { get; private set; }
+
+	private DiscordGuild guild;
+	private bool accepted, controlled, rejected;
+
+	private ControlModal controlModal;
+	private RejectModal rejectModal;
 
 	protected override async Task OnParametersSetAsync()
 	{
@@ -70,9 +127,45 @@ else
 		if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
 		{
 			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+
+			if ((Member = SignupControlService.ResolveMember(Form.UserSnowflake)) is not null)
+			{
+				MemberRoles = SignupControlService.GetMemberRoles(Member);
+			}
 		}
+
+		Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
 		await base.OnParametersSetAsync();
 		Loaded = true;
+	}
+
+	private Task AcceptMemberAsync()
+	{
+		accepted = true;
+		return SignupControlService.AcceptNewMemberAsync(Member, Garantor);
+	}
+
+	private Task ControlMemberAsync(ControlModal.ParametersModel parameters)
+	{
+		controlled = true;
+		controlModal.Show = false;
+		return SignupControlService.ControlNewMemberAsync(Member, Garantor, parameters.Reason);
+	}
+
+	private Task RejectMemberAsync(RejectModal.ParametersModel parameters)
+	{
+		rejected = true;
+		rejectModal.Show = false;
+
+
+
+		return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason, (parameters.Kick, parameters.Ban) switch
+		{
+			(_, true) => SignupControlService.RejectAction.Ban,
+			(true, _) => SignupControlService.RejectAction.Kick,
+
+			_ => SignupControlService.RejectAction.None
+		});
 	}
 }

@@ -1,14 +1,16 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using Transcom.Web.Data;
 using Transcom.Web.Data.Forms;
+
+
 
 namespace Transcom.Web
 {
 	public static class Utilities
 	{
+		public const string SignatureFooter = "Transcom (Web) - Powered by Nodsoft Systems";
+		public const string AuditLogPrefix = "[Transcom Web] - \n";
+
 		public static string ToDisplayString(this Orientation orientation) => orientation switch
 		{
 			Orientation.Transgender => "Transgenre",

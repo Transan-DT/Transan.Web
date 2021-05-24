@@ -14,7 +14,7 @@ namespace Transcom.Web.Data.Forms
 
 		public bool HasEvidence { get; set; }
 
-		[Required, MinLength(10), MaxLength(10000)]
+		[MaxLength(10000)]
 		public string EvidenceDescription { get; set; }
 	}
 

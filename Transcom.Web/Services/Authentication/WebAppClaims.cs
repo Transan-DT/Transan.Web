@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,23 +41,14 @@ namespace Transcom.Web.Services.Authentication
 				{
 					if (guild.Members.TryGetValue(snowflake, out DiscordMember member))
 					{
+						Dictionary<string, ulong> roles = new();
+						config.GetSection("DiscordIntegration:Server:Roles").Bind(roles);
+
 						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
 
-						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Member")))
+						foreach (string role in roles.Join(member.Roles, r1 => r1.Value, r2 => r2.Id, (r1, r2) => r1.Key))
 						{
-							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Member));
-						}
-						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")))
-						{
-							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Moderator));
-						}
-						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:GlossaryEditor")))
-						{
-							identity.AddClaim(new(ClaimTypes.Role, UserRoles.GlossaryEditor));
-						}
-						if (member.Roles.Any(r => r.Id == config.GetValue<ulong>("DiscordIntegration:Server:Roles:Admin")))
-						{
-							identity.AddClaim(new(ClaimTypes.Role, UserRoles.Admin));
+							identity.AddClaim(new(ClaimTypes.Role, role));
 						}
 					} 
 				}

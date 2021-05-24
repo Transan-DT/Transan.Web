@@ -38,6 +38,13 @@
 				<label for="DisplayTitle">Titre</label>
 				<InputText DisplayName="Title" @bind-Value=Entry.DisplayTitle class="form-control" maxlength="60" />
 			</div>
+
+			<div class="col-sm-3 align-bottom d-flex align-items-end">
+				<div class="form-check form-switch pb-1">
+					<InputCheckbox class="form-check-input" @bind-Value=Entry.Visible />
+					<label class="form-check-label">Visible</label>
+				</div>
+			</div>
 		</div>
 
 		<div class="row my-3 mx-1">

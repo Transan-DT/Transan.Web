@@ -37,7 +37,7 @@ namespace Transcom.Web
 			services.AddServerSideBlazor();
 			services.AddHttpContextAccessor();
 
-			if (hostingEnvironment.IsProduction() || true)
+			if (hostingEnvironment.IsProduction())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{
@@ -75,12 +75,13 @@ namespace Transcom.Web
 
 			services.AddAuthorization();
 
+			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
 			services.AddSingleton<HtmlContentFileLoader>();
 			services.AddSingleton<GlossaryService>();
 			services.AddSingleton<AuthService>();
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
-			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
+			services.AddSingleton<SignupControlService>();
 
 			services.AddSingleton(new DiscordClient(new DiscordConfiguration()
 			{

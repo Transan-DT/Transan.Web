@@ -30,7 +30,7 @@ namespace Transcom.Web.Services
 
 		public IOrderedEnumerable<IGrouping<char, GlossaryEntry>> GetEntriesByStartLetter() =>
 			from entry in GetAllEntries().AsEnumerable()
-			group entry by entry.DisplayTitle[0] into letterGroup
+			group entry by char.ToUpper(entry.DisplayTitle[0]) into letterGroup
 			orderby letterGroup.Key
 			select letterGroup;
 

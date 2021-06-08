@@ -72,8 +72,8 @@ namespace Transcom.Web.Services
 				overwrites: new DiscordOverwriteBuilder[] 
 				{
 					new DiscordOverwriteBuilder().For(Guild.EveryoneRole).Deny(Permissions.AccessChannels),
-					new DiscordOverwriteBuilder().For(Guild.Roles.First(r => r.Key == configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels),
-					new DiscordOverwriteBuilder().For(member).Allow(Permissions.AccessChannels)
+					new DiscordOverwriteBuilder().For(Guild.Roles.First(r => r.Key == configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages),
+					new DiscordOverwriteBuilder().For(member).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages)
 				});
 
 			await Guild.GetChannel(configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))

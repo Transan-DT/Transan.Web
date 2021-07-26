@@ -109,7 +109,7 @@ namespace Transan.Web.Services
 			.WithTitle($"Bienvenue !")
 			.WithDescription("Votre Inscription vient d'être validée par la Modération. \n" +
 				"Nous vous invitons à choisir vos rôles pour qu'on vous identifie correctement (obligatoire), puis vous présenter à la communauté. \n\n" +
-				"Bienvenue sur Transgenres Community !")
+				"Bienvenue sur Le Transanctuaire !")
 			.WithColor(DiscordColor.Green)
 			.WithFooter(Utilities.SignatureFooter)
 			.AddField("🌸 Choisissez vos rôles", $"<#{configuration["DiscordIntegration:Server:Channels:RoleMenu"]}>")

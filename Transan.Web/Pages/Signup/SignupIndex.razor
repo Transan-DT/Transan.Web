@@ -65,7 +65,7 @@
 
 	protected override async Task OnParametersSetAsync()
 	{
-		Layout.SetCover("Inscription", "Rejoignez le serveur Transgenres Community.");
+		Layout.SetCover("Inscription", "Rejoignez le serveur Le Transanctuaire.");
 
 		user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 		userSnowflake = Convert.ToUInt64(user.FindFirstValue(ClaimTypes.NameIdentifier));

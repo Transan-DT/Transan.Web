@@ -349,14 +349,14 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-Transcom.Web/wwwroot/css/site.css
+Transan.Web/wwwroot/css/site.css
 
-Transcom.Web/wwwroot/css/site.min.css
+Transan.Web/wwwroot/css/site.min.css
 
-Transcom.Web/wwwroot/lib/
+Transan.Web/wwwroot/lib/
 
-Transcom.Web/wwwroot/js/site.js
+Transan.Web/wwwroot/js/site.js
 
-Transcom.Web/wwwroot/js/site.js.map
+Transan.Web/wwwroot/js/site.js.map
 
-Transcom.Web/appsettings.Production.json
+Transan.Web/appsettings.Production.json

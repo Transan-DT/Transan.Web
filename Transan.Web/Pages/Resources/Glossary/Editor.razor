@@ -1,0 +1,97 @@
+﻿@page "/resources/glossary/{EntryName}/edit"
+@page "/resources/glossary/new"
+@layout CoverLayout
+@inject Transan.Web.Services.GlossaryService GlossaryService
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = UserRoles.Admin + "," + UserRoles.GlossaryEditor)]
+
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb mb-5">
+		<li class="breadcrumb-item"><NavLink href="/resources/glossary">Lexique</NavLink></li>
+		@if (Entry is null || Entry.Id == default)
+		{
+			<li class="breadcrumb-item active" aria-current="page">Nouveau</li>
+		}
+		else
+		{
+			<li class="breadcrumb-item" aria-current="page"><NavLink href=@($"/resources/glossary/{EntryName}")>@Entry.DisplayTitle</NavLink></li>
+			<li class="breadcrumb-item active" aria-current="page">Edition</li>
+		}
+		
+	</ol>
+</nav>
+
+@if (Entry is not null)
+{
+	<EditForm Model=Entry Context=EditFormContext OnValidSubmit=SubmitAsync>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+
+		<div class="row my-3">
+			<div class="col-sm-3">
+				<label for="UrlTitle">Fragment de lien </label>
+				<span class="form-text">/resources/glossary/<b>...</b></span>
+				<InputText DisplayName="Link Fragment" @bind-Value=Entry.UrlTitle class="form-control" maxlength="30" />
+			</div>
+
+			<div class="col-md-6">
+				<label for="DisplayTitle">Titre</label>
+				<InputText DisplayName="Title" @bind-Value=Entry.DisplayTitle class="form-control" maxlength="60" />
+			</div>
+
+			<div class="col-sm-3 align-bottom d-flex align-items-end">
+				<div class="form-check form-switch pb-1">
+					<InputCheckbox class="form-check-input" @bind-Value=Entry.Visible />
+					<label class="form-check-label">Visible</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="row my-3 mx-1">
+			<label for="Content">Contenu (HTML)</label>
+			<InputTextArea DisplayName="Content" @bind-Value=Entry.Content class="font-control font-monospace" style="height: 20rem" />
+		</div>
+
+		<div class="row my-5">
+			<div class="col">
+				<button type="submit" class="btn btn-primary me-3 px-5">Valider</button>
+				<button onclick="window.history.back()" class="btn btn-secondary px-5">Annuler</button>
+			</div>
+		</div>
+	</EditForm>
+}
+
+
+@code {
+	[CascadingParameter] CoverLayout Layout { get; init; }
+	[Parameter] public string EntryName { get; init; }
+
+	public GlossaryEntry Entry { get; private set; }
+	public bool Loaded { get; private set; }
+
+	protected override async Task OnParametersSetAsync()
+	{
+		Loaded = false;
+		Entry = await GlossaryService.FetchEntryAsync(EntryName) ?? new();
+
+		Layout.SetCover("Lexique", (Entry.Id == default ? "Nouvelle Entrée" : $"Edition d'entrée : {Entry.UrlTitle}"));
+
+		await base.OnParametersSetAsync();
+		Loaded = true;
+	}
+
+	protected async Task SubmitAsync()
+	{
+		if (Entry.Id == default)
+		{
+			await GlossaryService.CreateEntryAsync(Entry);
+		}
+		else
+		{
+			await GlossaryService.EditEntryAsync(Entry);
+
+		}
+
+		NavigationManager.NavigateTo($"/resources/glossary/{Entry.UrlTitle}");
+	}
+}

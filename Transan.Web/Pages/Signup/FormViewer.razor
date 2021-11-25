@@ -114,7 +114,6 @@ else
 	public DiscordMember Garantor { get; private set; }
 	public IEnumerable<string> MemberRoles { get; private set; }
 
-	private DiscordGuild guild;
 	private bool accepted, controlled, rejected;
 
 	private ControlModal controlModal;
@@ -128,13 +127,13 @@ else
 		{
 			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
 
-			if ((Member = SignupControlService.ResolveMember(Form.UserSnowflake)) is not null)
+			if ((Member = await SignupControlService.ResolveMemberAsync(Form.UserSnowflake)) is not null)
 			{
 				MemberRoles = SignupControlService.GetMemberRoles(Member);
 			}
 		}
 
-		Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
+		Garantor = await SignupControlService.ResolveMemberAsync(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
 		await base.OnParametersSetAsync();
 		Loaded = true;

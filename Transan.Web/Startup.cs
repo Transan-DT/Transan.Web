@@ -43,7 +43,7 @@ namespace Transan.Web
 				{
 					options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |	ForwardedHeaders.XForwardedProto;
 					// Only loopback proxies are allowed by default.
-					// Clear that restriction because forwarders are enabled by explicit 
+					// Clear that restriction because forwarders are enabled by explicit
 					// configuration.
 					options.KnownNetworks.Clear();
 					options.KnownProxies.Clear();
@@ -69,7 +69,7 @@ namespace Transan.Web
 				options.Scope.Add("email");
 				options.Scope.Add("guilds");
 
-				options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+				options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
 				options.CorrelationCookie.SameSite = SameSiteMode.Lax;
 			});
 

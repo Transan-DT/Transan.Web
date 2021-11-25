@@ -39,7 +39,7 @@ namespace Transan.Web.Services.Authentication
 
 				if (guild is not null)
 				{
-					if (guild.Members.TryGetValue(snowflake, out DiscordMember member))
+					if (await guild.GetMemberAsync(snowflake) is DiscordMember member)
 					{
 						Dictionary<string, ulong> roles = new();
 						config.GetSection("DiscordIntegration:Server:Roles").Bind(roles);
@@ -50,7 +50,7 @@ namespace Transan.Web.Services.Authentication
 						{
 							identity.AddClaim(new(ClaimTypes.Role, role));
 						}
-					} 
+					}
 				}
 
 				principal.AddIdentity(identity);

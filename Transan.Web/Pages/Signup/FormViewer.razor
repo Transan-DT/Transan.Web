@@ -3,6 +3,7 @@
 @inject FormService<FormSignup> SignupService
 @inject SignupControlService SignupControlService
 @inject DiscordClient DiscordClient
+@inject TrustlistClient TrustlistClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
@@ -17,6 +18,47 @@ else if (Form is null)
 }
 else
 {
+	@if (TrustlistRecord is not null)
+    {
+		TrustlistEntry lastEntry = TrustlistRecord.Entries.OrderBy(e => e.EscalationLevel).ThenByDescending(e => e.LastEscalated).First();
+
+		<div class="card bg-body border-@(TrustlistRecord.GetTrustlistLevelBootstrapColor()) mb-5 p-4">
+			<h3 class="mb-4">
+				NSYS SocialGuard : 
+				<span class="text-@TrustlistRecord.GetTrustlistLevelBootstrapColor()">
+					@TrustlistRecord.GetTrustlistLevelDisplayString()
+				</span>
+			</h3>
+
+            <div class="row">
+                <div class="col-8">
+                    <h5>Dernière Raison</h5>
+                    <p class="my-3" style="white-space: pre-wrap;">@lastEntry.EscalationNote</p>
+                </div>
+
+                <div class="col-4">
+                    <table class="table table-borderless">
+                        <tbody>
+							<tr>
+								<th>Répertoire SG</th>
+
+								<td>
+									<a class="text-secondary" target="_blank" href=@TrustlistClient.MainHost>
+										@(new Uri(TrustlistClient.MainHost).DnsSafeHost)
+									</a>
+								</td>
+							</tr>
+
+                            <tr><th>Entrée par</th><td>@lastEntry.Emitter.DisplayName <span class="text-muted">(@lastEntry.Emitter.Login)</span></td></tr>
+                            <tr><th>Date/Heure d'Entrée</th><td>@lastEntry.EntryAt</td></tr>
+                            <tr><th>Entrées Totales</th><td>@TrustlistRecord.Entries.Count</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+		</div>
+    }
+
 	<div class="row justify-content-between mb-5">
 		<div class="col-md-4 my-4 order-md-last">
 			<table class="table table-borderless">
@@ -36,6 +78,14 @@ else
 					{
 						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>
 					}
+
+					<tr>
+						<th>Niveau SocialGuard</th>
+
+						<td class="text-@($"{TrustlistRecord?.GetTrustlistLevelBootstrapColor() ?? "success"}")">
+							@($"{TrustlistRecord?.GetTrustlistLevelDisplayString() ?? "Aucun"} ({TrustlistRecord?.Entries?.Max(e => e.EscalationLevel) ?? 0})")
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -105,74 +155,84 @@ else
 }
 
 @code {
-	[Parameter] public string SnowflakeStr { get; init; }
+    [Parameter] public string SnowflakeStr { get; init; }
 
-	public bool Loaded { get; private set; }
-	public FormSignup Form { get; set; }
-	public DiscordUser User { get; private set; }
-	public DiscordMember Member { get; private set; }
-	public DiscordMember Garantor { get; private set; }
-	public IEnumerable<string> MemberRoles { get; private set; }
+    public bool Loaded { get; private set; }
+    public FormSignup Form { get; set; }
+    public DiscordUser User { get; private set; }
+    public DiscordMember Member { get; private set; }
+    public TrustlistUser TrustlistRecord { get; private set; }
+    public DiscordMember Garantor { get; private set; }
+    public IEnumerable<string> MemberRoles { get; private set; }
 
-	private bool accepted, controlled, rejected;
+    private bool accepted, controlled, rejected;
 
-	private ControlModal controlModal;
-	private RejectModal rejectModal;
+    private ControlModal controlModal;
+    private RejectModal rejectModal;
 
-	protected override async Task OnParametersSetAsync()
-	{
-		Loaded = false;
+    protected override async Task OnParametersSetAsync()
+    {
+        Loaded = false;
 
-		if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
-		{
-			try
-			{
-				User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
-				Member = SignupControlService.ResolveMember(Form.UserSnowflake);
+        if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
+        {
+            try
+            {
+                User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+                Member = SignupControlService.ResolveMember(Form.UserSnowflake);
 
-				if (Member is not null)
-				{
-					MemberRoles = SignupControlService.GetMemberRoles(Member);
-				}
-			}
-			catch (DSharpPlus.Exceptions.NotFoundException)
-			{
-				User = null;
-			}
-		}
+                if (Member is not null)
+                {
+                    MemberRoles = SignupControlService.GetMemberRoles(Member);
+                }
+            }
+            catch (DSharpPlus.Exceptions.NotFoundException)
+            {
+                User = null;
+            }
 
-		Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            try
+            {
+				TrustlistRecord = await TrustlistClient.LookupUserAsync(Form.UserSnowflake);
+            }
+            catch
+            {
 
-		await base.OnParametersSetAsync();
-		Loaded = true;
-	}
+            }
+        }
 
-	private Task AcceptMemberAsync()
-	{
-		accepted = true;
-		return SignupControlService.AcceptNewMemberAsync(Member, Garantor);
-	}
+        Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
-	private Task ControlMemberAsync(ControlModal.ParametersModel parameters)
-	{
-		controlled = true;
-		controlModal.Show = false;
-		return SignupControlService.ControlNewMemberAsync(Member, Garantor, parameters.Reason);
-	}
+        await base.OnParametersSetAsync();
+        Loaded = true;
+    }
 
-	private Task RejectMemberAsync(RejectModal.ParametersModel parameters)
-	{
-		rejected = true;
-		rejectModal.Show = false;
+    private Task AcceptMemberAsync()
+    {
+        accepted = true;
+        return SignupControlService.AcceptNewMemberAsync(Member, Garantor);
+    }
+
+    private Task ControlMemberAsync(ControlModal.ParametersModel parameters)
+    {
+        controlled = true;
+        controlModal.Show = false;
+        return SignupControlService.ControlNewMemberAsync(Member, Garantor, parameters.Reason);
+    }
+
+    private Task RejectMemberAsync(RejectModal.ParametersModel parameters)
+    {
+        rejected = true;
+        rejectModal.Show = false;
 
 
 
-		return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason, (parameters.Kick, parameters.Ban) switch
-		{
-			(_, true) => SignupControlService.RejectAction.Ban,
-			(true, _) => SignupControlService.RejectAction.Kick,
+        return SignupControlService.RejectNewMemberAsync(Member, Garantor, parameters.Reason, (parameters.Kick, parameters.Ban) switch
+        {
+            (_, true) => SignupControlService.RejectAction.Ban,
+            (true, _) => SignupControlService.RejectAction.Kick,
 
-			_ => SignupControlService.RejectAction.None
-		});
-	}
+            _ => SignupControlService.RejectAction.None
+        });
+    }
 }

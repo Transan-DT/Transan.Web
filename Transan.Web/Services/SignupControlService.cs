@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -24,7 +23,7 @@ public class SignupControlService
 		_configuration ??= config;
 	}
 
-	public Task<DiscordMember> ResolveMemberAsync(ulong snowflake) => Guild.GetMemberAsync(snowflake);
+	public DiscordMember ResolveMember(ulong snowflake) => Guild.Members.GetValueOrDefault(snowflake);
 
 	public IEnumerable<string> GetMemberRoles(DiscordMember member)
 	{
@@ -72,9 +71,9 @@ public class SignupControlService
 			parent: Guild.GetChannel(_configuration.GetValue<ulong>("DiscordIntegration:Server:Categories:Control")),
 			overwrites: new DiscordOverwriteBuilder[]
 			{
-					new DiscordOverwriteBuilder().For(Guild.EveryoneRole).Deny(Permissions.AccessChannels),
-					new DiscordOverwriteBuilder().For(Guild.Roles.First(r => r.Key == _configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages),
-					new DiscordOverwriteBuilder().For(member).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages)
+				new DiscordOverwriteBuilder(Guild.EveryoneRole).Deny(Permissions.AccessChannels),
+				new DiscordOverwriteBuilder(Guild.Roles.First(r => r.Key == _configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages),
+				new DiscordOverwriteBuilder(member).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages)
 			});
 
 		await Guild.GetChannel(_configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))

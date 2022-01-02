@@ -23,7 +23,7 @@ else
 				<tbody>
 					<tr><th>Formulaire envoyé</th><td>@Form.SubmittedAt.ToString()</td></tr>
 					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
-					<tr><th>Orientation</th><td>@Form.Orientation.ToDisplayString()</td></tr>
+					<tr><th>Identité de Genre</th><td>@Form.Gender.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
 
 					@if (User is not null)
@@ -32,7 +32,7 @@ else
 						<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
 					}
 
-					@if (Form.Orientation is Orientation.Cisgender)
+					@if (Form.Gender is Gender.Cisgender)
 					{
 						<tr><th>Invitation</th><td>@Form.ReferalUser</td></tr>
 					}
@@ -52,7 +52,7 @@ else
 			</div>
 
 			<div class="mb-5">
-				<h4 class="mb-3">Définition de "@Form.Orientation.ToDisplayString()"</h4>
+				<h4 class="mb-3">Définition de "@Form.Gender.ToDisplayString()"</h4>
 				<p style="white-space:pre-wrap;">@Form.OrientationDefinition</p>
 			</div>
 		</div>
@@ -125,15 +125,23 @@ else
 
 		if ((Form = (await SignupService.GetUserFormsAsync(Convert.ToUInt64(SnowflakeStr))).FirstOrDefault()) is not null)
 		{
-			User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
-
-			if ((Member = await SignupControlService.ResolveMemberAsync(Form.UserSnowflake)) is not null)
+			try
 			{
-				MemberRoles = SignupControlService.GetMemberRoles(Member);
+				User = await DiscordClient.GetUserAsync(Form.UserSnowflake);
+				Member = SignupControlService.ResolveMember(Form.UserSnowflake);
+
+				if (Member is not null)
+				{
+					MemberRoles = SignupControlService.GetMemberRoles(Member);
+				}
+			}
+			catch (DSharpPlus.Exceptions.NotFoundException)
+			{
+				User = null;
 			}
 		}
 
-		Garantor = await SignupControlService.ResolveMemberAsync(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
+		Garantor = SignupControlService.ResolveMember(Convert.ToUInt64((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
 		await base.OnParametersSetAsync();
 		Loaded = true;

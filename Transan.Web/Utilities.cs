@@ -11,14 +11,14 @@ namespace Transan.Web
 		public const string SignatureFooter = "Transan (Web) - Powered by Nodsoft Systems";
 		public const string AuditLogPrefix = "[Transan Web] - \n";
 
-		public static string ToDisplayString(this Orientation orientation) => orientation switch
+		public static string ToDisplayString(this Gender gender) => gender switch
 		{
-			Orientation.Transgender => "Transgenre",
-			Orientation.NonBinary => "Non-Binaire",
-			Orientation.GenderFluid => "Genderfluid",
-			Orientation.Cisgender => "Homme/Femme Cisgenre",
-			Orientation.Questioning => "En Questionnement",
-			Orientation.Other => "Autre",
+			Gender.Transgender => "Transgenre",
+			Gender.NonBinary => "Non-Binaire",
+			Gender.GenderFluid => "Genderfluid",
+			Gender.Cisgender => "Homme/Femme Cisgenre",
+			Gender.Questioning => "En Questionnement",
+			Gender.Other => "Autre",
 			_ => ""
 		};
 

@@ -9,7 +9,7 @@
 			<div class="col-md-8">
 				<label class="form-label">Vous êtes...</label>
 
-				<InputSelect @bind-Value=Form.Orientation class="form-select form-select-lg">
+				<InputSelect @bind-Value=Form.Gender class="form-select form-select-lg">
 					<option value="Unknown"></option>
 					<option value="Transgender">Transgenre</option>
 					<option value="NonBinary">Non-Binaire</option>
@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		@if (Form.Orientation is Orientation.Cisgender)
+		@if (Form.Gender is Gender.Cisgender)
 		{
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
@@ -31,7 +31,7 @@
 			</div>
 		}
 
-		@if (Form.Orientation is not Orientation.Unknown)
+		@if (Form.Gender is not Gender.Unknown)
 		{
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
@@ -50,15 +50,15 @@
 			<div class="row justify-content-center my-5">
 				<div class="col-md-8">
 					<label class="form-label">
-						@(Form.Orientation switch
+						@(Form.Gender switch
 					{
-						Orientation.Questioning => "Que ressentez-vous, en tant que personne en questionnement ?",
-						Orientation.Other => "Expliquez-nous votre orientation de genre.",
-						_ => $"Quelle est votre définition de {Form.Orientation.ToDisplayString()} ?"
+						Gender.Questioning => "Que ressentez-vous, en tant que personne en questionnement ?",
+						Gender.Other => "Expliquez-nous votre identité de genre.",
+						_ => $"Quelle est votre définition de {Form.Gender.ToDisplayString()} ?"
 					})
 					</label>
 
-					<InputTextArea DisplayName="Définition Orientation" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@FormBase.MaxContentLength />
+					<InputTextArea DisplayName="Définition Identité de Genre" @bind-Value=Form.OrientationDefinition class="form-control" style="height: 10rem;" maxlength=@FormBase.MaxContentLength />
 				</div>
 			</div>
 

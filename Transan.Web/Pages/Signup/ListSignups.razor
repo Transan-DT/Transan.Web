@@ -1,0 +1,45 @@
+﻿@page "/signup/view"
+@inject FormService<FormSignup> FormService
+@inject DiscordClient DiscordClient
+@attribute [Authorize(Roles = UserRoles.Moderator)]
+
+<h1>Inscriptions</h1>
+
+<table class="table table-hover table-responsive-md">
+    <thead>
+        <tr>
+            <th class="col">ID Formulaire</th>
+            <th class="col">Date de soumission</th>
+            <th class="col">Snowflake</th>
+            <th>Username</th>
+            <th>Identité de Genre</th>
+            <th>Invité par</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (FormSignup form in _forms.OrderByDescending(f => f.SubmittedAt))
+        {
+            <tr>
+                <td class="font-monospace"><a class="link-secondary" href=@($"/signup/view/{form.UserSnowflake}")>@form.Id.ToString()</a></td>
+                <td>@form.SubmittedAt.ToString()</td>
+                <td class="font-monospace">@form.UserSnowflake</td>
+                <td>@DiscordClient.GetUserAsync(form.UserSnowflake).GetAwaiter().GetResult()?.Username</td>
+                <td>@form.Gender.ToDisplayString()</td>
+                <td>@form.ReferalUser</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private IQueryable<FormSignup> _forms = new List<FormSignup>().AsQueryable();
+
+    protected override Task OnInitializedAsync()
+    {
+        _forms = FormService.ListForms();
+        return base.OnInitializedAsync();
+    }
+
+}

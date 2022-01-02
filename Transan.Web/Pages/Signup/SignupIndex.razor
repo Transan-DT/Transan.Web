@@ -5,8 +5,15 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IHttpContextAccessor HttpContextAccessor
 
+<AuthorizeView Roles=@UserRoles.Moderator>
+	<Authorized>
+		<div class="alert alert-primary lead text-center">
+			<a href="/signup/view">Accéder aux Formulaires d'Inscription</a>
+		</div>
+	</Authorized>
+</AuthorizeView>
 
-<AuthorizeView Roles=@UserRoles.Joined>
+<AuthorizeView Roles=@UserRoles.Joined>	
 	<Authorized>
 		@if (formWasSubmitted)
 		{

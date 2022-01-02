@@ -1,45 +1,64 @@
 ﻿@page "/signup/view"
 @inject FormService<FormSignup> FormService
+@inject TrustlistClient Trustlist
 @inject DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1>Inscriptions</h1>
 
-<table class="table table-hover table-responsive-md">
-    <thead>
-        <tr>
-            <th class="col">ID Formulaire</th>
-            <th class="col">Date de soumission</th>
-            <th class="col">Snowflake</th>
-            <th>Username</th>
-            <th>Identité de Genre</th>
-            <th>Invité par</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (FormSignup form in _forms.OrderByDescending(f => f.SubmittedAt))
-        {
+@if (dataLoaded)
+{
+    <table class="table table-hover table-responsive-md">
+        <thead>
             <tr>
-                <td class="font-monospace"><a class="link-secondary" href=@($"/signup/view/{form.UserSnowflake}")>@form.Id.ToString()</a></td>
-                <td>@form.SubmittedAt.ToString()</td>
-                <td class="font-monospace">@form.UserSnowflake</td>
-                <td>@DiscordClient.GetUserAsync(form.UserSnowflake).GetAwaiter().GetResult()?.Username</td>
-                <td>@form.Gender.ToDisplayString()</td>
-                <td>@form.ReferalUser</td>
+                <th class="col">ID Formulaire</th>
+                <th class="col">Date de soumission</th>
+                <th class="col">Snowflake</th>
+                <th>Username</th>
+                <th>Identité de Genre</th>
+                <th>Invité par</th>
+                <th>Statut SocialGuard</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tbody>
+            @foreach (FormSignup form in _forms.OrderByDescending(f => f.SubmittedAt))
+            {
+                TrustlistUser sgUser = _trustlistUsers.FirstOrDefault(u => u.Id == form.UserSnowflake);
+
+                <tr>
+                    <td class="font-monospace"><a class="link-secondary" href=@($"/signup/view/{form.UserSnowflake}")>@form.Id.ToString()</a></td>
+                    <td>@form.SubmittedAt.ToString()</td>
+                    <td class="font-monospace">@form.UserSnowflake</td>
+                    <td>@DiscordClient.GetUserAsync(form.UserSnowflake).GetAwaiter().GetResult()?.Username</td>
+                    <td>@form.Gender.ToDisplayString()</td>
+                    <td>@form.ReferalUser</td>
+                    <td class=@($"text-{sgUser?.GetTrustlistLevelBootstrapColor() ?? "success"}")>@(sgUser?.GetTrustlistLevelDisplayString() ?? "Aucun")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{ 
+    <h3 class="text-info">
+        Chargement...
+    </h3>
+}
 
 @code {
+    bool dataLoaded = false;
 
     private IQueryable<FormSignup> _forms = new List<FormSignup>().AsQueryable();
+    private IEnumerable<TrustlistUser> _trustlistUsers;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        dataLoaded = false;
         _forms = FormService.ListForms();
-        return base.OnInitializedAsync();
-    }
+        _trustlistUsers = await Trustlist.LookupUsersAsync(_forms.Select(f => f.UserSnowflake).ToArray());
+        dataLoaded = true;
 
+        await base.OnInitializedAsync();
+    }
 }

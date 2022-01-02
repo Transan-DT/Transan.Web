@@ -1,5 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using SocialGuard.Common.Data.Models;
+using System.Linq;
 using Transan.Web.Data.Forms;
 
 
@@ -48,5 +50,26 @@ namespace Transan.Web
 		}
 
 		public static string GetFullUsername(this DiscordUser user) => $"{user.Username}#{user.Discriminator}";
+
+
+		#region SocialGuard
+
+		public static string GetTrustlistLevelBootstrapColor(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
+		{
+			> 3 => "danger",
+			2 => "warning",
+			1 => "info",
+			_ => "success"
+		};
+
+		public static string GetTrustlistLevelDisplayString(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
+		{
+			> 3 => "Dangereux",
+			2 => "Méfiant",
+			1 => "Suspicieux",
+			_ => "Aucun"
+		};
+
+		#endregion // SocialGuard
 	}
 }

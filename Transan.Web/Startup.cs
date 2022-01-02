@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog.Extensions.Logging;
+using SocialGuard.Common.Services;
 using Transan.Web.Services;
 using Transan.Web.Services.Authentication;
 
@@ -75,6 +76,8 @@ namespace Transan.Web
 
 			services.AddAuthorization();
 
+			services.AddHttpClient<RestClientBase>();
+
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
 			services.AddSingleton<HtmlContentFileLoader>();
 			services.AddSingleton<GlossaryService>();
@@ -82,6 +85,8 @@ namespace Transan.Web
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
 			services.AddSingleton<SignupControlService>();
+
+			services.AddSingleton<TrustlistClient>();
 
 			services.AddSingleton(new DiscordClient(new DiscordConfiguration()
 			{

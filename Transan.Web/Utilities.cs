@@ -56,7 +56,7 @@ namespace Transan.Web
 
 		public static string GetTrustlistLevelBootstrapColor(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
 		{
-			> 3 => "danger",
+			>= 3 => "danger",
 			2 => "warning",
 			1 => "info",
 			_ => "success"
@@ -64,7 +64,7 @@ namespace Transan.Web
 
 		public static string GetTrustlistLevelDisplayString(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
 		{
-			> 3 => "Dangereux",
+			>= 3 => "Dangereux",
 			2 => "Méfiant",
 			1 => "Suspicieux",
 			_ => "Aucun"

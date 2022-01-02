@@ -64,13 +64,13 @@ namespace Transan.Web.Services
 			.WithAuthor(user)
 			.WithFooter(Utilities.SignatureFooter)
 			.WithUrl($"{config["Domain"]}/signup/view/{form.UserSnowflake}")
-			.AddField("Orientation", form.Orientation.ToDisplayString())
+			.AddField("Orientation", form.Gender.ToDisplayString())
 			.AddField("Présentation", form.Presentation.Length < MaxEmbedContentLength ? form.Presentation : ContentTooLargeSubstituteText)
 			.AddField("Motivation", form.Motivation.Length < MaxEmbedContentLength ? form.Motivation : ContentTooLargeSubstituteText)
-			.AddField($"Définition de {form.Orientation.ToDisplayString()}",
+			.AddField($"Définition de {form.Gender.ToDisplayString()}",
 				form.OrientationDefinition.Length < MaxEmbedContentLength ? form.OrientationDefinition : ContentTooLargeSubstituteText);
 
-			if (form.Orientation is Orientation.Cisgender)
+			if (form.Gender is Gender.Cisgender)
 			{
 				builder.AddField("Invité(e) par :", form.ReferalUser);
 			}

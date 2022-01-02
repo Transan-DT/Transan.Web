@@ -1,5 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using SocialGuard.Common.Data.Models;
+using System.Linq;
 using Transan.Web.Data.Forms;
 
 
@@ -11,14 +13,14 @@ namespace Transan.Web
 		public const string SignatureFooter = "Transan (Web) - Powered by Nodsoft Systems";
 		public const string AuditLogPrefix = "[Transan Web] - \n";
 
-		public static string ToDisplayString(this Orientation orientation) => orientation switch
+		public static string ToDisplayString(this Gender gender) => gender switch
 		{
-			Orientation.Transgender => "Transgenre",
-			Orientation.NonBinary => "Non-Binaire",
-			Orientation.GenderFluid => "Genderfluid",
-			Orientation.Cisgender => "Homme/Femme Cisgenre",
-			Orientation.Questioning => "En Questionnement",
-			Orientation.Other => "Autre",
+			Gender.Transgender => "Transgenre",
+			Gender.NonBinary => "Non-Binaire",
+			Gender.GenderFluid => "Genderfluid",
+			Gender.Cisgender => "Homme/Femme Cisgenre",
+			Gender.Questioning => "En Questionnement",
+			Gender.Other => "Autre",
 			_ => ""
 		};
 
@@ -48,5 +50,26 @@ namespace Transan.Web
 		}
 
 		public static string GetFullUsername(this DiscordUser user) => $"{user.Username}#{user.Discriminator}";
+
+
+		#region SocialGuard
+
+		public static string GetTrustlistLevelBootstrapColor(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
+		{
+			> 3 => "danger",
+			2 => "warning",
+			1 => "info",
+			_ => "success"
+		};
+
+		public static string GetTrustlistLevelDisplayString(this TrustlistUser user) => user.Entries.Max(e => e.EscalationLevel) switch
+		{
+			> 3 => "Dangereux",
+			2 => "Méfiant",
+			1 => "Suspicieux",
+			_ => "Aucun"
+		};
+
+		#endregion // SocialGuard
 	}
 }

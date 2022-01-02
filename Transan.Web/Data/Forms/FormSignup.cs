@@ -7,7 +7,7 @@ namespace Transan.Web.Data.Forms
 		/// <summary>
 		/// User's Gender Orientation
 		/// </summary>
-		public Orientation Orientation { get; set; }
+		public Gender Gender { get; set; }
 
 		/// <summary>
 		/// User's Presentation Text
@@ -41,7 +41,7 @@ namespace Transan.Web.Data.Forms
 		public string ReferalUser { get; set; }
 	}
 
-	public enum Orientation
+	public enum Gender
 	{
 		Unknown,
 		Other,

@@ -5,8 +5,15 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IHttpContextAccessor HttpContextAccessor
 
+<AuthorizeView Roles=@UserRoles.Moderator>
+	<Authorized>
+		<div class="alert alert-primary lead text-center">
+			<a href="/signup/view">Accéder aux Formulaires d'Inscription</a>
+		</div>
+	</Authorized>
+</AuthorizeView>
 
-<AuthorizeView Roles=@UserRoles.Joined>
+<AuthorizeView Roles=@UserRoles.Joined>	
 	<Authorized>
 		@if (formWasSubmitted)
 		{
@@ -29,9 +36,9 @@
 					<h3 class="mb-3"><i class="bi bi-shield-check me-3 me-md-5"></i>Confidentialité & Sécurité</h3>
 
 					<p>
-						Nous transmettons votre identifiant aux équipes de confiance et sécurité de Discord si vous commettez des actes graves, ou contraires aux TOS de Discord. <br />
-						Après l'envoi de votre formulaire, votre formulaire sera étudié par notre équipe de modération et conservé pendant 5 ans. <br />
-						Nous nous réservons le droit de transmettre votre formulaire s'il nous paraît suspect, afin que le serveur reste le plus sûr possible.
+						Après son envoi, votre formulaire sera maintenu comme donnée strictement personnelle, et étudié par notre équipe de modération uniquement. <br />
+						Nous nous réservons le droit de transmettre votre formulaire au sein du système SocialGuard, s'il nous paraît suspect, afin de garantir la sécurité des serveurs de la communauté LGBT. <br />
+						Nous serons également tenus de transmettre aux équipes Confiance et Sécurité de Discord, si vous commettez des actes graves ou contraires aux TOS de Discord.
 					</p>
 				</div>
 			</div>
@@ -43,7 +50,7 @@
 	<NotAuthorized>
 		@if (user.Identity.IsAuthenticated)
 		{
-			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur</NavLink>.</h3>
+			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur Discord</NavLink>.</h3>
 		}
 		else
 		{

@@ -84,11 +84,12 @@ namespace Transan.Web
 			services.AddSingleton<AuthService>();
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
-			services.AddSingleton<SignupControlService>();
+			
+			services.AddScoped<SignupControlService>();
 
 			services.AddSingleton<TrustlistClient>();
 
-			services.AddSingleton(new DiscordClient(new DiscordConfiguration()
+			services.AddSingleton(new DiscordClient(new()
 			{
 				TokenType = TokenType.Bot,
 				Intents = DiscordIntents.All,

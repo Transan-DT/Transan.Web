@@ -51,7 +51,7 @@ public class SignupControlService
 		await Guild.GetChannel(_configuration.GetValue<ulong>("DiscordIntegration:Server:Channels:Signup"))
 			.SendMessageAsync($"Inscription de {member.Mention} refusée par {garantor.Mention}.", GenerateDenyReportEmbed(member, garantor, reason, action));
 
-		await member.SendMessageAsync($"Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason, action));
+		await member.SendMessageAsync("Demande d'Inscription refusée.", GenerateDenyDmEmbed(reason, action));
 
 		if (action is RejectAction.Ban)
 		{
@@ -69,7 +69,7 @@ public class SignupControlService
 			name: $"🔒🔎-control-{member.Id:X}",
 			type: ChannelType.Text,
 			parent: Guild.GetChannel(_configuration.GetValue<ulong>("DiscordIntegration:Server:Categories:Control")),
-			overwrites: new DiscordOverwriteBuilder[]
+			overwrites: new[]
 			{
 				new DiscordOverwriteBuilder(Guild.EveryoneRole).Deny(Permissions.AccessChannels),
 				new DiscordOverwriteBuilder(Guild.Roles.First(r => r.Key == _configuration.GetValue<ulong>("DiscordIntegration:Server:Roles:Mod")).Value).Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory | Permissions.SendMessages),
@@ -87,7 +87,7 @@ public class SignupControlService
 
 	#region Embeds
 
-	private static DiscordEmbed GenerateSignupReportEmbed(DiscordMember member, DiscordMember garantor) => new DiscordEmbedBuilder()
+	private static DiscordEmbed GenerateSignupReportEmbed(DiscordMember member, DiscordUser garantor) => new DiscordEmbedBuilder()
 		.WithTitle($"Demande d'inscription acceptée : {member.Nickname}")
 		.WithColor(DiscordColor.Green)
 		.WithFooter(Utilities.SignatureFooter)
@@ -106,27 +106,26 @@ public class SignupControlService
 		.Build();
 
 	private static DiscordEmbed GenerateWelcomeDmEmbed() => new DiscordEmbedBuilder()
-		.WithTitle($"Bienvenue !")
-		.WithDescription("Votre Inscription vient d'être validée par la Modération. \n" +
-			"Nous vous invitons à choisir vos rôles pour qu'on vous identifie correctement (obligatoire), puis vous présenter à la communauté. \n\n" +
+		.WithTitle("Bienvenue !")
+		.WithDescription("Votre Inscription vient d'être validée par l'équipe de Modération. \n" +
+			"Nous vous invitons dès à présent à choisir vos rôles pour que nous puissions vous identifier correctement, puis vous présenter à la communauté. \n\n" +
 			"Bienvenue sur Le Transanctuaire !")
 		.WithColor(DiscordColor.Green)
 		.WithFooter(Utilities.SignatureFooter)
 		.AddField("🌸 Choisissez vos rôles", $"<#{_configuration["DiscordIntegration:Server:Channels:RoleMenu"]}>")
-		.AddField("🎨 Changez votre couleur", $"<#{_configuration["DiscordIntegration:Server:Channels:ColorMenu"]}>")
 		.AddField("🎤 Présentez vous", $"<#{_configuration["DiscordIntegration:Server:Channels:Presentation"]}>")
 		.Build();
 
-	private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordMember garantor, string reason, RejectAction action)
+	private static DiscordEmbed GenerateDenyReportEmbed(DiscordMember member, DiscordUser garantor, string reason, RejectAction action)
 	{
 		DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-		.WithTitle($"Demande d'inscription refusée : {member.Nickname}")
-		.WithColor(DiscordColor.Red)
-		.WithFooter(Utilities.SignatureFooter)
-		.WithAuthor(member)
-		.WithUrl($"{_configuration["Domain"]}/signup/view/{member.Id}")
-		.AddField("Utilisateur", member.Mention)
-		.AddField("Validation", garantor.Mention);
+			.WithTitle($"Demande d'inscription refusée : {member.Nickname}")
+			.WithColor(DiscordColor.Red)
+			.WithFooter(Utilities.SignatureFooter)
+			.WithAuthor(member)
+			.WithUrl($"{_configuration["Domain"]}/signup/view/{member.Id}")
+			.AddField("Utilisateur", member.Mention)
+			.AddField("Validation", garantor.Mention);
 
 		if (!string.IsNullOrWhiteSpace(reason))
 		{
@@ -150,7 +149,7 @@ public class SignupControlService
 	{
 		DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 			.WithTitle("Inscription refusée")
-			.WithDescription("Désolé, votre demande d'inscription a été refusée par la Modération.")
+			.WithDescription("Désolé, votre demande d'inscription a été refusée par l'équipe de Modération.")
 			.WithColor(DiscordColor.Red)
 			.WithFooter(Utilities.SignatureFooter);
 
@@ -169,13 +168,13 @@ public class SignupControlService
 		}
 		else
 		{
-			embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec la Modération.");
+			embed.AddField("Une erreur ?", "Si vous considérez ce refus comme étant une erreur, nous vous suggérons de prendre contact avec notre équipe de Modération.");
 		}
 
 		return embed.Build();
 	}
 
-	private static DiscordEmbed GenerateControlReportEmbed(DiscordMember member, DiscordMember garantor, DiscordChannel channel, string reason)
+	private static DiscordEmbed GenerateControlReportEmbed(DiscordUser member, DiscordUser garantor, DiscordChannel channel, string reason)
 	{
 		DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 			.WithTitle("Mise sous contrôle")
@@ -197,7 +196,7 @@ public class SignupControlService
 	{
 		DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
 			.WithTitle("Petit soucis...")
-			.WithDescription("Nous avons un problème avec votre demande d'adhésion. \nVeuillez prendre contact avec la modération dans le channel ci-dessous.")
+			.WithDescription("Nous avons un problème avec votre demande d'inscription. \nVeuillez prendre contact avec la modération dans le channel ci-dessous.")
 			.WithColor(DiscordColor.Orange)
 			.WithFooter(Utilities.SignatureFooter)
 			.AddField("Channel", channel.Mention);

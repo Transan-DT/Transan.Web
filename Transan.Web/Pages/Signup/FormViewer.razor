@@ -1,9 +1,10 @@
 ﻿@page "/signup/view/{SnowflakeStr}"
+@using Transan.Web.Services.SocialGuard
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject FormService<FormSignup> SignupService
 @inject SignupControlService SignupControlService
 @inject DiscordClient DiscordClient
-@inject TrustlistClient TrustlistClient
+@inject TrustlistCacheableClient TrustlistClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 
 <h1 class="mb-4 mb-md-5">Formulaire d'Inscription</h1>
@@ -20,7 +21,7 @@ else
 {
 	@if (TrustlistRecord is not null)
     {
-		TrustlistEntry lastEntry = TrustlistRecord.Entries.OrderBy(e => e.EscalationLevel).ThenByDescending(e => e.LastEscalated).First();
+		TrustlistEntry lastEntry = TrustlistRecord.Entries!.OrderBy(e => e.EscalationLevel).ThenByDescending(e => e.LastEscalated).First();
 
 		<div class="card bg-body border-@(TrustlistRecord.GetTrustlistLevelBootstrapColor()) mb-5 p-4">
 			<h3 class="mb-4">
@@ -43,15 +44,15 @@ else
 								<th>Répertoire SG</th>
 
 								<td>
-									<a class="text-secondary" target="_blank" href=@TrustlistClient.MainHost>
-										@(new Uri(TrustlistClient.MainHost).DnsSafeHost)
+									<a class="text-secondary" target="_blank" href=@RestClientBase.MainHost>
+										@(new Uri(RestClientBase.MainHost).DnsSafeHost)
 									</a>
 								</td>
 							</tr>
 
-                            <tr><th>Entrée par</th><td>@lastEntry.Emitter.DisplayName <span class="text-muted">(@lastEntry.Emitter.Login)</span></td></tr>
+                            <tr><th>Entrée par</th><td>@lastEntry.Emitter!.DisplayName <span class="text-muted">(@lastEntry.Emitter.Login)</span></td></tr>
                             <tr><th>Date/Heure d'Entrée</th><td>@lastEntry.EntryAt</td></tr>
-                            <tr><th>Entrées Totales</th><td>@TrustlistRecord.Entries.Count</td></tr>
+                            <tr><th>Entrées Totales</th><td>@TrustlistRecord.Entries!.Count</td></tr>
                         </tbody>
                     </table>
                 </div>

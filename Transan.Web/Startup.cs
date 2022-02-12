@@ -15,6 +15,7 @@ using Serilog.Extensions.Logging;
 using SocialGuard.Common.Services;
 using Transan.Web.Services;
 using Transan.Web.Services.Authentication;
+using Transan.Web.Services.SocialGuard;
 
 namespace Transan.Web
 {
@@ -87,7 +88,8 @@ namespace Transan.Web
 			
 			services.AddScoped<SignupControlService>();
 
-			services.AddSingleton<TrustlistClient>();
+			services.AddHostedService<TrustlistCacheableClient>();
+			services.AddSingleton<TrustlistCacheableClient>();
 
 			services.AddSingleton(new DiscordClient(new()
 			{

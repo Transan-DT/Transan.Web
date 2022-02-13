@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-
+using System.ComponentModel.DataAnnotations;
 
 
 namespace Transan.Web.Data.Forms
@@ -31,6 +31,9 @@ namespace Transan.Web.Data.Forms
 		/// IP address from User
 		/// </summary>
 		public string IpAddress { get; init; }
+		
+		[EmailAddress]
+		public string EmailAddress { get; init; }
 	}
 
 	public enum ContactFormType

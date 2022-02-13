@@ -66,14 +66,16 @@ else
 				<tbody>
 					<tr><th>Formulaire envoyé</th><td>@Form.SubmittedAt.ToString()</td></tr>
 					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
-					<tr><th>Identité de Genre</th><td>@Form.Gender.ToDisplayString()</td></tr>
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
-
+					<tr><th>Adresse Mail</th><td>@(Form.EmailAddress ?? "N/A")</td></tr>
+					
 					@if (User is not null)
-					{
-						<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
-						<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
-					}
+	                {
+                		<tr><th>Nom d'Utilisateur</th><td>@User.GetFullUsername()</td></tr>
+                		<tr><th>Compte créé</th><td>@User.CreationTimestamp.UtcDateTime.ToString()</td></tr>
+	                }
+					
+					<tr><th>Identité de Genre</th><td>@Form.Gender.ToDisplayString()</td></tr>
 
 					@if (Form.Gender is Gender.Cisgender)
 					{

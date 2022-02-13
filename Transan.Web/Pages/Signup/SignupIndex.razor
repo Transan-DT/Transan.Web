@@ -48,7 +48,7 @@
 	</Authorized>
 
 	<NotAuthorized>
-		@if (user.Identity.IsAuthenticated)
+		@if (user?.Identity?.IsAuthenticated is true)
 		{
 			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur Discord</NavLink>.</h3>
 		}

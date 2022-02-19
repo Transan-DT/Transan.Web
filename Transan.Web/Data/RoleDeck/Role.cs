@@ -16,6 +16,11 @@ public record Role
 	public ulong Id { get; init; }
 	
 	/// <summary>
+	/// Display Order of the role, within the category (displays from highest to lowest).
+	/// </summary>
+	public sbyte? Order { get; set; }
+	
+	/// <summary>
 	/// Display name of the role.
 	/// </summary>
 	public string Name { get; set; } = string.Empty;

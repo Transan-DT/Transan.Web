@@ -7,19 +7,20 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Transan.Web.Data.RoleDeck;
 
 namespace Transan.Web.Services;
 
-public class RoleService
+public class RoleDeckService
 {
 	private readonly ILogger _logger;
 	private readonly IConfiguration _config;
 	private readonly DiscordClient _discordClient;
 	private readonly IMongoCollection<RoleCategory> _roles;
 
-	public RoleService(ILogger<RoleService> logger, IMongoClient mongoClient, IConfiguration config, DiscordClient discordClient)
+	public RoleDeckService(ILogger<RoleDeckService> logger, IMongoClient mongoClient, IConfiguration config, DiscordClient discordClient)
 	{
 		_logger = logger;
 		_config = config;
@@ -74,4 +75,33 @@ public class RoleService
 			await member.RevokeRoleAsync(role, reasonMessage);
 		}
 	}
+
+	public Task CreateNewCategoryAsync(RoleCategory category) => _roles.InsertOneAsync(category with { Id = ObjectId.GenerateNewId() });
+
+	public Task EditCategoryAsync(RoleCategory category) => _roles.FindOneAndReplaceAsync(r => r.Id == category.Id, category);
+
+	public Task DeleteCategoryAsync(RoleCategory category) => _roles.FindOneAndDeleteAsync(c => c.Id == category.Id);
+	
+	/*
+		FIXME: Cannot sort while inserting new Role. 
+		The C# MongoDB driver doesn't have support yet for using $sort in a $push operation.
+		See: https://jira.mongodb.org/browse/CSHARP-1271
+	*/
+	public async Task CreateRoleAsync(ObjectId categoryId, Role role)
+	{
+		await _roles.FindOneAndUpdateAsync(
+			c => c.Id == categoryId,
+			new UpdateDefinitionBuilder<RoleCategory>().Push(c => c.Roles, role)
+		);
+	}
+
+	public Task EditRoleAsync(Role role) => _roles.UpdateOneAsync(
+		Builders<RoleCategory>.Filter.ElemMatch(c => c.Roles, r => r.Id == role.Id),
+		Builders<RoleCategory>.Update.Set(x => x.Roles[-1], role)
+	);
+		
+	public Task DeleteRoleAsync(Role role) => _roles.UpdateOneAsync(
+		Builders<RoleCategory>.Filter.ElemMatch(c => c.Roles, r => r.Id == role.Id),
+		Builders<RoleCategory>.Update.Unset(x => x.Roles[-1])
+	);
 }

@@ -65,7 +65,12 @@ else
 			<table class="table table-borderless">
 				<tbody>
 					<tr><th>Formulaire envoyé</th><td>@Form.SubmittedAt.ToString()</td></tr>
-					<tr><th>Adresse IP</th><td class="font-monospace">@Form.IpAddress</td></tr>
+
+					<tr>
+						<th>Adresse IP</th>
+						<td class="font-monospace"><a class="link-secondary" href=@($"https://www.ipalyzer.com/{Form.IpAddress}") target="_blank" >@Form.IpAddress</a></td>
+					</tr>
+				
 					<tr><th>Snowflake</th><td class="font-monospace">@Form.UserSnowflake</td></tr>
 					<tr><th>Adresse Mail</th><td>@(Form.EmailAddress ?? "N/A")</td></tr>
 					

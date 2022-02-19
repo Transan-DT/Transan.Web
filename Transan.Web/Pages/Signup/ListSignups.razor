@@ -1,6 +1,7 @@
 ﻿@page "/signup/view"
+@using Transan.Web.Services.SocialGuard
 @inject FormService<FormSignup> FormService
-@inject TrustlistClient Trustlist
+@inject TrustlistCacheableClient Trustlist
 @inject DiscordClient DiscordClient
 @attribute [Authorize(Roles = UserRoles.Moderator)]
 

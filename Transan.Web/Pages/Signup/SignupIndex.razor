@@ -20,7 +20,7 @@
 			<h1 class="text-success mb-5">Merci !</h1>
 			<p class="lead text-secondary">Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu. Patience ! ;)</p>
 		}
-		else if (SignupService.ListForms().Where(f => f.UserSnowflake == userSnowflake).Any())
+		else if (SignupService.ListForms().Any(f => f.UserSnowflake == userSnowflake))
 		{
 			<h3 class="text-info">Vous avez déjà rempli le formulaire.</h3>
 		}
@@ -48,7 +48,7 @@
 	</Authorized>
 
 	<NotAuthorized>
-		@if (user.Identity.IsAuthenticated)
+		@if (user?.Identity?.IsAuthenticated is true)
 		{
 			<h3 class="text-info">Pour accéder à l'inscription, veuillez d'abord <NavLink href=@Configuration["ExtLinks:Discord"]>rejoindre le serveur Discord</NavLink>.</h3>
 		}

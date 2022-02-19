@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -27,20 +28,20 @@ namespace Transan.Web.Services.Authentication
 		{
 			if (principal.Identity.IsAuthenticated)
 			{
-
 				ClaimsIdentity identity = new();
 				ulong snowflake = Convert.ToUInt64(principal.FindFirstValue(ClaimTypes.NameIdentifier));
 
 				if ((await authDb.FetchUserAsync(snowflake.ToString()))?.Claims is Claim[] claims)
 				{
 					identity.AddClaims(claims);
-
 				}
 
 				if (guild is not null)
 				{
-					if (await guild.GetMemberAsync(snowflake) is DiscordMember member)
+					try
 					{
+						DiscordMember member = await guild.GetMemberAsync(snowflake);
+
 						Dictionary<string, ulong> roles = new();
 						config.GetSection("DiscordIntegration:Server:Roles").Bind(roles);
 
@@ -51,6 +52,7 @@ namespace Transan.Web.Services.Authentication
 							identity.AddClaim(new(ClaimTypes.Role, role));
 						}
 					}
+					catch (NotFoundException) { }
 				}
 
 				principal.AddIdentity(identity);

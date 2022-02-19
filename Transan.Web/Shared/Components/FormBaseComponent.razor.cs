@@ -37,7 +37,8 @@ namespace Transan.Web.Shared.Components
 			{
 				Id = ObjectId.GenerateNewId(),
 				UserSnowflake = userSnowflake,
-				IpAddress = HttpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+				IpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+				EmailAddress = user.FindFirst(ClaimTypes.Email)?.Value
 			};
 
 			FormEditContext = new(Form);

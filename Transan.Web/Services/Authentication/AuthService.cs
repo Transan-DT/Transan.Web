@@ -23,7 +23,7 @@ namespace Transan.Web.Services.Authentication
 
 		public async Task<User> FetchUserAsync(string snowflake) => (await users.FindAsync(u => u.Snowflake == snowflake)).FirstOrDefault();
 
-		public async Task<bool> UserHasClaimAsync(string snowflake, Claim claim) => await FetchUserAsync(snowflake) is not null and User user && user.Claims.Contains(claim);
+		public async Task<bool> UserHasClaimAsync(string snowflake, Claim claim) => await FetchUserAsync(snowflake) is User user && user.Claims.Contains(claim);
 
 		private void ProvisionDb()
 		{

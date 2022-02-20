@@ -1,10 +1,14 @@
 ﻿@page "/profile"
 @page "/profile/{SnowflakeStr}"
-@attribute [Authorize(Policy = "SelfOrAdmin")]
-
 @inject AuthenticationStateProvider _authenticationStateProvider
 
-<h1>Profile</h1>
+<AuthorizeView Resource="UserId" Policy="SelfOrAdmin">
+	<Authorized>
+		<h1>Profile</h1>
+	</Authorized>
+</AuthorizeView>
+
+
 
 @code {
 

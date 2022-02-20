@@ -12,7 +12,7 @@ using Transan.Web.Services.Authentication;
 
 namespace Transan.Web.Infrastructure.Security;
 
-public class ResourceAccessAuthorizationHandler : AuthorizationHandler<SelfOrRoleRequirement>
+public class ResourceAccessAuthorizationHandler : AuthorizationHandler<SelfOrRoleRequirement, ulong>
 {
 	private readonly ILogger<ResourceAccessAuthorizationHandler> _logger;
 	private readonly IHttpContextAccessor _httpContextAccessor;
@@ -24,41 +24,11 @@ public class ResourceAccessAuthorizationHandler : AuthorizationHandler<SelfOrRol
 		_httpContextAccessor = httpContextAccessor;
 	}
 
-	protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, SelfOrRoleRequirement requirement)
+	protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, SelfOrRoleRequirement requirement, ulong userId)
 	{
 		if (context.User.Identity is not { IsAuthenticated: true })
 		{
 			context.Fail(new(this, "User is not authenticated."));
-		}
-
-		ulong pathUserId;
-
-		try
-		{
-			if (_httpContextAccessor.HttpContext?.Request.RouteValues is { Count: not 0 } routeValues)
-			{
-				if (!TryGetFirstSnowflakeFromRoute(routeValues, out pathUserId))
-				{
-					_logger.LogDebug("Short-circuiting authorization, there is no resource to check on.");
-					context.Succeed(requirement);
-					return Task.CompletedTask;
-				}
-			}
-			
-			// HttpContext is null or path empty.
-			// FIXME: Blazor Server sends empty requests, forcing authz as either hard denied or bypassed on each page access.
-			else
-			{
-				_logger.LogDebug("HttpContext is null, or route values are empty.");
-				
-				// context.Succeed(requirement);
-				return Task.CompletedTask;
-			}
-		}
-		catch (FormatException e)
-		{
-			_logger.LogDebug(e, "Error while parsing.");
-			return Task.CompletedTask;
 		}
 
 		try
@@ -66,7 +36,7 @@ public class ResourceAccessAuthorizationHandler : AuthorizationHandler<SelfOrRol
 			ulong currentUserId = Convert.ToUInt64(context.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 			// Check for resource owner
-			if (currentUserId == pathUserId)
+			if (currentUserId == userId)
 			{
 				_logger.LogDebug("User was authorized as resource owner.");
 			}

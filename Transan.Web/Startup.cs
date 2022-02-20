@@ -3,6 +3,7 @@ using AspNet.Security.OAuth.Discord;
 using DSharpPlus;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog.Extensions.Logging;
 using SocialGuard.Common.Services;
+using Transan.Web.Infrastructure.Security;
 using Transan.Web.Services;
 using Transan.Web.Services.Authentication;
 using Transan.Web.Services.SocialGuard;
@@ -75,8 +77,20 @@ namespace Transan.Web
 				options.CorrelationCookie.SameSite = SameSiteMode.Lax;
 			});
 
-			services.AddAuthorization();
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("SelfOrAdmin", policy => policy
+					.AddAuthenticationSchemes(DiscordAuthenticationDefaults.AuthenticationScheme)
+					.RequireSelfOrRole(UserRoles.Admin));	
+				
+				options.AddPolicy("SelfOrMod", policy => policy
+					.AddAuthenticationSchemes(DiscordAuthenticationDefaults.AuthenticationScheme)
+					.RequireSelfOrRole(UserRoles.Moderator));
+			});
 
+			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
+			
+			
 			services.AddHttpClient<RestClientBase>();
 
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));
@@ -124,7 +138,7 @@ namespace Transan.Web
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
-
+			
 			app.UseRouting();
 
 			app.UseAuthentication();

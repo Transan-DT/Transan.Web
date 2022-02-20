@@ -1,0 +1,25 @@
+﻿@page "/profile"
+@page "/profile/{SnowflakeStr}"
+@attribute [Authorize(Policy = "SelfOrAdmin")]
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<h1>Profile</h1>
+
+@code {
+
+	[Parameter]
+	public string? SnowflakeStr { get; set; }
+	
+	public ulong UserId { get; set; }
+
+	public override async Task SetParametersAsync(ParameterView parameters)
+	{
+		await base.SetParametersAsync(parameters);
+		AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+		UserId = Convert.ToUInt64(SnowflakeStr ?? authState.User.FindFirstValue(ClaimTypes.NameIdentifier));
+		
+		
+	}
+
+}

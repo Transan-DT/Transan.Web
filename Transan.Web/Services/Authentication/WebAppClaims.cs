@@ -26,34 +26,31 @@ namespace Transan.Web.Services.Authentication
 
 		public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
 		{
-			if (principal.Identity.IsAuthenticated)
+			if (principal.Identity is { IsAuthenticated: true })
 			{
 				ClaimsIdentity identity = new();
 				ulong snowflake = Convert.ToUInt64(principal.FindFirstValue(ClaimTypes.NameIdentifier));
 
-				if ((await authDb.FetchUserAsync(snowflake.ToString()))?.Claims is Claim[] claims)
+				if ((await authDb.FetchUserAsync(snowflake.ToString()))?.Claims is { } claims)
 				{
 					identity.AddClaims(claims);
 				}
 
-				if (guild is not null)
+				try
 				{
-					try
+					DiscordMember member = await guild.GetMemberAsync(snowflake);
+
+					Dictionary<string, ulong> roles = new();
+					config.GetSection("DiscordIntegration:Server:Roles").Bind(roles);
+
+					identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
+
+					foreach (string role in roles.Join(member.Roles, r1 => r1.Value, r2 => r2.Id, (r1, r2) => r1.Key))
 					{
-						DiscordMember member = await guild.GetMemberAsync(snowflake);
-
-						Dictionary<string, ulong> roles = new();
-						config.GetSection("DiscordIntegration:Server:Roles").Bind(roles);
-
-						identity.AddClaim(new(ClaimTypes.Role, UserRoles.Joined));
-
-						foreach (string role in roles.Join(member.Roles, r1 => r1.Value, r2 => r2.Id, (r1, r2) => r1.Key))
-						{
-							identity.AddClaim(new(ClaimTypes.Role, role));
-						}
+						identity.AddClaim(new(ClaimTypes.Role, role));
 					}
-					catch (NotFoundException) { }
 				}
+				catch (NotFoundException) { }
 
 				principal.AddIdentity(identity);
 			}

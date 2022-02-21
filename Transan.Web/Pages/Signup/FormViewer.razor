@@ -167,8 +167,8 @@ else
 
     public bool Loaded { get; private set; }
     public FormSignup Form { get; set; }
-    public DiscordUser User { get; private set; }
-    public DiscordMember Member { get; private set; }
+    public DiscordUser? User { get; private set; }
+    public DiscordMember? Member { get; private set; }
     public TrustlistUser TrustlistRecord { get; private set; }
     public DiscordMember Garantor { get; private set; }
     public IEnumerable<string> MemberRoles { get; private set; }

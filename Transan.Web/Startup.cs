@@ -23,12 +23,12 @@ namespace Transan.Web
 {
 	public class Startup
 	{
-		private readonly IWebHostEnvironment hostingEnvironment;
+		private readonly IWebHostEnvironment _hostingEnvironment;
 
 		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			Configuration = configuration;
-			this.hostingEnvironment = env;
+			_hostingEnvironment = env;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -41,7 +41,7 @@ namespace Transan.Web
 			services.AddServerSideBlazor();
 			services.AddHttpContextAccessor();
 
-			if (hostingEnvironment.IsProduction())
+			if (_hostingEnvironment.IsProduction())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{
@@ -89,8 +89,7 @@ namespace Transan.Web
 			});
 
 			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
-			
-			
+
 			services.AddHttpClient<RestClientBase>();
 
 			services.AddSingleton<IMongoClient, MongoClient>(c => new(Configuration["MongoDb:ConnectionString"]));

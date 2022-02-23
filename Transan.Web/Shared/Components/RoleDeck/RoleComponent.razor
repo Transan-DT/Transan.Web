@@ -20,7 +20,7 @@
 	</div>
 	
 	<AuthorizeView Roles=@Services.Authentication.UserRoles.Admin>
-		<div class="col d-grid gap-2">
+		<div class="d-grid gap-2">
         	<a class="btn btn-lg btn-block btn-warning" href="/admin/roledeck/edit/@Role.Id">Éditer le Rôle</a>
         </div>
 	</AuthorizeView>
@@ -31,6 +31,6 @@
 	[CascadingParameter] IEnumerable<ulong> UserRoles { get; set; }
 	
 	[Parameter] public Role Role { get; set; }
-	[Parameter] EventCallback<RoleChangeDto> OnRoleChange { get; set; }
+	[Parameter] public EventCallback<RoleChangeDto> OnRoleChange { get; set; }
 	[Parameter] public bool Selected { get; set; }
 }

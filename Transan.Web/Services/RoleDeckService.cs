@@ -33,6 +33,10 @@ public class RoleDeckService
 			new() { Sort = new SortDefinitionBuilder<RoleCategory>().Descending(r => r.Order) }))
 			.ToListAsync();
 
+	public async Task<RoleCategory?> GetRoleDeckCategoryAsync(ObjectId id) => 
+		await (await _roles.FindAsync(c => c.Id == id))
+			.FirstOrDefaultAsync();
+	
 	public async Task<IEnumerable<DiscordRole>> GetAllServerRolesAsync(bool includeSeparatorRoles)
 	{
 		DiscordGuild guild = await _discordClient.GetGuildAsync(_config.GetValue<ulong>("DiscordIntegration:Server:Id"));

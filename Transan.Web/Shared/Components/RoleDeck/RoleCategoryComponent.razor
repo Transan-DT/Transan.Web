@@ -20,10 +20,10 @@
 
 @code {
 	[CascadingParameter] public ulong UserId { get; set; }
-	[CascadingParameter] IEnumerable<ulong> UserRoles { get; set; }
+	[CascadingParameter] public IEnumerable<ulong> UserRoles { get; set; }
 	
 	[Parameter] public RoleCategory Category { get; set; }
-	[Parameter] EventCallback<RoleChangeDto> OnRoleChange { get; set; }
+	[Parameter] public EventCallback<RoleChangeDto> OnRoleChange { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{

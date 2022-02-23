@@ -98,6 +98,7 @@ namespace Transan.Web
 			services.AddSingleton<AuthService>();
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
+			services.AddSingleton<RoleDeckService>();
 			
 			services.AddScoped<SignupControlService>();
 

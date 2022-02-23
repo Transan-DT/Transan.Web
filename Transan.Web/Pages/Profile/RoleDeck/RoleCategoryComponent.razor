@@ -1,0 +1,38 @@
+﻿@using System.Collections
+@using Transan.Web.Data.RoleDeck
+@inject	RoleDeckService _roleDeck
+
+<div id=@Category.Id>
+	<div class="my-3">
+		<h3 class="my-3">@Category.Name</h3>
+		<p style="white-space: pre-wrap;">@Category.Description</p>
+	</div>
+	
+	<div class="row-cols-lg-4 row-cols-md-2">
+		@foreach (Role role in Category.Roles)
+		{
+			<div class="col">
+				<RoleComponent Role=role OnRoleChange=OnRoleChange />
+			</div>
+		}
+	</div>
+</div>
+
+@code {
+	[CascadingParameter] public ulong UserId { get; set; }
+	[CascadingParameter] IEnumerable<ulong> UserRoles { get; set; }
+	
+	[Parameter] public RoleCategory Category { get; set; }
+	[Parameter] EventCallback<RoleChangeDto> OnRoleChange { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		
+		await base.OnParametersSetAsync();
+	}
+}

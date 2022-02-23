@@ -28,7 +28,7 @@ public class RoleDeckService
 		_roles = mongoClient.GetDatabase(config["MongoDb:Databases:Web"]).GetCollection<RoleCategory>("Roles");
 	}
 
-	public async Task<IEnumerable<RoleCategory>> GetRoleDeckcategoriesAsync() => 
+	public async Task<IEnumerable<RoleCategory>> GetRoleDeckCategoriesAsync() => 
 		await (await _roles.FindAsync(FilterDefinition<RoleCategory>.Empty, 
 			new() { Sort = new SortDefinitionBuilder<RoleCategory>().Descending(r => r.Order) }))
 			.ToListAsync();

@@ -1,0 +1,42 @@
+﻿@using System.Collections
+@using Transan.Web.Data.RoleDeck
+@inject DiscordClient _discordClient;
+@inject RoleDeckService _roleDeck;
+
+<div class="d-flex flex-column bd-highlight mb-3">
+	@foreach (RoleCategory category in _roleCategories)
+	{
+		<CascadingValue TValue="IEnumerable<ulong>" Name="UserRoles" Value="_selectedRoles">
+			<CascadingValue TValue="IEnumerable<RoleChangeDto>" Name="PendingChanges" Value="_pendingChanges">
+				<div class="my-5 p-2 bd-highlight text-center">
+                    <RoleCategoryComponent Category=category OnRoleChange=OnRoleChangeAsync />
+                </div>
+			</CascadingValue>
+		</CascadingValue>
+	}
+</div>
+
+
+@code {
+	
+	[Parameter] ulong UserId { get; set; }
+
+	private IEnumerable<RoleCategory> _roleCategories;
+	private IEnumerable<ulong> _selectedRoles;
+	
+	private Queue<RoleChangeDto> _pendingChanges;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_roleCategories = await _roleDeck.GetRoleDeckCategoriesAsync();
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		_selectedRoles = await _roleDeck.GetMemberRolesAsync(UserId);
+		await base.OnParametersSetAsync();
+	}
+
+	private async Task OnRoleChangeAsync(RoleChangeDto roleChange) => _pendingChanges.Enqueue(roleChange);
+}

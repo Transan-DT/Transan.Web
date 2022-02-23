@@ -1,0 +1,36 @@
+﻿@using Transan.Web.Data.RoleDeck
+
+<div id=@Role.Id class="card bg-body border-@(Selected ? "success" : "secondary")">
+	<div>
+		<div id="title" style="white-space: nowrap"> 
+			<h5>@Role.Name</h5>
+			<h6>(@Role.Subtitle)</h6>
+		</div>
+        	
+		@if (Role.Icon is not null)
+		{
+			<div id="icon" class="m-3 img-thumbnail ratio-1x1">
+				<img alt="Icone du rôle @Role.Name" src="data:image/png;base64, @Convert.ToBase64String(Role.Icon)">
+			</div>
+		}
+        	
+		<div id="description">
+			<p style="white-space: pre-wrap">@Role.Description</p>
+		</div>
+	</div>
+	
+	<AuthorizeView Roles=@Services.Authentication.UserRoles.Admin>
+		<div class="col d-grid gap-2">
+        	<a class="btn btn-lg btn-block btn-warning" href="/admin/roledeck/edit/@Role.Id">Éditer le Rôle</a>
+        </div>
+	</AuthorizeView>
+</div>
+
+@code {
+	[CascadingParameter] public ulong UserId { get; set; }
+	[CascadingParameter] IEnumerable<ulong> UserRoles { get; set; }
+	
+	[Parameter] public Role Role { get; set; }
+	[Parameter] EventCallback<RoleChangeDto> OnRoleChange { get; set; }
+	[Parameter] public bool Selected { get; set; }
+}

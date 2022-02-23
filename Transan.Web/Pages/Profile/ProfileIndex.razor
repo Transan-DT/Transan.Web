@@ -19,9 +19,9 @@
 				<h2>@HighestUser.Username<span class="ms-3 small text-muted">#@HighestUser.Discriminator</span></h2>
 				
 				@if (HighestUser.IsBot)
-                {
-                	<span class="badge bg-secondary">BOT</span>
-                }
+				{
+					<span class="badge bg-secondary">BOT</span>
+				}
 			</div>
 					
 			
@@ -63,13 +63,11 @@
 			</table>
 		</div>
 	</div>
-	
-	
-	<AuthorizeView Resource="_userId" Policy="SelfOrAdmin">
-		<Authorized>
-			
-		</Authorized>
-	</AuthorizeView>
+
+	<CascadingValue TValue=ulong Name="UserId" Value=@_userId>
+		<hr class="my-5" />
+		<RolesView />
+	</CascadingValue>
 }
 else
 {
@@ -79,33 +77,30 @@ else
 @code {
 
 	[CascadingParameter] CoverLayout? Layout { get; set; }
-
 	
 	[Parameter] public string? SnowflakeStr { get; set; }
 
 	private ulong _userId;
-
 	private DiscordUser? HighestUser => _discordMember ?? _discordUser;
-	
 	private DiscordUser? _discordUser;
 	private DiscordMember? _discordMember;
+	
 	
 	public override async Task SetParametersAsync(ParameterView parameters)
 	{
 		Layout?.SetCover("Profil", "Soyez qui vous voulez être.");
 		
 		await base.SetParametersAsync(parameters);
-		
-		
-		AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-		_userId = Convert.ToUInt64(SnowflakeStr ?? authState.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 		try
 		{
+			AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+			_userId = Convert.ToUInt64(SnowflakeStr ?? authState.User.FindFirstValue(ClaimTypes.NameIdentifier));
+			
 			_discordUser = await _discordClient.GetUserAsync(_userId);
 			_discordMember = await (await _discordClient.GetGuildAsync(_configuration.GetValue<ulong>("DiscordIntegration:Server:Id"))).GetMemberAsync(_userId);
 		}
-		catch { /* Ignore any errors from lookup. */ }
+		catch { /* Ignore any errors from parsing & lookup. */ }
 	}
 
 	private string? GetAvatarLink(ushort size) => HighestUser?.GetAvatarUrl(ImageFormat.Auto, size);

@@ -13,7 +13,7 @@ public record Role
 	/// Discord snowflake of the role.
 	/// </summary>
 	[BsonId, BsonRepresentation(BsonType.String)]
-	public ulong Id { get; init; }
+	public ulong Id { get; set; }
 	
 	/// <summary>
 	/// Display Order of the role, within the category (displays from highest to lowest).

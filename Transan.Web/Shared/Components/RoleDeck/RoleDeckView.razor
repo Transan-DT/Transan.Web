@@ -13,18 +13,16 @@
 		{
 			@foreach (RoleCategory category in _roleCategories)
 			{
-				<CascadingValue TValue="IEnumerable<ulong>" Name="UserRoles" Value="_selectedRoles">
-					<CascadingValue TValue="IEnumerable<RoleChangeDto>" Name="PendingChanges" Value="_pendingChanges">
-						<div class="my-5 p-2 bd-highlight text-center">
-							<RoleCategoryComponent Category=category OnRoleChange=OnRoleChangeAsync />
-						</div>
-					</CascadingValue>
+				<CascadingValue TValue="IEnumerable<ulong>" Value="_selectedRoles">
+					<div class="my-5 p-2 bd-highlight text-center">
+						<RoleCategoryComponent Category=category OnRoleChange=OnRoleChangeAsync />
+					</div>
 				</CascadingValue>
 			}	
 		}
 		else
 		{
-			<h3 class="text-danger">Error: Tried to load an empty RoleDeck.</h3>
+			<h3 class="text-danger my-5">Error : Tried to load an empty RoleDeck.</h3>
 		}
 	</div>
 </div>
@@ -32,7 +30,7 @@
 
 @code {
 	
-	[Parameter] public ulong UserId { get; set; }
+	[CascadingParameter] public ulong UserId { get; set; }
 
 	private IEnumerable<RoleCategory>? _roleCategories;
 	private IEnumerable<ulong>? _selectedRoles;
@@ -51,5 +49,11 @@
 		await base.OnParametersSetAsync();
 	}
 
-	private async Task OnRoleChangeAsync(RoleChangeDto roleChange) => _pendingChanges.Enqueue(roleChange);
+	private async Task OnRoleChangeAsync(RoleChangeDto roleChange)
+	{
+		await _roleDeck.SetMemberRoleAsync(roleChange);
+		_selectedRoles = await _roleDeck.GetMemberRolesAsync(UserId);
+		StateHasChanged();
+	}
+
 }

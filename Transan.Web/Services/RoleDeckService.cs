@@ -37,12 +37,14 @@ public class RoleDeckService
 		await (await _roles.FindAsync(c => c.Id == id))
 			.FirstOrDefaultAsync();
 	
-	public async Task<IEnumerable<DiscordRole>> GetAllServerRolesAsync(bool includeSeparatorRoles)
+	public async Task<IEnumerable<DiscordRole>> GetAllServerRolesAsync(bool includeSeparatorRoles = false)
 	{
 		DiscordGuild guild = await _discordClient.GetGuildAsync(_config.GetValue<ulong>("DiscordIntegration:Server:Id"));
+		IEnumerable<DiscordRole> roles = guild.Roles.Values.Where(r => r.Id != guild.EveryoneRole.Id).OrderByDescending(r => r.Position);
+
 		return includeSeparatorRoles
-			? guild.Roles.Values
-			: guild.Roles.Values.Where(r => !r.Name.StartsWith('.'));
+			? roles
+			: roles.Where(r => !r.Name.StartsWith('.'));
 	}
 	
 	public async Task<IEnumerable<ulong>> GetMemberRolesAsync(ulong userId)

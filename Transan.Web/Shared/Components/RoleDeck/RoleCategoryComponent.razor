@@ -1,38 +1,33 @@
 ﻿@using System.Collections
 @using Transan.Web.Data.RoleDeck
-@inject	RoleDeckService _roleDeck
 
 <div id=@Category.Id>
-	<div class="my-3">
-		<h3 class="my-3">@Category.Name</h3>
-		<p style="white-space: pre-wrap;">@Category.Description</p>
+	<div class="my-5">
+		<h1 class="my-3">@Category.Name</h1>
+		<p class="lead" style="white-space: pre-wrap;">@Category.Description</p>
+		
+		<AuthorizeView Roles=@UserRoles.Admin>
+        	<div class="text-reset my-3">
+	            <a class="btn btn-block btn-warning" href="/admin/roledeck/category/edit/@Category.Id">Edit Category</a>
+	            <a class="btn btn-block btn-success" href="/admin/roledeck/role/add/@Category.Id">Add Role</a>
+        	</div>
+        </AuthorizeView>
 	</div>
-	
-	<div class="row-cols-lg-4 row-cols-md-2">
-		@foreach (Role role in Category.Roles)
+
+	<div class="row justify-content-center align-items-stretch my-5">
+		@foreach (Role role in Category.Roles.OrderByDescending(r => r.Order))
 		{
-			<div class="col">
-				<RoleComponent Role=role OnRoleChange=OnRoleChange />
+			<div class="col-4 d-flex flex-column flex-grow-1">
+				<RoleComponent Role=role CategoryId=@Category.Id OnRoleChange=OnRoleChange />
 			</div>
 		}
 	</div>
+	
+	<span class="my-5"></span>
+	
 </div>
 
 @code {
-	[CascadingParameter] public ulong UserId { get; set; }
-	[CascadingParameter] public IEnumerable<ulong> UserRoles { get; set; }
-	
 	[Parameter] public RoleCategory Category { get; set; }
 	[Parameter] public EventCallback<RoleChangeDto> OnRoleChange { get; set; }
-
-	protected override async Task OnInitializedAsync()
-	{
-		
-	}
-
-	protected override async Task OnParametersSetAsync()
-	{
-		
-		await base.OnParametersSetAsync();
-	}
 }

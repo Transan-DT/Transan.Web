@@ -1,36 +1,46 @@
 ﻿@using Transan.Web.Data.RoleDeck
+@using MongoDB.Bson
 
-<div id=@Role.Id class="card bg-body border-@(Selected ? "success" : "secondary")">
-	<div>
-		<div id="title" style="white-space: nowrap"> 
-			<h5>@Role.Name</h5>
-			<h6>(@Role.Subtitle)</h6>
-		</div>
-        	
-		@if (Role.Icon is not null)
+<div id=@Role!.Id class="card bg-body border-@(Selected ? "success" : "secondary") p-4 flex-grow-1" @onclick=OnClickAsync>
+	<div id="title" class="flex-grow-1" style="white-space: nowrap"> 
+		<h3>@Role.Name</h3>
+			
+		@if (Role.Subtitle is not null)
 		{
-			<div id="icon" class="m-3 img-thumbnail ratio-1x1">
-				<img alt="Icone du rôle @Role.Name" src="data:image/png;base64, @Convert.ToBase64String(Role.Icon)">
-			</div>
+			<p class="lead">(@Role.Subtitle)</p>
 		}
-        	
-		<div id="description">
-			<p style="white-space: pre-wrap">@Role.Description</p>
-		</div>
 	</div>
-	
-	<AuthorizeView Roles=@Services.Authentication.UserRoles.Admin>
-		<div class="d-grid gap-2">
-        	<a class="btn btn-lg btn-block btn-warning" href="/admin/roledeck/edit/@Role.Id">Éditer le Rôle</a>
-        </div>
-	</AuthorizeView>
+        	
+	@if (Role.Icon is not null)
+	{
+		<div id="icon" class="m-3 img-fluid ratio-1x1">
+			<img alt="Icone du rôle @Role.Name" src="data:image/png;base64, @Convert.ToBase64String(Role.Icon)">
+		</div>
+	}
+        	
+	<div id="description">
+		<p style="white-space: pre-wrap">@Role.Description</p>
+	</div>
 </div>
+
+<AuthorizeView Roles=@UserRoles.Admin>
+	<div>
+		<a class="btn btn-sm btn-block flex-grow-0 btn-warning my-3" href="/admin/roledeck/role/edit/@CategoryId.ToString()/@Role.Id">Edit Role</a>
+	</div>
+</AuthorizeView>
 
 @code {
 	[CascadingParameter] public ulong UserId { get; set; }
-	[CascadingParameter] IEnumerable<ulong> UserRoles { get; set; }
+	[CascadingParameter] public IEnumerable<ulong> CurrentRoles { get; set; }
 	
-	[Parameter] public Role Role { get; set; }
+	[Parameter] public ObjectId CategoryId { get; set; }
+	[Parameter] public Role? Role { get; set; }
 	[Parameter] public EventCallback<RoleChangeDto> OnRoleChange { get; set; }
-	[Parameter] public bool Selected { get; set; }
+
+	public bool Selected => CurrentRoles.Contains(Role.Id);
+	
+	public async Task OnClickAsync()
+	{
+		await OnRoleChange.InvokeAsync(new(UserId, Role!.Id, !Selected));
+	}
 }

@@ -23,7 +23,7 @@ else
     {
 		TrustlistEntry lastEntry = TrustlistRecord.Entries!.OrderBy(e => e.EscalationLevel).ThenByDescending(e => e.LastEscalated).First();
 
-		<div class="card bg-body border-@(TrustlistRecord.GetTrustlistLevelBootstrapColor()) mb-5 p-4">
+		<div class="card bg-body border-@(TrustlistRecord.GetTrustlistLevelBootstrapColor()) mb-5 p-5">
 			<h3 class="mb-4">
 				NSYS SocialGuard : 
 				<span class="text-@TrustlistRecord.GetTrustlistLevelBootstrapColor()">

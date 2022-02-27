@@ -20,7 +20,7 @@ namespace Transan.Web
 			Log.Logger = new LoggerConfiguration()
 #if DEBUG
 				.MinimumLevel.Debug()
-	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 #else
 				.MinimumLevel.Information()
 				.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)

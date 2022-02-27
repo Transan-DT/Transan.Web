@@ -1,0 +1,128 @@
+﻿@page "/profile"
+@page "/profile/{SnowflakeStr}"
+@layout CoverLayout
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DiscordClient _discordClient
+@inject IConfiguration _configuration
+
+
+@if (HighestUser is not null)
+{
+	<div class="row mb-5">
+		<div class="col-md-auto mx-lg-5">
+			<img class="img-fluid rounded-circle" alt="Avatar de l'utilisateur" src="@GetAvatarLink(512)" style="max-height: 25rem;" />
+		</div>
+				
+		<div class="col-md-6">
+			<div class="mb-5" style="white-space: nowrap;">
+				<h2>@HighestUser.Username<span class="ms-3 small text-muted">#@HighestUser.Discriminator</span></h2>
+				
+				@if (HighestUser.IsBot)
+				{
+					<span class="badge bg-secondary">BOT</span>
+				}
+			</div>
+					
+			
+			
+			<table class="table table-borderless">
+				<tbody>
+					<tr><th>Identifiant / Snowflake</th><td class="font-monospace">@HighestUser.Id</td></tr>
+					<tr><th>Date de création du compte</th><td>@HighestUser.CreationTimestamp.ToUniversalTime().ToString("f")</td></tr>
+					
+					@if (_discordMember is not null)
+					{
+						<AuthorizeView Roles=@UserRoles.Member>
+							<Authorized>
+								<tr><th>A rejoint Le Transanctuaire</th><td>@_discordMember.JoinedAt.ToUniversalTime().ToString("f")</td></tr>
+								
+								<tr>
+									<th>Rôles</th>
+
+									<td>
+										@if (_discordMember.Roles.Any())
+										{
+											<ul>
+												@foreach (DiscordRole? role in _discordMember.Roles)
+												{
+													<li style="color: @role.Color.ToString()">@role.Name</li>
+												}
+											</ul>
+										}
+										else
+										{
+											<i class="text-muted">Aucun rôle</i>
+										}
+									</td>
+								</tr>
+							</Authorized>
+							
+							<NotAuthorized>
+								@if (SnowflakeStr is null)
+								{
+									<tr class="lead text-info">
+										<th>Pas encore membre?</th>
+										<td><a href="/signup">Venez vous inscrire!</a></td>
+									</tr>
+								}
+							</NotAuthorized>
+						</AuthorizeView>
+					}
+					else
+					{
+						<AuthorizeView Roles=@UserRoles.Member>
+							<tr><span class="lead text-secondary p-3">L'utilisateurice n'est pas sur le serveur.</span></tr>
+						</AuthorizeView>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<AuthorizeView Roles=@UserRoles.Joined Policy="SelfOrAdmin" Resource=@_userId>
+		@if (_discordMember is not null)
+		{
+			<CascadingValue Value=@_userId>
+				<hr class="my-5" />
+				<RoleDeckView />
+			</CascadingValue>
+		}
+	</AuthorizeView>
+}
+else
+{
+	<h3 class="text-warning">Aucun utilisateur trouvé.</h3>
+}
+
+@code {
+
+	[CascadingParameter] CoverLayout? Layout { get; set; }
+	
+	[Parameter] public string? SnowflakeStr { get; set; }
+
+	private ulong _userId;
+	private DiscordUser? HighestUser => _discordMember ?? _discordUser;
+	private DiscordUser? _discordUser;
+	private DiscordMember? _discordMember;
+	
+	
+	public override async Task SetParametersAsync(ParameterView parameters)
+	{
+		Layout?.SetCover("Profil", "Soyez qui vous voulez être.");
+		
+		await base.SetParametersAsync(parameters);
+
+		try
+		{
+			AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+			_userId = Convert.ToUInt64(SnowflakeStr ?? authState.User.FindFirstValue(ClaimTypes.NameIdentifier));
+			
+			_discordUser = await _discordClient.GetUserAsync(_userId);
+			_discordMember = await (await _discordClient.GetGuildAsync(_configuration.GetValue<ulong>("DiscordIntegration:Server:Id"))).GetMemberAsync(_userId);
+		}
+		catch { /* Ignore any errors from parsing & lookup. */ }
+	}
+
+	private string? GetAvatarLink(ushort size) => HighestUser?.GetAvatarUrl(ImageFormat.Auto, size);
+}

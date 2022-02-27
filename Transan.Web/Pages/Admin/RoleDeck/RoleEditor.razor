@@ -1,0 +1,184 @@
+﻿@page "/admin/roledeck/role/add/{CategoryId}"
+@page "/admin/roledeck/role/edit/{CategoryId}/{RoleId}"
+@attribute [Authorize(Roles = UserRoles.Admin)]
+
+@using Transan.Web.Data.RoleDeck
+@using Microsoft.AspNetCore.Components
+@using MongoDB.Bson
+@using Mapster
+@using MongoDB.Bson.Serialization.Attributes
+
+@inject RoleDeckService _roleDeck;
+@inject NavigationManager _navigation;
+
+
+<h1>Role Editor</h1>
+
+@if (_editModelNotFound)
+{
+	<h3 class="text-warning">Category/Role not found.</h3>
+	
+	<p>Category ID: @(CategoryId ?? "None")</p>
+	<p>Role ID: @(RoleId ?? "None")</p>
+}
+else
+{
+	<EditForm Model=_model OnValidSubmit=OnValidSubmitAsync>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+	
+		<h3 class="text-muted">Category ID: <span class="font-monospace">@CategoryId</span></h3>
+		
+		<div class="row my-5">
+			<div class="col-md-4">
+				<label class="form-label">Role</label>
+
+				<InputSelect @bind-Value=_model.Id class="form-select form-select-lg">
+					@if (_serverRoles is not null && _serverRoles.Any())
+					{
+						foreach (DiscordRole role in _serverRoles)
+						{
+							<option value=@role.Id>@role.Name (@role.Id)</option>
+						}
+					}
+				</InputSelect>
+			</div>
+			
+			<div class="col-md-4">
+				<label>Title</label>
+				<InputText DisplayName="Title" @bind-Value=_model.Name class="form-control" maxlength="60" />
+			</div>
+
+			<div class="col-md-4">
+				<label>Subtitle</label>
+				<InputText DisplayName="Subtitle" @bind-Value=_model.Subtitle class="form-control" maxlength="60" />
+			</div>
+		</div>
+		
+		<div class="row my-5">
+			<div class="col-sm-3">
+				<label>Category Order</label>
+				<span class="form-text">(hi>lo sort)</span>
+				<InputNumber DisplayName="Order" @bind-Value=_model.EditorOrder class="form-control" />
+			</div>
+
+			<div class="col-sm-3 align-bottom d-flex align-items-end">
+				<div>
+					<label class="form-check-label">Icon</label>
+					<InputFile OnChange=LoadFiles class="form-control" accept="image/png" placeholer="Choose Image File..." />
+				</div>
+			</div>
+		</div>
+		
+		<div class="row my-3 mx-1">
+			<label>Description</label>
+			<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
+		</div>
+
+		<div class="row my-5">
+			<div class="col">
+				<div>
+					<button type="submit" class="btn btn-primary me-3 px-5" disabled=@(_formSubmitSuccess && _isNewModel)>Submit</button>
+					<button type="button" onclick="window.history.back()" class="btn btn-secondary px-5 me-3">Cancel</button>
+					
+					@if (!_isNewModel)
+                    {
+                    	<button type="button" @onclick=@(() => _deletionRequested = true) class="btn btn-danger px-5 me-3">Delete</button>
+                    }
+				</div>
+				
+				@if (_formSubmitSuccess)
+				{
+					<h5 class="text-success">Successfuly submitted.</h5>
+				}
+			</div>
+		</div>
+	</EditForm>
+
+	if (_deletionRequested)
+	{
+		<DeleteConfirm OnConfirm=OnDeleteClickedAsync OnCancel=@(() => _deletionRequested = false) />
+	}
+}
+
+
+@code {
+	[Parameter] public string? CategoryId { get; set; }
+	[Parameter] public string? RoleId { get; set; }
+
+	private ulong? _roleId { get; set; }
+	
+	private bool _isNewModel, _editModelNotFound, _formSubmitSuccess, _deletionRequested;
+	private RoleModel _model { get; set; } = new();
+	private IEnumerable<DiscordRole>? _serverRoles;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_serverRoles = await _roleDeck.GetAllServerRolesAsync();
+		
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (CategoryId is not null && await _roleDeck.GetRoleDeckCategoryAsync(ObjectId.Parse(CategoryId)) is { } category)
+		{
+			if (RoleId is not null)
+			{
+				_roleId = Convert.ToUInt64(RoleId);
+				_model = category.Roles.FirstOrDefault(r => r.Id == _roleId)?.Adapt<RoleModel>() ?? throw new ArgumentException($"Could not find Role for Id {_roleId}");
+			}
+			else
+			{
+				_isNewModel = true;
+			}
+		}
+		else
+		{
+			_editModelNotFound = true;
+		}
+
+		await base.OnParametersSetAsync();
+	}
+
+	private async Task OnValidSubmitAsync()
+	{
+		if (_model.IconFile is not null)
+		{
+			await using Stream s = (await _model.IconFile.RequestImageFileAsync("image/png", 256, 256)).OpenReadStream(5120000);
+			await s.ReadAsync(_model.Icon = new byte[s.Length]);
+		}
+		
+		if (_isNewModel)
+		{
+			await _roleDeck.CreateRoleAsync(ObjectId.Parse(CategoryId), _model);
+		}
+		else
+		{
+			await _roleDeck.EditRoleAsync(_model);
+		}
+
+		_formSubmitSuccess = true;
+	}
+
+	private void LoadFiles(InputFileChangeEventArgs e)
+	{
+		_model.IconFile = e.File;
+	}
+
+	
+	private async Task OnDeleteClickedAsync()
+	{
+		await _roleDeck.DeleteRoleAsync(_model);
+		_navigation.NavigateTo("profile");
+	}
+	
+	public record RoleModel : Role
+	{
+		[BsonIgnore]
+		public IBrowserFile? IconFile { get; set; }
+		
+		[Range(sbyte.MinValue, sbyte.MaxValue), BsonIgnore]
+		public short? EditorOrder { get => Order; set => Order = (sbyte?)value; }
+	}
+}

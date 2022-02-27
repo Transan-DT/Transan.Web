@@ -57,6 +57,22 @@
 									</td>
 								</tr>
 							</Authorized>
+							
+							<NotAuthorized>
+								@if (SnowflakeStr is null)
+								{
+									<tr class="lead text-info">
+										<th>Pas encore membre?</th>
+										<td><a href="/signup">Venez vous inscrire!</a></td>
+									</tr>
+								}
+							</NotAuthorized>
+						</AuthorizeView>
+					}
+					else
+					{
+						<AuthorizeView Roles=@UserRoles.Member>
+							<tr><span class="lead text-secondary p-3">L'utilisateurice n'est pas sur le serveur.</span></tr>
 						</AuthorizeView>
 					}
 				</tbody>
@@ -65,10 +81,13 @@
 	</div>
 
 	<AuthorizeView Roles=@UserRoles.Joined Policy="SelfOrAdmin" Resource=@_userId>
-		<CascadingValue Value=@_userId>
-	        <hr class="my-5" />
-	        <RoleDeckView />
-	    </CascadingValue>
+		@if (_discordMember is not null)
+		{
+			<CascadingValue Value=@_userId>
+				<hr class="my-5" />
+				<RoleDeckView />
+			</CascadingValue>
+		}
 	</AuthorizeView>
 }
 else

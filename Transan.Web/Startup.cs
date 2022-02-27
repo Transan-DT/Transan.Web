@@ -3,6 +3,7 @@ using AspNet.Security.OAuth.Discord;
 using DSharpPlus;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog.Extensions.Logging;
 using SocialGuard.Common.Services;
+using Transan.Web.Infrastructure.Security;
 using Transan.Web.Services;
 using Transan.Web.Services.Authentication;
 using Transan.Web.Services.SocialGuard;
@@ -21,12 +23,12 @@ namespace Transan.Web
 {
 	public class Startup
 	{
-		private readonly IWebHostEnvironment hostingEnvironment;
+		private readonly IWebHostEnvironment _hostingEnvironment;
 
 		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			Configuration = configuration;
-			this.hostingEnvironment = env;
+			_hostingEnvironment = env;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -39,7 +41,7 @@ namespace Transan.Web
 			services.AddServerSideBlazor();
 			services.AddHttpContextAccessor();
 
-			if (hostingEnvironment.IsProduction())
+			if (_hostingEnvironment.IsProduction())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{
@@ -75,7 +77,18 @@ namespace Transan.Web
 				options.CorrelationCookie.SameSite = SameSiteMode.Lax;
 			});
 
-			services.AddAuthorization();
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("SelfOrAdmin", policy => policy
+					.AddAuthenticationSchemes(DiscordAuthenticationDefaults.AuthenticationScheme)
+					.RequireSelfOrRole(UserRoles.Admin));	
+				
+				options.AddPolicy("SelfOrMod", policy => policy
+					.AddAuthenticationSchemes(DiscordAuthenticationDefaults.AuthenticationScheme)
+					.RequireSelfOrRole(UserRoles.Moderator));
+			});
+
+			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
 
 			services.AddHttpClient<RestClientBase>();
 
@@ -85,6 +98,7 @@ namespace Transan.Web
 			services.AddSingleton<AuthService>();
 			services.AddSingleton(typeof(FormService<>));
 			services.AddSingleton<FormEmbedHandler>();
+			services.AddSingleton<RoleDeckService>();
 			
 			services.AddScoped<SignupControlService>();
 
@@ -124,7 +138,7 @@ namespace Transan.Web
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
-
+			
 			app.UseRouting();
 
 			app.UseAuthentication();

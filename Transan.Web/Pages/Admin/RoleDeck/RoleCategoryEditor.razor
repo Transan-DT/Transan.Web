@@ -1,0 +1,144 @@
+﻿@page "/admin/roledeck/category/add"
+@page "/admin/roledeck/category/edit/{CategoryId}"
+@attribute [Authorize(Roles = UserRoles.Admin)]
+
+@using Transan.Web.Data.RoleDeck
+@using Microsoft.AspNetCore.Components
+@using MongoDB.Bson
+@using Mapster
+@using MongoDB.Bson.Serialization.Attributes
+
+@inject RoleDeckService _roleDeck;
+@inject NavigationManager _navigation;
+
+<h1>Role Category Editor</h1>
+
+@if (_editModelNotFound)
+{
+	<h3 class="text-warning">Role Category not found.</h3>
+}
+else
+{
+	<EditForm Model=_model OnValidSubmit=OnValidSubmitAsync>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+	
+		<h3 class="text-muted">Category ID: <span class="font-monospace">@(_model.Id != new ObjectId() ? _model.Id.ToString() : "None (New ID)")</span></h3>
+		
+		<div class="row my-5">
+			<div class="col-sm-3">
+				<label>Category Order</label>
+				<span class="form-text">(hi>lo sort)</span>
+				<InputNumber DisplayName="Order" @bind-Value=_model.OrderModel class="form-control" />
+			</div>
+
+			<div class="col-md-6">
+				<label>Title</label>
+				<InputText DisplayName="Title" @bind-Value=_model.Name class="form-control" maxlength="60" />
+			</div>
+
+			<div class="col-sm-3 align-bottom d-flex align-items-end">
+				<div>
+					<label class="form-check-label">Icon</label>
+					<InputFile OnChange=LoadFiles class="form-control" accept="image/png" placeholer="Choose Image File..." />
+				</div>
+			</div>
+		</div>
+		
+		<div class="row my-3 mx-1">
+			<label>Description</label>
+			<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
+		</div>
+
+		<div class="row my-5">
+			<div class="col">
+				<div>
+					<button type="submit" class="btn btn-primary me-3 px-5" disabled=@(_formSubmitSuccess && CategoryId is null)>Submit</button>
+					<button type="button" onclick="window.history.back()" class="btn btn-secondary px-5">Cancel</button>
+					
+					@if (CategoryId is not null)
+					{
+						<button type="button" @onclick="() => _deletionRequested = true" class="btn btn-danger px-5">Delete</button>
+					}
+					
+				</div>
+				
+				@if (_formSubmitSuccess)
+				{
+					<h5 class="text-success">Successfuly submitted.</h5>
+				}
+			</div>
+		</div>
+	</EditForm>
+	
+	if (_deletionRequested)
+	{
+		<DeleteConfirm OnConfirm=OnDeleteClickedAsync OnCancel=@(() => _deletionRequested = false) />
+	}
+}
+
+
+@code {
+	[Parameter] public string? CategoryId { get; set; }
+
+	private bool _editModelNotFound, _formSubmitSuccess, _deletionRequested;
+	private RoleCategoryModel _model { get; set; } = new();
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (CategoryId is not null)
+		{
+			if ((await _roleDeck.GetRoleDeckCategoryAsync(ObjectId.Parse(CategoryId)))?.Adapt<RoleCategoryModel>() is { } current)
+			{
+				_model = current;
+			}
+			else
+			{
+				_editModelNotFound = true;
+			}
+		}
+		
+		await base.OnParametersSetAsync();
+	}
+
+
+	private async Task OnValidSubmitAsync()
+	{
+		if (_model.IconFile is not null)
+		{
+			await using Stream s = (await _model.IconFile.RequestImageFileAsync("image/png", 480, 480)).OpenReadStream(5120000);
+			await s.ReadAsync(_model.Icon = new byte[_model.IconFile.Size]);
+		}
+		
+		if (CategoryId is null)
+		{
+			await _roleDeck.CreateNewCategoryAsync(_model);
+		}
+		else
+		{
+			await _roleDeck.EditCategoryAsync(_model);
+		}
+
+		_formSubmitSuccess = true;
+	}
+
+	private void LoadFiles(InputFileChangeEventArgs e)
+	{
+		_model.IconFile = e.File;
+	}
+	
+	private async Task OnDeleteClickedAsync()
+	{
+		await _roleDeck.DeleteCategoryAsync(_model);
+		_navigation.NavigateTo("profile");
+	}
+	
+	public record RoleCategoryModel : RoleCategory
+	{
+		[BsonIgnore]
+		public IBrowserFile? IconFile { get; set; }
+		
+		[Range(sbyte.MinValue, sbyte.MaxValue), BsonIgnore]
+		public short? OrderModel { get => Order; set => Order = (sbyte?)value; }
+	}
+}

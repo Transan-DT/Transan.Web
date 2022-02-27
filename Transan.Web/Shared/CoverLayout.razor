@@ -10,7 +10,7 @@
 		<div class="carousel slide mb-5" data-ride="carousel">
 			<div class="carousel-inner">
 				<div class="carousel-item active">
-					<img src="assets/transan-banner.webp" class="d-block w-100" style="@(CoverFullHeight ? "min-" : null)height:30rem">
+					<img alt="Bannière du site" class="d-block w-100" src="assets/transan-banner.webp" style="@(CoverFullHeight ? "min-" : null)height:30rem">
 
 					<div class="container">
 						<div class="carousel-caption @(CoverTextCenter ? null : "text-start") align-content-center">
@@ -33,7 +33,7 @@
 		</div>
 
 		<div class="container">
-			<CascadingValue Value=this>
+			<CascadingValue TValue=CoverLayout Value=this>
 				@Body
 			</CascadingValue>
 		</div>
@@ -50,8 +50,6 @@
 	public bool SubtitleHeader { get; private set; }
 	public bool CoverTextCenter { get; private set; }
 	public bool CoverFullHeight { get; private set; }
-
-	public void Refresh() => StateHasChanged();
 
 	public void SetCover(string title, string subtitle, bool center = false, bool subtitleHeader = false, bool coverFullHeight = false)
 	{

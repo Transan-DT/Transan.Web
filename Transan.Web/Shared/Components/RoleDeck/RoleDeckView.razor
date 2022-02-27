@@ -1,0 +1,59 @@
+﻿@using System.Collections
+@using Transan.Web.Data.RoleDeck
+@inject DiscordClient _discordClient;
+@inject RoleDeckService _roleDeck;
+
+<div id="roledeck">
+	<AuthorizeView Roles=@UserRoles.Admin>
+		<a class="btn btn-lg btn-block btn-success" href="/admin/roledeck/category/add">Add Category</a>
+	</AuthorizeView>
+	
+	<div class="d-flex flex-column bd-highlight my-3">
+		@if (_roleCategories?.Any() is true)
+		{
+			@foreach (RoleCategory category in _roleCategories)
+			{
+				<CascadingValue TValue="IEnumerable<ulong>" Value="_selectedRoles">
+					<div class="my-5 p-2 bd-highlight text-center">
+						<RoleCategoryComponent Category=category OnRoleChange=OnRoleChangeAsync />
+					</div>
+				</CascadingValue>
+			}	
+		}
+		else
+		{
+			<h3 class="text-danger my-5">Error : Tried to load an empty RoleDeck.</h3>
+		}
+	</div>
+</div>
+
+
+@code {
+	
+	[CascadingParameter] public ulong UserId { get; set; }
+
+	private IEnumerable<RoleCategory>? _roleCategories;
+	private IEnumerable<ulong>? _selectedRoles;
+	
+	private Queue<RoleChangeDto> _pendingChanges = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_roleCategories = await _roleDeck.GetRoleDeckCategoriesAsync();
+		await base.OnInitializedAsync();
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		_selectedRoles = await _roleDeck.GetMemberRolesAsync(UserId);
+		await base.OnParametersSetAsync();
+	}
+
+	private async Task OnRoleChangeAsync(RoleChangeDto roleChange)
+	{
+		await _roleDeck.SetMemberRoleAsync(roleChange);
+		_selectedRoles = await _roleDeck.GetMemberRolesAsync(UserId);
+		StateHasChanged();
+	}
+
+}

@@ -64,10 +64,12 @@
 		</div>
 	</div>
 
-	<CascadingValue Value=@_userId>
-		<hr class="my-5" />
-		<RoleDeckView />
-	</CascadingValue>
+	<AuthorizeView Roles=@UserRoles.Joined Policy="SelfOrAdmin" Resource=@_userId>
+		<CascadingValue Value=@_userId>
+	        <hr class="my-5" />
+	        <RoleDeckView />
+	    </CascadingValue>
+	</AuthorizeView>
 }
 else
 {

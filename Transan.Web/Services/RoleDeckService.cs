@@ -108,6 +108,6 @@ public class RoleDeckService
 		
 	public Task DeleteRoleAsync(Role role) => _roles.UpdateOneAsync(
 		Builders<RoleCategory>.Filter.ElemMatch(c => c.Roles, r => r.Id == role.Id),
-		Builders<RoleCategory>.Update.Unset(x => x.Roles[-1])
+		Builders<RoleCategory>.Update.PullFilter(x => x.Roles, x => x.Id == role.Id)
 	);
 }

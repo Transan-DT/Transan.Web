@@ -9,6 +9,7 @@
 @using MongoDB.Bson.Serialization.Attributes
 
 @inject RoleDeckService _roleDeck;
+@inject NavigationManager _navigation;
 
 <h1>Role Category Editor</h1>
 
@@ -22,7 +23,7 @@ else
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 	
-		<h3 class="text-muted">Category ID: <span class="font-monospace">@(_model.Id == new ObjectId() ? _model.Id.ToString() : "None (New ID)")</span></h3>
+		<h3 class="text-muted">Category ID: <span class="font-monospace">@(_model.Id != new ObjectId() ? _model.Id.ToString() : "None (New ID)")</span></h3>
 		
 		<div class="row my-5">
 			<div class="col-sm-3">
@@ -45,15 +46,21 @@ else
 		</div>
 		
 		<div class="row my-3 mx-1">
-        	<label>Description</label>
-        	<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
-        </div>
+			<label>Description</label>
+			<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
+		</div>
 
 		<div class="row my-5">
 			<div class="col">
 				<div>
-					<button type="submit" class="btn btn-primary me-3 px-5">Submit</button>
-					<button onclick="window.history.back()" class="btn btn-secondary px-5">Cancel</button>
+					<button type="submit" class="btn btn-primary me-3 px-5" disabled=@(_formSubmitSuccess && CategoryId is null)>Submit</button>
+					<button type="button" onclick="window.history.back()" class="btn btn-secondary px-5">Cancel</button>
+					
+					@if (CategoryId is not null)
+					{
+						<button type="button" @onclick="() => _deletionRequested = true" class="btn btn-danger px-5">Delete</button>
+					}
+					
 				</div>
 				
 				@if (_formSubmitSuccess)
@@ -63,13 +70,18 @@ else
 			</div>
 		</div>
 	</EditForm>
+	
+	if (_deletionRequested)
+	{
+		<DeleteConfirm OnConfirm=OnDeleteClickedAsync OnCancel=@(() => _deletionRequested = false) />
+	}
 }
 
 
 @code {
 	[Parameter] public string? CategoryId { get; set; }
 
-	private bool _editModelNotFound, _formSubmitSuccess;
+	private bool _editModelNotFound, _formSubmitSuccess, _deletionRequested;
 	private RoleCategoryModel _model { get; set; } = new();
 
 	protected override async Task OnParametersSetAsync()
@@ -113,6 +125,12 @@ else
 	private void LoadFiles(InputFileChangeEventArgs e)
 	{
 		_model.IconFile = e.File;
+	}
+	
+	private async Task OnDeleteClickedAsync()
+	{
+		await _roleDeck.DeleteCategoryAsync(_model);
+		_navigation.NavigateTo("profile");
 	}
 	
 	public record RoleCategoryModel : RoleCategory

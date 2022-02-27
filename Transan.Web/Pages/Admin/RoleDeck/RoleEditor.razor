@@ -9,6 +9,7 @@
 @using MongoDB.Bson.Serialization.Attributes
 
 @inject RoleDeckService _roleDeck;
+@inject NavigationManager _navigation;
 
 
 <h1>Role Editor</h1>
@@ -30,16 +31,18 @@ else
 		
 		<div class="row my-5">
 			<div class="col-md-4">
-            	<label class="form-label">Role</label>
+				<label class="form-label">Role</label>
 
-            	<InputSelect @bind-Value=_model.Id class="form-select form-select-lg">
-            		
-            		@foreach (DiscordRole role in _serverRoles)
-		            {
-			            <option value=@role.Id>@role.Name (@role.Id)</option>
-		            }
-            	</InputSelect>
-            </div>
+				<InputSelect @bind-Value=_model.Id class="form-select form-select-lg">
+					@if (_serverRoles is not null && _serverRoles.Any())
+					{
+						foreach (DiscordRole role in _serverRoles)
+						{
+							<option value=@role.Id>@role.Name (@role.Id)</option>
+						}
+					}
+				</InputSelect>
+			</div>
 			
 			<div class="col-md-4">
 				<label>Title</label>
@@ -68,15 +71,20 @@ else
 		</div>
 		
 		<div class="row my-3 mx-1">
-        	<label>Description</label>
-        	<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
-        </div>
+			<label>Description</label>
+			<InputTextArea DisplayName="Content" @bind-Value=_model.Description class="font-control" style="height: 10rem" />
+		</div>
 
 		<div class="row my-5">
 			<div class="col">
 				<div>
-					<button type="submit" class="btn btn-primary me-3 px-5">Submit</button>
-					<button onclick="window.history.back()" class="btn btn-secondary px-5">Cancel</button>
+					<button type="submit" class="btn btn-primary me-3 px-5" disabled=@(_formSubmitSuccess && _isNewModel)>Submit</button>
+					<button type="button" onclick="window.history.back()" class="btn btn-secondary px-5 me-3">Cancel</button>
+					
+					@if (!_isNewModel)
+                    {
+                    	<button type="button" @onclick=@(() => _deletionRequested = true) class="btn btn-danger px-5 me-3">Delete</button>
+                    }
 				</div>
 				
 				@if (_formSubmitSuccess)
@@ -86,6 +94,11 @@ else
 			</div>
 		</div>
 	</EditForm>
+
+	if (_deletionRequested)
+	{
+		<DeleteConfirm OnConfirm=OnDeleteClickedAsync OnCancel=@(() => _deletionRequested = false) />
+	}
 }
 
 
@@ -95,7 +108,7 @@ else
 
 	private ulong? _roleId { get; set; }
 	
-	private bool _isNewModel, _editModelNotFound, _formSubmitSuccess;
+	private bool _isNewModel, _editModelNotFound, _formSubmitSuccess, _deletionRequested;
 	private RoleModel _model { get; set; } = new();
 	private IEnumerable<DiscordRole>? _serverRoles;
 
@@ -128,7 +141,6 @@ else
 		await base.OnParametersSetAsync();
 	}
 
-
 	private async Task OnValidSubmitAsync()
 	{
 		if (_model.IconFile is not null)
@@ -152,6 +164,13 @@ else
 	private void LoadFiles(InputFileChangeEventArgs e)
 	{
 		_model.IconFile = e.File;
+	}
+
+	
+	private async Task OnDeleteClickedAsync()
+	{
+		await _roleDeck.DeleteRoleAsync(_model);
+		_navigation.NavigateTo("profile");
 	}
 	
 	public record RoleModel : Role

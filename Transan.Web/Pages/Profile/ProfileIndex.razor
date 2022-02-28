@@ -1,6 +1,7 @@
 ﻿@page "/profile"
 @page "/profile/{SnowflakeStr}"
 @layout CoverLayout
+@attribute [Authorize(Roles = UserRoles.Admin)] 
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DiscordClient _discordClient

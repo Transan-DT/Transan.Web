@@ -46,7 +46,7 @@
 											<ul>
 												@foreach (DiscordRole? role in _discordMember.Roles)
 												{
-													<li style="color: @role.Color.ToString()">@role.Name</li>
+													<li style="color: @(role.Color.ToString() is "#000000" ? "#FFFFFF" : role.Color.ToString())">@role.Name</li>
 												}
 											</ul>
 										}

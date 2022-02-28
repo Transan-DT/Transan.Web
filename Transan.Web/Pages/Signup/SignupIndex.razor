@@ -17,8 +17,15 @@
 	<Authorized>
 		@if (formWasSubmitted)
 		{
-			<h1 class="text-success mb-5">Merci !</h1>
-			<p class="lead text-secondary">Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu. Patience ! ;)</p>
+			<h1 class="text-success my-5">Merci !</h1>
+			
+			<p class="lead text-secondary my-5">
+				Nous avons bien reçu votre formulaire, et notre Modération vérifiera votre inscription sous peu.
+				<br />
+				Pendant sa vérification, vous pouvez d'ores et déjà <a href="/profile">compléter votre profil.</a>
+			</p>
+			
+			<h3 class="text-secondary my-5">Patience! ;)</h3>
 		}
 		else if (SignupService.ListForms().Any(f => f.UserSnowflake == userSnowflake))
 		{

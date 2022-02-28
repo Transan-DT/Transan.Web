@@ -1,4 +1,4 @@
-﻿@using System.Collections
+@using System.Collections
 @using Transan.Web.Data.RoleDeck
 
 <div id=@Category.Id>
@@ -14,7 +14,7 @@
         </AuthorizeView>
 	</div>
 
-	<div class="row justify-content-center align-items-stretch my-5">
+	<div class="row justify-content-center align-items-stretch my-5 g-4">
 		@foreach (Role role in Category.Roles.OrderByDescending(r => r.Order))
 		{
 			<div class="col-lg-4 col-md-6 d-flex flex-column flex-grow-1">

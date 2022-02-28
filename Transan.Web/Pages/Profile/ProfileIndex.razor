@@ -1,7 +1,6 @@
 ﻿@page "/profile"
 @page "/profile/{SnowflakeStr}"
 @layout CoverLayout
-@attribute [Authorize(Roles = UserRoles.Admin)] 
 
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DiscordClient _discordClient
@@ -47,7 +46,7 @@
 											<ul>
 												@foreach (DiscordRole? role in _discordMember.Roles)
 												{
-													<li style="color: @role.Color.ToString()">@role.Name</li>
+													<li style="color: @(role.Color.ToString() is "#000000" ? "#FFFFFF" : role.Color.ToString())">@role.Name</li>
 												}
 											</ul>
 										}

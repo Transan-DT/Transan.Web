@@ -4,10 +4,15 @@
 @inject RoleDeckService _roleDeck;
 
 <div id="roledeck">
+	<div class="my-5">
+		<h1 class="h1 d-inline-block">Role Deck</h1>
+		<span class="badge rounded-pill bg-info align-top">Beta</span>
+	</div>
+
 	<AuthorizeView Roles=@UserRoles.Admin>
 		<a class="btn btn-lg btn-block btn-success" href="/admin/roledeck/category/add">Add Category</a>
 	</AuthorizeView>
-	
+
 	<div class="d-flex flex-column bd-highlight my-3">
 		@if (_roleCategories?.Any() is true)
 		{
@@ -18,7 +23,7 @@
 						<RoleCategoryComponent Category=category OnRoleChange=OnRoleChangeAsync />
 					</div>
 				</CascadingValue>
-			}	
+			}
 		}
 		else
 		{

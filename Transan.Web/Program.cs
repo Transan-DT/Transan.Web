@@ -45,6 +45,7 @@ namespace Transan.Web
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();
+					webBuilder.UseStaticWebAssets();
 					webBuilder.UseSerilog();
 				});
 
